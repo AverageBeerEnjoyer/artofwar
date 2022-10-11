@@ -25,6 +25,7 @@ public class GameScreen implements Screen {
     private Rectangle bucket;
     private Rectangle field_red;
     private Array<Rectangle> raindrops;
+    private int govno;
 
     public GameScreen(final Start game) {
         this.game = game;
