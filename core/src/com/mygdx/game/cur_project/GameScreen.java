@@ -55,6 +55,7 @@ public class GameScreen implements Screen {
         raindrops = new Array<Rectangle>();
         spawnRaindrop();
         spawnRaindrop();
+        WorldMap map=new WorldMap(10,10);
     }
 
     public void drow_fields(){

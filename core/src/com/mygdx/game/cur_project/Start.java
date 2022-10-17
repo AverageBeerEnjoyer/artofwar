@@ -12,7 +12,9 @@ public class Start extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont(); // use libGDX's default Arial font
-        this.setScreen(new MenuScreen(this));
+      // this.setScreen(new MenuScreen(this));
+       this.setScreen(new WorldMap(150,150));
+
     }
 
     public void render() {
