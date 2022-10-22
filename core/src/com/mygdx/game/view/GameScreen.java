@@ -51,11 +51,11 @@ public class GameScreen implements Screen {
         raindrops = new Array<Rectangle>();
         spawnRaindrop();
         spawnRaindrop();
-        WorldMap map=new WorldMap(10,10);
+        WorldMap map = new WorldMap(10, 10);
     }
 
-    public void drow_fields(){
-        for(int j = 0; j< 10; ++j) {
+    public void drow_fields() {
+        for (int j = 0; j < 10; ++j) {
             for (int i = 0; i < 10; ++i) {
                 game.batch.draw(field,
                         field_red.x + field_red.width * i,
@@ -83,7 +83,7 @@ public class GameScreen implements Screen {
         game.batch.begin();
         drow_fields();
         game.batch.draw(dropImage, bucket.x, bucket.y, bucket.width, bucket.height);
-        for(Rectangle raindrop: raindrops) {
+        for (Rectangle raindrop : raindrops) {
             game.batch.draw(dropImage, raindrop.x, raindrop.y);
         }
         game.batch.end();

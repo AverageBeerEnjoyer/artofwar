@@ -57,9 +57,9 @@ public class Map {
     }
 
     private void initmap(int height, int width) {
-        for(MapCell[] row : cells){
-            for(int i=0;i<row.length;++i){
-                row[i]=new MapCell();
+        for (MapCell[] row : cells) {
+            for (int i = 0; i < row.length; ++i) {
+                row[i] = new MapCell();
             }
         }
         double randomCoef = 1.999;

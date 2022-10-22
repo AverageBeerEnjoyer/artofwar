@@ -25,6 +25,7 @@ public class WorldMap implements Screen {
         printmap();
     }
 
+    // FIXME - shitcode for debug only
     private void printmap() {
         System.out.println(map.toString());
     }
