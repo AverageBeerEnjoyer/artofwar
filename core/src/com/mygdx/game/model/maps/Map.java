@@ -3,8 +3,6 @@ package com.mygdx.game.model.maps;
 import com.badlogic.gdx.utils.Queue;
 import com.mygdx.game.view.utils.Pair;
 
-import java.util.Objects;
-
 import static com.mygdx.game.model.maps.CellType.LAND;
 import static com.mygdx.game.model.maps.CellType.WATER;
 
@@ -34,12 +32,21 @@ public class Map {
         return sb.toString();
     }
 
+    // FIXME
+    /*
+     * Code below is fucking shit for some reasons:
+     * 1. Bad naming (wtf can do method with name initMap, it is not obvious)
+     * 2. Bad codestyle
+     * 3. No javadoc comments found
+     *
+    */
+
     public static Map createMap(int height, int width, int mode) {
         assert height >= 1 && width >= 1;
         int landcnt = 0;
         Map map = new Map(new MapCell[height][width]);
         while ((double) landcnt / (width * height) < 0.2 || (double) landcnt / (height * width) > 0.5) {
-            map.initmap(height, width);
+            map.initMap(height, width);
             landcnt = map.cntCell(LAND);
             if (mode == 1) {
                 for (int i = 0; i < 7; ++i) {
@@ -56,7 +63,7 @@ public class Map {
         return map;
     }
 
-    private void initmap(int height, int width) {
+    private void initMap(int height, int width) {
         for (MapCell[] row : cells) {
             for (int i = 0; i < row.length; ++i) {
                 row[i] = new MapCell();
@@ -144,13 +151,13 @@ public class Map {
         int[][] neighboursMap = new int[cells.length][cells[0].length];
         for (int i = 0; i < neighboursMap.length; ++i) {
             for (int j = 0; j < neighboursMap[0].length; ++j) {
-                neighboursMap[i][j] = cnt_neighbours(i, j, cellType);
+                neighboursMap[i][j] = cntNeighbours(i, j, cellType);
             }
         }
         return neighboursMap;
     }
 
-    private int cnt_neighbours(int x, int y, CellType cellType) {
+    private int cntNeighbours(int x, int y, CellType cellType) {
         int res = 0;
         if (safeAccess(x - 1, y) != null && safeAccess(x - 1, y).type == cellType) ++res;
         if (safeAccess(x + 1, y) != null && safeAccess(x + 1, y).type == cellType) ++res;
