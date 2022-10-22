@@ -7,10 +7,10 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MenuScreen implements Screen {
 
-    final Start game;
+    final ArtOfWar game;
     OrthographicCamera camera;
 
-    public MenuScreen(final Start game) {
+    public MenuScreen(final ArtOfWar game) {
         this.game = game;
 
         camera = new OrthographicCamera();

@@ -3,18 +3,13 @@ package com.mygdx.game.view;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.mygdx.game.model.maps.MapCell;
-import com.mygdx.game.model.maps.MapOperations;
+import com.mygdx.game.model.maps.Map;
 
 public class WorldMap implements Screen {
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLUE = "\u001b[34m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001b[33m";
     private int width;
     private int height;
-    private MapCell[][] scalesMap;
-    TiledMap map;
+    private Map map;
+    TiledMap tiledMap;
     TiledMapTileLayer layer;
 
     public WorldMap(int height, int width) {
@@ -24,23 +19,14 @@ public class WorldMap implements Screen {
     }
 
     private void init() {
-        MapOperations mapOperations = new MapOperations();
-        mapOperations.createMap(height, width, 0);
-        scalesMap = mapOperations.getMap();
+        map = Map.createMap(height, width, 0);
 
         System.out.println();
         printmap();
     }
 
     private void printmap() {
-        for (int i = 0; i < height; ++i) {
-            if ((i & 1) == 1) System.out.print(" ");
-            for (int j = 0; j < width; ++j) {
-                System.out.print(scalesMap[i][j].type.color() + "@" + ANSI_RESET + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
+        System.out.println(map.toString());
     }
 
     @Override

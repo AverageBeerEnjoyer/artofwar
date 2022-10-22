@@ -3,62 +3,61 @@ package com.mygdx.game.model.maps;
 import com.badlogic.gdx.utils.Queue;
 import com.mygdx.game.view.utils.Pair;
 
+import java.util.Objects;
+
 import static com.mygdx.game.model.maps.CellType.LAND;
 import static com.mygdx.game.model.maps.CellType.WATER;
 
-enum CellType {
-    NOTDEFINED(-1, ""),
-    LAND(0, "\u001B[32m"),
-    BEACH(1, "\u001b[33m"),
-    WATER(2, "\u001b[34m");
-    private final int type;
-    private final String color;
+public class Map {
 
-    CellType(int type, String color) {
-        this.type = type;
-        this.color = color;
+    static final String ANSI_RESET = "\u001B[0m";
+
+    private MapCell[][] cells;
+
+    private Map(MapCell[][] cells) {
+        this.cells = cells;
     }
 
-    public int type() {
-        return this.type;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        int width = cells.length;
+        int height = cells[0].length;
+        for (int i = 0; i < height; ++i) {
+            if ((i & 1) == 1) System.out.print(" ");
+            for (int j = 0; j < width; ++j) {
+                sb.append(cells[i][j].type.color()).append("@").append(ANSI_RESET).append(" ");
+            }
+            sb.append("\n");
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 
-    public String color() {
-        return this.color;
-    }
-}
-
-public class MapOperations {
-
-    private MapCell[][] map;
-
-    public MapCell[][] getMap() {
-        return map;
-    }
-
-    public void createMap(int height, int width, int mode) {
-
+    public static Map createMap(int height, int width, int mode) {
+        assert height >= 1 && width >= 1;
         int landcnt = 0;
+        Map map = new Map(new MapCell[height][width]);
         while ((double) landcnt / (width * height) < 0.2 || (double) landcnt / (height * width) > 0.5) {
-            initmap(height, width);
-            landcnt = cntCell(LAND);
+            map.initmap(height, width);
+            landcnt = map.cntCell(LAND);
             if (mode == 1) {
                 for (int i = 0; i < 7; ++i) {
-                    removeWater();
+                    map.removeWater();
                 }
             }
         }
         if (mode == 0) {
             for (int i = 0; i < 7; ++i) {
-                removeWater();
+                map.removeWater();
             }
         }
-        setBeaches();
+        map.setBeaches();
+        return map;
     }
 
     private void initmap(int height, int width) {
-        map = new MapCell[height][width];
-        for(MapCell[] row:map){
+        for(MapCell[] row : cells){
             for(int i=0;i<row.length;++i){
                 row[i]=new MapCell();
             }
@@ -74,17 +73,17 @@ public class MapOperations {
             int y = p.second;
             if (x >= height || x < 0) continue;
             if (y >= width || y < 0) continue;
-            if (map[x][y].type == CellType.NOTDEFINED) {
+            if (cells[x][y].type == CellType.NOTDEFINED) {
                 if (x == width / 2 && y == height / 2)
-                    map[x][y].type = LAND;
+                    cells[x][y].type = LAND;
                 else {
                     int cell = (int) (Math.random() * randomCoef);
                     if (cell == 0)
-                        map[x][y].type = LAND;
-                    else map[x][y].type = WATER;
+                        cells[x][y].type = LAND;
+                    else cells[x][y].type = WATER;
                 }
             } else continue;
-            if (map[x][y].type != CellType.NOTDEFINED && map[x][y].type != LAND) continue;
+            if (cells[x][y].type != CellType.NOTDEFINED && cells[x][y].type != LAND) continue;
             q.addFirst(Pair.pair(x - 1, y));
             q.addFirst(Pair.pair(x + 1, y));
             q.addFirst(Pair.pair(x, y - 1));
@@ -100,12 +99,31 @@ public class MapOperations {
         changeCells(CellType.NOTDEFINED, WATER);
     }
 
+    private void changeCells(CellType cellTypeOld, CellType cellTypeNew) {
+        for (MapCell[] row : cells) {
+            for (int i = 0; i < row.length; ++i) {
+                if (row[i].type == cellTypeOld)
+                    row[i].type = cellTypeNew;
+            }
+        }
+    }
+
+    private int cntCell(CellType cellType) {
+        int res = 0;
+        for (MapCell[] row : cells) {
+            for (MapCell cell : row) {
+                if (cell.type == cellType) ++res;
+            }
+        }
+        return res;
+    }
+
     private void removeWater() {
         int[][] neighbours_map = neighboursMap(WATER);
         for (int i = 0; i < neighbours_map.length; ++i) {
             for (int j = 0; j < neighbours_map[0].length; ++j) {
-                if (map[i][j].type == WATER && neighbours_map[i][j] < 3) {
-                    map[i][j].type = LAND;
+                if (cells[i][j].type == WATER && neighbours_map[i][j] < 3) {
+                    cells[i][j].type = LAND;
                 }
             }
         }
@@ -115,15 +133,15 @@ public class MapOperations {
         int[][] neighbourMap = neighboursMap(WATER);
         for (int i = 0; i < neighbourMap.length; ++i) {
             for (int j = 0; j < neighbourMap[0].length; ++j) {
-                if (map[i][j].type == LAND && neighbourMap[i][j] > 0) {
-                    map[i][j].type = CellType.BEACH;
+                if (cells[i][j].type == LAND && neighbourMap[i][j] > 0) {
+                    cells[i][j].type = CellType.BEACH;
                 }
             }
         }
     }
 
     private int[][] neighboursMap(CellType cellType) {
-        int[][] neighboursMap = new int[map.length][map[0].length];
+        int[][] neighboursMap = new int[cells.length][cells[0].length];
         for (int i = 0; i < neighboursMap.length; ++i) {
             for (int j = 0; j < neighboursMap[0].length; ++j) {
                 neighboursMap[i][j] = cnt_neighbours(i, j, cellType);
@@ -150,30 +168,11 @@ public class MapOperations {
 
     private MapCell safeAccess(int x, int y) {
         try {
-            if (map[x][y].type == CellType.NOTDEFINED) return null;
-            return map[x][y];
+            if (cells[x][y].type == CellType.NOTDEFINED) return null;
+            return cells[x][y];
         } catch (IndexOutOfBoundsException e) {
             return null;
         }
     }
-
-    private void changeCells(CellType cellTypeOld, CellType cellTypeNew) {
-        for (MapCell[] row : map) {
-            for (int i = 0; i < row.length; ++i) {
-                if (row[i].type == cellTypeOld)
-                    row[i].type = cellTypeNew;
-            }
-        }
-
-    }
-
-    private int cntCell(CellType cellType) {
-        int res = 0;
-        for (MapCell[] row : map) {
-            for (MapCell cell : row) {
-                if (cell.type == cellType) ++res;
-            }
-        }
-        return res;
-    }
 }
+

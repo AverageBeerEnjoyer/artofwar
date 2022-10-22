@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
-    final Start game;
+    final ArtOfWar game;
 
     private Texture dropImage;
     private Texture field;
@@ -23,7 +23,7 @@ public class GameScreen implements Screen {
     private Array<Rectangle> raindrops;
     private int govno;
 
-    public GameScreen(final Start game) {
+    public GameScreen(final ArtOfWar game) {
         this.game = game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each
