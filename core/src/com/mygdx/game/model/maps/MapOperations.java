@@ -1,11 +1,10 @@
-package com.mygdx.game.cur_project.Maps;
+package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
-import com.mygdx.game.cur_project.utils.MyUtils;
-import com.mygdx.game.cur_project.utils.Pair;
+import com.mygdx.game.view.utils.Pair;
 
-import static com.mygdx.game.cur_project.Maps.CellType.LAND;
-import static com.mygdx.game.cur_project.Maps.CellType.WATER;
+import static com.mygdx.game.model.maps.CellType.LAND;
+import static com.mygdx.game.model.maps.CellType.WATER;
 
 enum CellType {
     NOTDEFINED(-1, ""),

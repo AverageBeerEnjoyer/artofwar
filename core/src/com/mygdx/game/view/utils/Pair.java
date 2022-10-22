@@ -1,4 +1,4 @@
-package com.mygdx.game.cur_project.utils;
+package com.mygdx.game.view.utils;
 
     public final class Pair<T, U> {
 

@@ -1,9 +1,8 @@
-package com.mygdx.game.cur_project;
+package com.mygdx.game.view;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.game.cur_project.Maps.WorldMap;
 
 public class Start extends Game {
 
