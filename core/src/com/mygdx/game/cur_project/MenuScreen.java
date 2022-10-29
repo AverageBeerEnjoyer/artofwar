@@ -14,7 +14,7 @@ public class MenuScreen implements Screen {
         this.stage = stage;
         camera = new OrthographicCamera();
         a = new CreateMenuScreen(stage);
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, 1080, 720);
     }
 
     @Override
