@@ -4,65 +4,50 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.kotcrab.vis.ui.widget.tabbedpane.Tab;
 import com.mygdx.game.cur_project.perlins.scrin;
-import sun.jvm.hotspot.utilities.BitMap;
-
-import java.lang.annotation.Target;
-import java.util.Iterator;
 
 public class ConstructorMap implements Screen {
     final Start game;
-    private Stage stage;
+    private final Stage stage;
     private Color[][] type_cell;
     private String n1="10",n2="10";
     private OrthographicCamera camera;
-    private ScrollPane scrollPane;
 
     public ConstructorMap(final Start game) {
         this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        stage.addActor(CreateWindow().left().top());
+        CreateTypeCell();
+        stage.addActor(CreateWindow());
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1080, 720);
     }
 
+    //Menu+Map
     public Table CreateWindow(){
         Table window = new Table();
-        scrin a = new scrin(Integer.parseInt(n1), Integer.parseInt(n2),0);
-        type_cell = new Color[Integer.parseInt(n1)][Integer.parseInt(n2)];
-        type_cell = a.view_Up(0);
-
         window.setFillParent(true);
-        scrollPane = new ScrollPane(CreateMap());
 
         window.add(CreateMenu()).top().left();
+
+        ScrollPane scrollPane = new ScrollPane(CreateMap());
         window.add(scrollPane).fill().expand();
 
         window.debug();
         return window;
     }
 
+    //buttons,settings
     public Table CreateMenu(){
         Table table = new Table();
-        table.setWidth(600);
-        table.setHeight(400);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
@@ -79,12 +64,12 @@ public class ConstructorMap implements Screen {
         textButtonStyle.fontColor = Color.WHITE;
 
         final Label nameLabel = new Label("Count X:",labelStyle);
-        final TextField nameText = new TextField("10",labelStyle1);
+        final TextField nameText = new TextField(this.n1,labelStyle1);
         Label addressLabel = new Label("Count Y:", labelStyle);
-        final TextField addressText = new TextField("10",labelStyle1);
+        final TextField addressText = new TextField(this.n2,labelStyle1);
 
         Button button = new TextButton("Save settings.", textButtonStyle);
-        Button update = new TextButton("update map.", textButtonStyle);
+        final Button update = new TextButton("update map.", textButtonStyle);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -98,6 +83,7 @@ public class ConstructorMap implements Screen {
                 );
                 type_cell = new Color[Integer.parseInt(n1)][Integer.parseInt(n2)];
                 type_cell = a.view_Up(0);
+                UpdateWindow();
             }
         });
         update.addListener(new ChangeListener() {
@@ -110,13 +96,14 @@ public class ConstructorMap implements Screen {
                         -1//random user
                 );
                 type_cell = a.view_Up(0);
+                UpdateWindow();
             }
         });
 
-        table.add(nameLabel);              // Row 0, column 0.
+        table.add(nameLabel);   // Row 0, column 0.
         table.add(nameText);    // Row 0, column 1.
-        table.row();                       // Move to next row.
-        table.add(addressLabel);           // Row 1, column 0.
+        table.row();            // Move to next row.
+        table.add(addressLabel);// Row 1, column 0.
         table.add(addressText); // Row 1, column 1.
         table.row();
         table.add(button);
@@ -125,6 +112,7 @@ public class ConstructorMap implements Screen {
         return table;
     }
 
+    //Take Map in type_cell
     public Table CreateMap(){
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
@@ -138,6 +126,17 @@ public class ConstructorMap implements Screen {
             table.row();
         }
         return table;
+    }
+
+    private void CreateTypeCell(){
+        scrin a = new scrin(Integer.parseInt(n1), Integer.parseInt(n2),0);
+        type_cell = new Color[Integer.parseInt(n1)][Integer.parseInt(n2)];
+        type_cell = a.view_Up(0);
+    }
+
+    private void UpdateWindow(){
+        stage.getActors().clear();
+        stage.addActor(CreateWindow());
     }
 
     @Override
@@ -179,15 +178,5 @@ public class ConstructorMap implements Screen {
     public void dispose() {
         stage.dispose();
         game.dispose();
-    }
-
-    private Texture getPixel(){
-        Pixmap pixmap = new Pixmap(1,1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(1F,1F,1F,1F);
-        pixmap.fill();
-
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        return texture;
     }
 }
