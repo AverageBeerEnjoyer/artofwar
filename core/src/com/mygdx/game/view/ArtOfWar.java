@@ -14,7 +14,6 @@ public class ArtOfWar extends Game {
         font = new BitmapFont(); // use libGDX's default Arial font
         // this.setScreen(new MenuScreen(this));
         this.setScreen(new WorldMap(150, 150));
-
     }
 
     public void render() {

@@ -20,8 +20,6 @@ public class WorldMap implements Screen {
 
     private void init() {
         map = Map.createMap(height, width, 0);
-
-        System.out.println();
         printmap();
     }
 
