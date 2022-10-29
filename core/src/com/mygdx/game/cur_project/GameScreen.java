@@ -57,17 +57,6 @@ public class GameScreen implements Screen {
         spawnRaindrop();
     }
 
-    public void drow_fields(){
-        for(int j = 0; j< 10; ++j) {
-            for (int i = 0; i < 10; ++i) {
-                game.batch.draw(field,
-                        field_red.x + field_red.width * i,
-                        field_red.y + field_red.height * j,
-                        field_red.width, field_red.height);
-            }
-        }
-    }
-
     private void spawnRaindrop() {
         Rectangle raindrop = new Rectangle();
         raindrop.x = MathUtils.random(0, 400);
@@ -84,7 +73,6 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        drow_fields();
         game.batch.draw(dropImage, bucket.x, bucket.y, bucket.width, bucket.height);
         for(Rectangle raindrop: raindrops) {
             game.batch.draw(dropImage, raindrop.x, raindrop.y);
