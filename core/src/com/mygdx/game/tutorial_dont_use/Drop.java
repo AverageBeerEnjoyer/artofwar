@@ -1,4 +1,4 @@
-package com.mygdx.game.tutorial;
+package com.mygdx.game.tutorial_dont_use;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

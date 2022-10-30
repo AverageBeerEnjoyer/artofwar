@@ -1,8 +1,9 @@
-package com.mygdx.game.cur_project;
+package com.mygdx.game.view;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.view.Start;
 
 public class MenuScreen implements Screen {
 

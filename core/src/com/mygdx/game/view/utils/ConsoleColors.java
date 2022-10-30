@@ -1,4 +1,4 @@
-package com.mygdx.game.cur_project.perlins;
+package com.mygdx.game.view.utils;
 
 public class ConsoleColors {
     // Reset

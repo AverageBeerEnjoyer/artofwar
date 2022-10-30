@@ -1,4 +1,4 @@
-package com.mygdx.game.tutorial;
+package com.mygdx.game.tutorial_dont_use;
 
 import java.util.Iterator;
 

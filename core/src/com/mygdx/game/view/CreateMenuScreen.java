@@ -1,4 +1,4 @@
-package com.mygdx.game.cur_project;
+package com.mygdx.game.view;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -12,8 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.cur_project.Start;
+import com.mygdx.game.view.Start;
 
 public class CreateMenuScreen extends Game {
     Start game;

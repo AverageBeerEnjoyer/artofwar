@@ -1,4 +1,4 @@
-package com.mygdx.game.cur_project;
+package com.mygdx.game.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
