@@ -2,9 +2,6 @@ package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
 import com.mygdx.game.view.utils.Pair;
-import com.mygdx.game.view.utils.Triple;
-import jdk.internal.jline.internal.Ansi;
-import org.graalvm.compiler.lir.amd64.AMD64Binary;
 
 import java.util.Random;
 
@@ -16,6 +13,9 @@ public class Map {
     public static int[][] neighbourodd = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, 1}, {1, 1}};
     public static int[][] neighboureven = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}};
 
+    private static final double persistence = 0.1;
+    private static final int octaves = 8;
+    private static final int seed = 777;
     static final String ANSI_RESET = "\u001B[0m";
 
     private MapCell[][] cells;
@@ -32,39 +32,17 @@ public class Map {
         for (int i = 0; i < height; ++i) {
             if ((i & 1) == 1) sb.append(" ");
             for (int j = 0; j < width; ++j) {
-                sb.append(color(cells[i][j].height)).append(cells[i][j].height/10).append(ANSI_RESET).append(" ");
+                int h = (int) (cells[i][j].height * 10);
+                String s;
+                if (cells[i][j].type == WATER) s = "@";
+                else s = "" + h;
+                sb.append(cells[i][j].type.color()).append(s).append(ANSI_RESET).append(" ");
             }
             sb.append("\n");
         }
         sb.append("\n");
         return sb.toString();
     }
-    //for debug
-    private String color(int h){
-        if(h==-1) return "\u001b[34m";
-        int r=h/10;
-        switch (r){
-            case 9:return "\u001b[38;5;240m";
-            case 8:return "\u001b[38;5;241m";
-            case 7:return "\u001b[38;5;242m";
-            case 6:return "\u001b[38;5;243m";
-            case 5:return "\u001b[38;5;244m";
-            case 4:return "\u001b[38;5;245m";
-            case 3:return "\u001b[38;5;246m";
-            case 2:return "\u001b[38;5;247m";
-            case 1:return "\u001b[38;5;248m";
-            default:return "\u001b[38;5;249m";
-        }
-    }
-
-    // FIXME
-    /*
-     * Code below is fucking shit for some reasons:
-     * 1. Bad naming (wtf can do method with name initMap, it is not obvious)
-     * 2. Bad codestyle
-     * 3. No javadoc comments found
-     *
-     */
 
     public static Map createMap(int height, int width, int mode) {
         assert height >= 1 && width >= 1;
@@ -103,13 +81,12 @@ public class Map {
             int y = p.second;
             MapCell cell = safeAccess(x, y);
             if (cell == null) continue;
-            if (cell.type == CellType.NOTDEFINED) {
-                if (x == width / 2 && y == height / 2) {
-                    cell.type = LAND;
-                } else {
-                    cell.type = randomLandOrWater();
-                }
-            } else continue;
+            if (cell.type != CellType.NOTDEFINED) continue;
+
+            if (x == width / 2 && y == height / 2) {
+                cell.type = LAND;
+            } else cell.type = randomLandOrWater();
+
             if (cell.type == WATER) continue;
             int[][] nb;
             if ((x & 1) == 1) nb = neighbourodd;
@@ -126,35 +103,23 @@ public class Map {
     private void setRandomHeight() {
         int height = cells.length;
         int width = cells[0].length;
-        Queue<Triple<Integer, Integer, Integer>> q = new Queue<>();
-        q.addFirst(Triple.triple(height / 2, width / 2, 30));
-        while (q.notEmpty()) {
-            Triple<Integer, Integer, Integer> t = q.removeLast();
-            int x = t.first;
-            int y = t.second;
-            int h = t.third;
-            MapCell cell = safeAccess(x, y);
-            if (cell == null) continue;
-            if (cell.type == WATER) continue;
-            if (cell.height != -1) continue;
-            cell.height = randomHeight(h);
-            int[][] nb;
-            if ((x & 1) == 1) nb = neighbourodd;
-            else nb = neighboureven;
-            for (int i = 0; i < nb.length; ++i) {
-                int dx = nb[i][0];
-                int dy = nb[i][1];
-                q.addFirst(Triple.triple(x + dx, y + dy, cell.height));
+        double min = 1;
+        Perlin2D perlin = new Perlin2D(seed);
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                if (cells[i][j].type == LAND) {
+                    double h = perlin.getNoise((double) i / height, (double) j / width, octaves, persistence);
+                    h=(h+1)/2;
+                    if (h < min) min = h;
+                    cells[i][j].height = h;
+                }
             }
         }
-    }
-
-    private int randomHeight(int prev) {
-        Random r = new Random();
-        int res = prev - 10 + r.nextInt(21);
-        if(res<0) return Math.abs(res);
-        if(res>100) return 100-res%100;
-        return res;
+        for (MapCell[] row : cells) {
+            for (MapCell cell : row) {
+                if (cell.type == LAND) cell.height -= min;
+            }
+        }
     }
 
     private void changeCells(CellType cellTypeOld, CellType cellTypeNew) {
@@ -224,7 +189,7 @@ public class Map {
         return res;
     }
 
-    private MapCell safeAccess(int x, int y) {
+    public MapCell safeAccess(int x, int y) {
         try {
             return cells[x][y];
         } catch (IndexOutOfBoundsException e) {
@@ -238,8 +203,5 @@ public class Map {
         if (res == 0) return LAND;
         return WATER;
     }
-    /* DEBUG
-
-     */
 }
 

@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class MapCell {
     CellType type;
-    int height;
+    double height;
 
     public MapCell() {
         this.type = CellType.NOTDEFINED;
