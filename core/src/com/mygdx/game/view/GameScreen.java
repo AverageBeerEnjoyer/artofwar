@@ -1,7 +1,10 @@
-package com.mygdx.game.view;
+package com.mygdx.game.cur_project;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
@@ -9,11 +12,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
-    final ArtOfWar game;
+    final Start game;
 
     private Texture dropImage;
     private Texture field;
@@ -23,7 +27,7 @@ public class GameScreen implements Screen {
     private Array<Rectangle> raindrops;
     private int govno;
 
-    public GameScreen(final ArtOfWar game) {
+    public GameScreen(final Start game) {
         this.game = game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each
@@ -51,11 +55,10 @@ public class GameScreen implements Screen {
         raindrops = new Array<Rectangle>();
         spawnRaindrop();
         spawnRaindrop();
-        WorldMap map = new WorldMap(10, 10);
     }
 
-    public void drow_fields() {
-        for (int j = 0; j < 10; ++j) {
+    public void drow_fields(){
+        for(int j = 0; j< 10; ++j) {
             for (int i = 0; i < 10; ++i) {
                 game.batch.draw(field,
                         field_red.x + field_red.width * i,
@@ -83,7 +86,7 @@ public class GameScreen implements Screen {
         game.batch.begin();
         drow_fields();
         game.batch.draw(dropImage, bucket.x, bucket.y, bucket.width, bucket.height);
-        for (Rectangle raindrop : raindrops) {
+        for(Rectangle raindrop: raindrops) {
             game.batch.draw(dropImage, raindrop.x, raindrop.y);
         }
         game.batch.end();

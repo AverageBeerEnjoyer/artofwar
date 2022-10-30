@@ -1,20 +1,20 @@
-package com.mygdx.game.view;
+package com.mygdx.game.cur_project;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MenuScreen implements Screen {
 
-    final ArtOfWar game;
+    final Start stage;
     OrthographicCamera camera;
+    CreateMenuScreen a;
 
-    public MenuScreen(final ArtOfWar game) {
-        this.game = game;
-
+    public MenuScreen(final Start stage) {
+        this.stage = stage;
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        a = new CreateMenuScreen(stage);
+        camera.setToOrtho(false, 1080, 720);
     }
 
     @Override
@@ -22,17 +22,18 @@ public class MenuScreen implements Screen {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
         camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
+        stage.batch.setProjectionMatrix(camera.combined);
 
-        game.batch.begin();
-        game.font.draw(game.batch, "Welcome to Drop!!! ", 100, 150);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
-        game.batch.end();
+        stage.batch.begin();
+        stage.font.draw(stage.batch, "Welcome to Drop!!! ", 100, 150);
+        stage.font.draw(stage.batch, "Tap anywhere to begin!", 100, 100);
+        a.getObjects().draw();
+        stage.batch.end();
 
-        if (Gdx.input.isTouched()) {
-            game.setScreen(new GameScreen(game));
-            dispose();
-        }
+//        if (Gdx.input.isTouched()) {
+//            game.setScreen(new GameScreen(game));
+//            dispose();
+//        }
     }
 
     @Override
