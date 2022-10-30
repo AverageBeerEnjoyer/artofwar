@@ -8,15 +8,20 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.model.maps.scrin;
+import com.mygdx.game.model.maps.BiomCreator;
+import com.mygdx.game.model.maps.CellType;
+import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.MapCell;
 
 public class ConstructorMap implements Screen {
     final Start game;
     private final Stage stage;
-    private Color[][] type_cell;
-    private String n1="10",n2="10";
+    private Map map;
+    private String n1="25",n2="25",n3="5";
     private OrthographicCamera camera;
 
     public ConstructorMap(final Start game) {
@@ -66,36 +71,24 @@ public class ConstructorMap implements Screen {
         final Label nameLabel = new Label("Count X:",labelStyle);
         final TextField nameText = new TextField(this.n1,labelStyle1);
         Label addressLabel = new Label("Count Y:", labelStyle);
+        Label addressLabel1 = new Label("Seed:", labelStyle);
         final TextField addressText = new TextField(this.n2,labelStyle1);
+        final TextField addressText1 = new TextField(this.n3,labelStyle1);
 
-        Button button = new TextButton("Save settings.", textButtonStyle);
-        final Button update = new TextButton("update map.", textButtonStyle);
+        Button button = new TextButton("Update map.", textButtonStyle);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 n1 = nameText.getText();
                 n2 = addressText.getText();
+                n3 = addressText1.getText();
                 System.out.println(n1+" "+n2);
-                scrin a = new scrin(
+                BiomCreator a = new BiomCreator(
                         Integer.parseInt(n1),//x
                         Integer.parseInt(n2),//y
-                        0//random local
+                        Integer.parseInt(n3)//random local
                 );
-                type_cell = new Color[Integer.parseInt(n1)][Integer.parseInt(n2)];
-                type_cell = a.view_Up(0);
-                UpdateWindow();
-            }
-        });
-        update.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println(n1+" "+n2);
-                scrin a = new scrin(
-                        Integer.parseInt(n1),//x
-                        Integer.parseInt(n2),//y
-                        -1//random user
-                );
-                type_cell = a.view_Up(0);
+                map = a.view_Up(0);
                 UpdateWindow();
             }
         });
@@ -106,8 +99,9 @@ public class ConstructorMap implements Screen {
         table.add(addressLabel);// Row 1, column 0.
         table.add(addressText); // Row 1, column 1.
         table.row();
+        table.add(addressLabel1);// Row 1, column 0.
+        table.add(addressText1);
         table.add(button);
-        table.add(update);
 
         return table;
     }
@@ -116,12 +110,13 @@ public class ConstructorMap implements Screen {
     public Table CreateMap(){
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
-
         Table table = new Table();
-        for (Color[] colors : type_cell) {
-            for (Color color : colors) {
-                labelStyle.fontColor = color;
-                table.add(new Label("@ ", new Label.LabelStyle(labelStyle)));
+        for (int i=0;i<map.cells.length;++i) {
+            if((i&1)==1) table.add(new Label(" ",new Label.LabelStyle(labelStyle)));
+            for (MapCell cell : map.cells[i]) {
+                labelStyle.fontColor = cell.type.color();
+                table.add(new Label(" ", new Label.LabelStyle(labelStyle)));
+                table.add(new Label("@", new Label.LabelStyle(labelStyle)));
             }
             table.row();
         }
@@ -129,9 +124,8 @@ public class ConstructorMap implements Screen {
     }
 
     private void CreateTypeCell(){
-        scrin a = new scrin(Integer.parseInt(n1), Integer.parseInt(n2),0);
-        type_cell = new Color[Integer.parseInt(n1)][Integer.parseInt(n2)];
-        type_cell = a.view_Up(0);
+        BiomCreator a = new BiomCreator(Integer.parseInt(n1), Integer.parseInt(n2),0);
+        map = a.view_Up(0);
     }
 
     private void UpdateWindow(){

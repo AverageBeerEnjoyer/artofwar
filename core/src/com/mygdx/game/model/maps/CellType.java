@@ -1,23 +1,22 @@
 package com.mygdx.game.model.maps;
 
-enum CellType {
-    NOTDEFINED(-1, ""),
-    LAND(0, "\u001B[32m"),
-    BEACH(1, "\u001b[33m"),
-    WATER(2, "\u001b[34m");
-    private final int type;
-    private final String color;
+import com.badlogic.gdx.graphics.Color;
 
-    CellType(int type, String color) {
-        this.type = type;
+public enum CellType {
+    NOTDEFINED(null),
+    LAND( Color.GREEN),
+    BEACH( Color.YELLOW),
+    WATER( Color.BLUE),
+    MOUNTAIN(Color.BLACK),
+    JUNGLE(Color.RED);
+    private final Color color;
+
+    CellType(Color color) {
         this.color = color;
     }
 
-    public int type() {
-        return this.type;
-    }
 
-    public String color() {
+    public Color color() {
         return this.color;
     }
 }
