@@ -53,7 +53,7 @@ public class Map {
      * @param height height of matrix
      * @param width  width of matrix
      * @param mode   0 - continent, 1 - island (could be removed)
-     * @param seed   seed to
+     * @param seed   seed for Random
      * @return Map with only two types of cells: LAND and WATER
      */
     public static Map createMap(int height, int width, int mode, int seed) {
