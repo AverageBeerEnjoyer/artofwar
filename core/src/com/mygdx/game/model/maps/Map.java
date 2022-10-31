@@ -9,14 +9,20 @@ import static com.mygdx.game.model.maps.CellType.LAND;
 import static com.mygdx.game.model.maps.CellType.WATER;
 
 public class Map {
+    /* coordinates of neighbour cells to current cell
+     * row with number i    odd <=> (i & 1) = 1
+     *                      even <=> (i & 0) = 0
+     * pairs{row dif,column dif}
+     */
     public static int[][] neighbourodd = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, 1}, {1, 1}};
     public static int[][] neighboureven = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}};
+
     static final String ANSI_RESET = "\u001B[0m";
     private Random random;
     public MapCell[][] cells;
 
     private Map(MapCell[][] cells, long seed) {
-        this.random=new Random(seed);
+        this.random = new Random(seed);
         this.cells = cells;
     }
 
@@ -28,7 +34,7 @@ public class Map {
         for (int i = 0; i < height; ++i) {
             if ((i & 1) == 1) sb.append(" ");
             for (int j = 0; j < width; ++j) {
-                int h = (int) (cells[i][j].height * 10);
+                int h = (int) (cells[i][j].elevation * 10);
                 String s;
                 if (cells[i][j].type == WATER) s = "@";
                 else s = "" + h;
@@ -40,6 +46,16 @@ public class Map {
         return sb.toString();
     }
 
+    /**
+     * creates map with 0.2 < land part < 0.5 else tries again
+     * (if mode == 1 land part can be a bit bigger)
+     *
+     * @param height height of matrix
+     * @param width  width of matrix
+     * @param mode   0 - continent, 1 - island (could be removed)
+     * @param seed   seed to
+     * @return Map with only two types of cells: LAND and WATER
+     */
     public static Map createMap(int height, int width, int mode, int seed) {
         assert height >= 1 && width >= 1;
         int landcnt = 0;
@@ -61,6 +77,12 @@ public class Map {
         return map;
     }
 
+    /**
+     * generate map with BFS from the center
+     *
+     * @param height
+     * @param width
+     */
     private void initMap(int height, int width) {
         for (MapCell[] row : cells) {
             for (int i = 0; i < row.length; ++i) {
@@ -113,6 +135,9 @@ public class Map {
         return res;
     }
 
+    /**
+     * set the LAND type to all WATER cells with number of neighbour WATER cells less than 3
+     */
     private void removeWater() {
         int[][] neighbours_map = neighboursMap(WATER);
         for (int i = 0; i < neighbours_map.length; ++i) {
@@ -124,6 +149,10 @@ public class Map {
         }
     }
 
+    /**
+     * @param cellType type of cells to count
+     * @return matrix with numbers of neighbour cells with chosen type
+     */
     private int[][] neighboursMap(CellType cellType) {
         int[][] neighboursMap = new int[cells.length][cells[0].length];
         for (int i = 0; i < neighboursMap.length; ++i) {
@@ -133,23 +162,22 @@ public class Map {
         }
         return neighboursMap;
     }
-
     private int cntNeighbours(int x, int y, CellType cellType) {
         int res = 0;
-        if (safeAccess(x - 1, y) != null && safeAccess(x - 1, y).type == cellType) ++res;
-        if (safeAccess(x + 1, y) != null && safeAccess(x + 1, y).type == cellType) ++res;
-        if (safeAccess(x, y + 1) != null && safeAccess(x, y + 1).type == cellType) ++res;
-        if (safeAccess(x, y - 1) != null && safeAccess(x, y - 1).type == cellType) ++res;
-        if ((x & 1) == 1) {
-            if (safeAccess(x - 1, y + 1) != null && safeAccess(x - 1, y + 1).type == cellType) ++res;
-            if (safeAccess(x + 1, y + 1) != null && safeAccess(x + 1, y + 1).type == cellType) ++res;
-        } else {
-            if (safeAccess(x - 1, y - 1) != null && safeAccess(x - 1, y - 1).type == cellType) ++res;
-            if (safeAccess(x + 1, y - 1) != null && safeAccess(x + 1, y - 1).type == cellType) ++res;
+        int[][] nb;
+        if ((x & 1) == 1) nb = neighbourodd;
+        else nb = neighboureven;
+        for(int i=0;i<6;++i){
+            if (safeAccess(x+nb[i][0],y+nb[i][1]) != null && safeAccess(x+nb[i][0],y+nb[i][1]).type == cellType) ++res;
         }
         return res;
     }
 
+    /**
+     * @param x row
+     * @param y column
+     * @return cell of map with coordinates(x,y), null if (x,y) out of map
+     */
     public MapCell safeAccess(int x, int y) {
         try {
             return cells[x][y];
