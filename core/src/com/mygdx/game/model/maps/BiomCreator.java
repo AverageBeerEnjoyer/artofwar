@@ -1,21 +1,21 @@
 package com.mygdx.game.model.maps;
 
-import com.badlogic.gdx.graphics.Color;
 import com.mygdx.game.view.utils.BiomUtils;
-import com.mygdx.game.view.utils.ConsoleColors;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.awt.*;
+import java.util.HashMap;
 
 public class BiomCreator {
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     private final double seed;
-    private Map map;
-    private final double degree = 1.5;
-    private final int octaves = 2;
-    private final double persistence = 0.1;
-    private double sr = 0, sr2 = 0;
+    private final Map map;
+    private final java.util.Map<String,Integer> statInfo = new HashMap<>();
+
+    private double degree = 1.5;
+    private int octaves = 2;
+    private double persistence = 0.1;
+
 
     public BiomCreator(int width, int height, int seed) {
         this.width = width;
@@ -27,9 +27,33 @@ public class BiomCreator {
         this.map = Map.createMap(height, width, 0, seed);
     }
 
-    private void countStat(double e, double m) {
-        sr += e;
-        sr2 += m;
+    public void setDegree(double e){
+        this.degree = e;
+    }
+    public void setOctaves(int e){
+        this.octaves = e;
+    }
+    public void setPersistence(double e){
+        this.persistence = e;
+    }
+
+    public double getSeed(){
+        return seed;
+    }
+
+    public java.util.Map<String,Integer> getStatInfo(){
+        return statInfo;
+    }
+
+    private void countStat(int i, int j, double e, double m) {
+        map.cells[i][j].type = biomeEXE(e, m);
+        String key = String.valueOf(map.cells[i][j].type);
+
+        if(statInfo.get(key) == null){
+            statInfo.put(key, 1);
+        }else{
+            statInfo.put(key, statInfo.get(key)+1);
+        }
     }
 
     private CellType biomeEXE(double e, double m) {
@@ -97,9 +121,9 @@ public class BiomCreator {
                     double m = humidity_map.getNoise(i / (double) height, j / (double) width, 10, 0.1f) + .5f;
 //                    m = exponent(m);
                     m = BiomUtils.round(m, 3);
-                    countStat(e, m);
                     map.cells[i][j].humidity = m;
-                    map.cells[i][j].type = biomeEXE(e, m);
+
+                    countStat(i,j, e, m);
                 }
             }
             System.out.println();
@@ -119,8 +143,8 @@ public class BiomCreator {
             }
             System.out.println();
         }
-        System.out.println("srednee: \n" + sr / (width * height));
-        System.out.println(sr2 / (width * height));
+//        System.out.println("srednee: \n" + countLand / (width * height));
+//        System.out.println(countWater / (width * height));
         return map;
     }
 }

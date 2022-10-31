@@ -6,10 +6,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.model.maps.BiomCreator;
@@ -17,11 +19,16 @@ import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 public class ConstructorMap implements Screen {
     final Start game;
     private final Stage stage;
     private Map map;
-    private String n1="25",n2="25",n3="5";
+    private String n1="25",n2="25",n3="5",n4="1.5",n5="2",n6="0.1";
+    private String textRandom="Random: off";
+    private java.util.Map<String,Integer> statInfo = new HashMap<>();
     private OrthographicCamera camera;
 
     public ConstructorMap(final Start game) {
@@ -41,21 +48,20 @@ public class ConstructorMap implements Screen {
         Table window = new Table();
         window.setFillParent(true);
 
-        window.add(CreateMenu()).top().left();
+        window.add(CreateMenu()).width(350).top().left();
 
         ScrollPane scrollPane = new ScrollPane(CreateMap());
         window.add(scrollPane).fill().expand();
 
-        window.debug();
         return window;
     }
 
     //buttons,settings
     public Table CreateMenu(){
         Table table = new Table();
+        BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
         labelStyle.font = myFont;
         labelStyle.fontColor = Color.RED;
 
@@ -63,47 +69,85 @@ public class ConstructorMap implements Screen {
         labelStyle1.font = myFont;
         labelStyle1.fontColor = Color.RED;
 
-        BitmapFont font = new BitmapFont();
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
+        textButtonStyle.font = myFont;
         textButtonStyle.fontColor = Color.WHITE;
 
-        final Label nameLabel = new Label("Count X:",labelStyle);
-        final TextField nameText = new TextField(this.n1,labelStyle1);
-        Label addressLabel = new Label("Count Y:", labelStyle);
-        Label addressLabel1 = new Label("Seed:", labelStyle);
-        final TextField addressText = new TextField(this.n2,labelStyle1);
-        final TextField addressText1 = new TextField(this.n3,labelStyle1);
+        final Label labelX = new Label("Count X:", labelStyle);
+        final Label labelY = new Label("Count Y:", labelStyle);
+        final Label labelSeed = new Label("Seed:", labelStyle);
+        final Label labelDegree = new Label("degree:", labelStyle);
+        final Label labelOctaves = new Label("octaves:", labelStyle);
+        final Label labelPersistence = new Label("persistence:", labelStyle);
 
-        Button button = new TextButton("Update map.", textButtonStyle);
-        button.addListener(new ChangeListener() {
+        final TextField fieldX = new TextField(this.n1, labelStyle1);
+        final TextField fieldY = new TextField(this.n2, labelStyle1);
+        final TextField fieldSeed = new TextField(this.n3,labelStyle1);
+        final TextField fieldDegree = new TextField(this.n4,labelStyle1);
+        final TextField fieldOctaves = new TextField(this.n5,labelStyle1);
+        final TextField fieldPersistence = new TextField(this.n6,labelStyle1);
+
+        final Button lightingCheckBox = new TextButton(textRandom, textButtonStyle);
+        lightingCheckBox.setName(textRandom);
+        lightingCheckBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                n1 = nameText.getText();
-                n2 = addressText.getText();
-                n3 = addressText1.getText();
-                System.out.println(n1+" "+n2);
-                BiomCreator a = new BiomCreator(
-                        Integer.parseInt(n1),//x
-                        Integer.parseInt(n2),//y
-                        Integer.parseInt(n3)//random local
-                );
-                map = a.view_Up(0);
+                if(Objects.equals(lightingCheckBox.getName(), "Random: off")){
+                    textRandom = "Random: on";
+                }
+                else{
+                    textRandom = "Random: off";
+                }
+                lightingCheckBox.setName(textRandom);
                 UpdateWindow();
             }
         });
 
-        table.add(nameLabel);   // Row 0, column 0.
-        table.add(nameText);    // Row 0, column 1.
-        table.row();            // Move to next row.
-        table.add(addressLabel);// Row 1, column 0.
-        table.add(addressText); // Row 1, column 1.
-        table.row();
-        table.add(addressLabel1);// Row 1, column 0.
-        table.add(addressText1);
-        table.add(button);
+        Button button = new TextButton("Update map", textButtonStyle);
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                n1 = fieldX.getText();
+                n2 = fieldY.getText();
+                if(Objects.equals(textRandom, "Random: on")){
+                    n3 = "-1";
+                }else n3 = fieldSeed.getText();
+                n4 = fieldDegree.getText();
+                n5 = fieldOctaves.getText();
+                n6 = fieldPersistence.getText();
+                BiomCreator a = new BiomCreator(
+                        Integer.parseInt(n1),//x
+                        Integer.parseInt(n2),//y
+                        Integer.parseInt(n3)//seed
+                );
+                UpdateSettings(a);
+                map = a.view_Up(0);
+                n3 = String.valueOf(a.getSeed());
+                statInfo = a.getStatInfo();
+                UpdateWindow();
+            }
+        });
 
-        return table;
+        table.add(labelX);
+        table.add(fieldX).width(50);
+        table.row();
+        table.add(labelY);
+        table.add(fieldY).width(50);
+        table.add(lightingCheckBox);
+        table.row();
+        table.add(labelSeed);
+        table.add(fieldSeed).width(50);
+        table.add(button).colspan(2);
+        table.row();
+        table.add(labelDegree);
+        table.add(fieldDegree).width(50);
+        table.add(labelOctaves);
+        table.add(fieldOctaves).width(50);
+        table.row();
+        table.add(labelPersistence);
+        table.add(fieldPersistence).width(50);
+
+        return CreateTableStatInfo(table);
     }
 
     //Take Map in type_cell
@@ -124,13 +168,37 @@ public class ConstructorMap implements Screen {
     }
 
     private void CreateTypeCell(){
-        BiomCreator a = new BiomCreator(Integer.parseInt(n1), Integer.parseInt(n2),0);
+        BiomCreator a = new BiomCreator(Integer.parseInt(n1), Integer.parseInt(n2),Integer.parseInt(n3));
         map = a.view_Up(0);
+        statInfo = a.getStatInfo();
+    }
+
+    private Table CreateTableStatInfo(Table tableMenu){
+        BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = myFont;
+        labelStyle.fontColor = Color.RED;
+
+        for(java.util.Map.Entry<String,Integer> entry : statInfo.entrySet()){
+            String key = entry.getKey();
+            String value = String.valueOf(entry.getValue());
+            tableMenu.row();
+            tableMenu.add(new Label(key, new Label.LabelStyle(labelStyle)));
+            tableMenu.add(new Label(value, new Label.LabelStyle(labelStyle)));
+        }
+        return tableMenu;
     }
 
     private void UpdateWindow(){
         stage.getActors().clear();
         stage.addActor(CreateWindow());
+    }
+
+    private void UpdateSettings(BiomCreator a){
+        a.setDegree(Double.parseDouble(n4));
+        a.setOctaves(Integer.parseInt(n5));
+        a.setPersistence(Double.parseDouble(n6));
     }
 
     @Override
