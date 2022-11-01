@@ -40,7 +40,7 @@ public class Map {
         return sb.toString();
     }
 
-    public static Map createMap(int height, int width, int mode, int seed) {
+    public static Map createMap(int height, int width, int mode, long seed) {
         assert height >= 1 && width >= 1;
         int landcnt = 0;
         Map map = new Map(new MapCell[height][width], seed);

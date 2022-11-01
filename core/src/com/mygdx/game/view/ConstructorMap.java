@@ -6,16 +6,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.model.maps.BiomCreator;
-import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 
@@ -118,7 +113,7 @@ public class ConstructorMap implements Screen {
                 BiomCreator a = new BiomCreator(
                         Integer.parseInt(n1),//x
                         Integer.parseInt(n2),//y
-                        Integer.parseInt(n3)//seed
+                        (long)Double.parseDouble(n3)//seed
                 );
                 UpdateSettings(a);
                 map = a.view_Up(0);

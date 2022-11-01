@@ -1,5 +1,6 @@
 package com.mygdx.game.model.maps;
 
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.mygdx.game.view.utils.BiomUtils;
 
 import java.awt.*;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 public class BiomCreator {
     private final int width;
     private final int height;
-    private final double seed;
+    private final long seed;
     private final Map map;
     private final java.util.Map<String,Integer> statInfo = new HashMap<>();
 
@@ -16,15 +17,15 @@ public class BiomCreator {
     private int octaves = 2;
     private double persistence = 0.1;
 
-
-    public BiomCreator(int width, int height, int seed) {
+    public BiomCreator(int width, int height, long seed) {
         this.width = width;
         this.height = height;
         if (seed == -1) {
-            this.seed = Math.random() * 2000;
-        } else
+            this.seed = (long) (Math.random() * 2000);
+        } else {
             this.seed = seed;
-        this.map = Map.createMap(height, width, 0, seed);
+        }
+        this.map = Map.createMap(height, width, 0, this.seed);
     }
 
     public void setDegree(double e){
@@ -37,7 +38,7 @@ public class BiomCreator {
         this.persistence = e;
     }
 
-    public double getSeed(){
+    public long getSeed(){
         return seed;
     }
 
@@ -114,7 +115,7 @@ public class BiomCreator {
                 if (cell.type == CellType.LAND) {
                     double e = elevation_map.getNoise(i / (double) height, j / (double) width, octaves, persistence) + .5f;
                      //e = terrace(e, 22);
-                    //e = exponent(e);
+                    e = exponent(e);
                     e = BiomUtils.round(e, 3);
                     map.cells[i][j].height = e;
 
