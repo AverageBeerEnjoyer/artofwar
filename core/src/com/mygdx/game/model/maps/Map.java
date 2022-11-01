@@ -34,7 +34,7 @@ public class Map {
         for (int i = 0; i < height; ++i) {
             if ((i & 1) == 1) sb.append(" ");
             for (int j = 0; j < width; ++j) {
-                int h = (int) (cells[i][j].height * 10);
+                int h = (int) (cells[i][j].elevation * 10);
                 String s;
                 if (cells[i][j].type == WATER) s = "@";
                 else s = "" + h;

@@ -118,7 +118,7 @@ public class BiomCreator {
                      //e = terrace(e, 22);
                     //e = exponent(e);
                     e = BiomUtils.round(e, 3);
-                    map.cells[i][j].height = e;
+                    map.cells[i][j].elevation = e;
 
                     double m = humidity_map.getNoise(i / (double) height, j / (double) width, 10, 0.1f) + .5f;
 //                    m = exponent(m);
@@ -133,7 +133,7 @@ public class BiomCreator {
         System.out.println();
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
-                System.out.print(map.cells[i][j].height + " ");
+                System.out.print(map.cells[i][j].elevation + " ");
             }
             System.out.println();
         }
