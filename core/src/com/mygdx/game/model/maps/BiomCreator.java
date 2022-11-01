@@ -1,9 +1,11 @@
 package com.mygdx.game.model.maps;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.graphics.Color;
 import com.mygdx.game.view.utils.BiomUtils;
+import com.mygdx.game.view.utils.ConsoleColors;
 
-import java.awt.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 
 public class BiomCreator {
@@ -46,9 +48,8 @@ public class BiomCreator {
         return statInfo;
     }
 
-    private void countStat(int i, int j, double e, double m) {
-        map.cells[i][j].type = biomeEXE(e, m);
-        String key = String.valueOf(map.cells[i][j].type);
+    private void countStat(CellType t) {
+        String key = String.valueOf(t);
 
         if(statInfo.get(key) == null){
             statInfo.put(key, 1);
@@ -115,7 +116,7 @@ public class BiomCreator {
                 if (cell.type == CellType.LAND) {
                     double e = elevation_map.getNoise(i / (double) height, j / (double) width, octaves, persistence) + .5f;
                      //e = terrace(e, 22);
-                    e = exponent(e);
+                    //e = exponent(e);
                     e = BiomUtils.round(e, 3);
                     map.cells[i][j].height = e;
 
@@ -123,8 +124,8 @@ public class BiomCreator {
 //                    m = exponent(m);
                     m = BiomUtils.round(m, 3);
                     map.cells[i][j].humidity = m;
-
-                    countStat(i,j, e, m);
+                    map.cells[i][j].type = biomeEXE(e, m);
+                    countStat(map.cells[i][j].type);
                 }
             }
             System.out.println();
