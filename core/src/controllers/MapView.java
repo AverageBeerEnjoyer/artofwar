@@ -32,9 +32,11 @@ public class MapView {
     public void create() {
         TiledMap tiledMap = new TiledMap();
         MapLayers layers = tiledMap.getLayers();
-        TiledMapTile[] tiles = new TiledMapTile[1];
+        TiledMapTile[] tiles = new TiledMapTile[2];
         TextureRegion tr= new TextureRegion(new Texture(Gdx.files.internal(rsrc+"desertHex.gif")));
+        TextureRegion tr1= new TextureRegion(new Texture(Gdx.files.internal(rsrc+"clayHex.gif")));
         tiles[0]=new StaticTiledMapTile(tr);
+        tiles[1]=new StaticTiledMapTile(tr1);
         TiledMapTileLayer lay = new TiledMapTileLayer(10, 10, 64, 55);
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
@@ -43,6 +45,7 @@ public class MapView {
                 lay.setCell(i, j, cell);
             }
         }
+        lay.getCell(0,0).setTile(tiles[1]);
         layers.add(lay);
         renderer = new HexagonalTiledMapRenderer(tiledMap);
 //
