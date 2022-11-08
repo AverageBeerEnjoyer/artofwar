@@ -3,14 +3,15 @@ package com.mygdx.game.view;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.mygdx.game.model.maps.Map;
+import controllers.MapView;
 
 public class WorldMap implements Screen {
     private int width;
     private int height;
     private Map map;
-    TiledMap tiledMap;
-    TiledMapTileLayer layer;
+    private HexagonalTiledMapRenderer renderer;
 
     public WorldMap(int height, int width) {
         this.width = width;
@@ -20,6 +21,9 @@ public class WorldMap implements Screen {
 
     private void init() {
         map = Map.createMap(height, width, 0,0);
+        MapView mapView=new MapView(map);
+        mapView.create();
+        renderer=mapView.getRenderer();
         printmap();
     }
 

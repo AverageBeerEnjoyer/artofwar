@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.model.maps.BiomCreator;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
+import controllers.MapView;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -21,25 +23,35 @@ public class ConstructorMap implements Screen {
     final Start game;
     private final Stage stage;
     private Map map;
-    private String n1="25",n2="25",n3="5",n4="1.5",n5="2",n6="0.1";
-    private String textRandom="Random: off";
-    private java.util.Map<String,Integer> statInfo = new HashMap<>();
+    private String n1 = "25", n2 = "25", n3 = "5", n4 = "1.5", n5 = "2", n6 = "0.1";
+    private String textRandom = "Random: off";
+    private java.util.Map<String, Integer> statInfo = new HashMap<>();
     private OrthographicCamera camera;
+    private HexagonalTiledMapRenderer renderer;
+    private BitmapFont font;
 
     public ConstructorMap(final Start game) {
         this.game = game;
+
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
         CreateTypeCell();
-        stage.addActor(CreateWindow());
+//        stage.addActor(CreateWindow());
+
+
+        MapView mapView = new MapView(map);
+        mapView.create();
+        renderer = mapView.getRenderer();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1080, 720);
+
+        font = new BitmapFont();
     }
 
     //Menu+Map
-    public Table CreateWindow(){
+    public Table CreateWindow() {
         Table window = new Table();
         window.setFillParent(true);
 
@@ -52,7 +64,7 @@ public class ConstructorMap implements Screen {
     }
 
     //buttons,settings
-    public Table CreateMenu(){
+    public Table CreateMenu() {
         Table table = new Table();
         BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
 
@@ -77,20 +89,19 @@ public class ConstructorMap implements Screen {
 
         final TextField fieldX = new TextField(this.n1, labelStyle1);
         final TextField fieldY = new TextField(this.n2, labelStyle1);
-        final TextField fieldSeed = new TextField(this.n3,labelStyle1);
-        final TextField fieldDegree = new TextField(this.n4,labelStyle1);
-        final TextField fieldOctaves = new TextField(this.n5,labelStyle1);
-        final TextField fieldPersistence = new TextField(this.n6,labelStyle1);
+        final TextField fieldSeed = new TextField(this.n3, labelStyle1);
+        final TextField fieldDegree = new TextField(this.n4, labelStyle1);
+        final TextField fieldOctaves = new TextField(this.n5, labelStyle1);
+        final TextField fieldPersistence = new TextField(this.n6, labelStyle1);
 
         final Button lightingCheckBox = new TextButton(textRandom, textButtonStyle);
         lightingCheckBox.setName(textRandom);
         lightingCheckBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(Objects.equals(lightingCheckBox.getName(), "Random: off")){
+                if (Objects.equals(lightingCheckBox.getName(), "Random: off")) {
                     textRandom = "Random: on";
-                }
-                else{
+                } else {
                     textRandom = "Random: off";
                 }
                 lightingCheckBox.setName(textRandom);
@@ -104,16 +115,16 @@ public class ConstructorMap implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 n1 = fieldX.getText();
                 n2 = fieldY.getText();
-                if(Objects.equals(textRandom, "Random: on")){
+                if (Objects.equals(textRandom, "Random: on")) {
                     n3 = "-1";
-                }else n3 = fieldSeed.getText();
+                } else n3 = fieldSeed.getText();
                 n4 = fieldDegree.getText();
                 n5 = fieldOctaves.getText();
                 n6 = fieldPersistence.getText();
                 BiomCreator a = new BiomCreator(
                         Integer.parseInt(n1),//x
                         Integer.parseInt(n2),//y
-                        (long)Double.parseDouble(n3)//seed
+                        (long) Double.parseDouble(n3)//seed
                 );
                 UpdateSettings(a);
                 map = a.view_Up(0);
@@ -146,12 +157,12 @@ public class ConstructorMap implements Screen {
     }
 
     //Take Map in type_cell
-    public Table CreateMap(){
+    public Table CreateMap() {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
         Table table = new Table();
-        for (int i=0;i<map.cells.length;++i) {
-            if((i&1)==1) table.add(new Label(" ",new Label.LabelStyle(labelStyle)));
+        for (int i = 0; i < map.cells.length; ++i) {
+            if ((i & 1) == 1) table.add(new Label(" ", new Label.LabelStyle(labelStyle)));
             for (MapCell cell : map.cells[i]) {
                 labelStyle.fontColor = cell.type.color();
                 table.add(new Label(" ", new Label.LabelStyle(labelStyle)));
@@ -162,20 +173,20 @@ public class ConstructorMap implements Screen {
         return table;
     }
 
-    private void CreateTypeCell(){
-        BiomCreator a = new BiomCreator(Integer.parseInt(n1), Integer.parseInt(n2),Integer.parseInt(n3));
+    private void CreateTypeCell() {
+        BiomCreator a = new BiomCreator(Integer.parseInt(n1), Integer.parseInt(n2), Integer.parseInt(n3));
         map = a.view_Up(0);
         statInfo = a.getStatInfo();
     }
 
-    private Table CreateTableStatInfo(Table tableMenu){
+    private Table CreateTableStatInfo(Table tableMenu) {
         BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = myFont;
         labelStyle.fontColor = Color.RED;
 
-        for(java.util.Map.Entry<String,Integer> entry : statInfo.entrySet()){
+        for (java.util.Map.Entry<String, Integer> entry : statInfo.entrySet()) {
             String key = entry.getKey();
             String value = String.valueOf(entry.getValue());
             tableMenu.row();
@@ -185,12 +196,12 @@ public class ConstructorMap implements Screen {
         return tableMenu;
     }
 
-    private void UpdateWindow(){
+    private void UpdateWindow() {
         stage.getActors().clear();
         stage.addActor(CreateWindow());
     }
 
-    private void UpdateSettings(BiomCreator a){
+    private void UpdateSettings(BiomCreator a) {
         a.setDegree(Double.parseDouble(n4));
         a.setOctaves(Integer.parseInt(n5));
         a.setPersistence(Double.parseDouble(n6));
@@ -200,17 +211,21 @@ public class ConstructorMap implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
         camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
+        //game.batch.setProjectionMatrix(camera.combined);
+        renderer.setView(camera);
 
-//        game.batch.begin();
-        stage.act();
-        stage.draw();
-//        game.batch.end();
+        renderer.render();
+
+        game.batch.begin();
+//        stage.act();
+//        stage.draw();
+        font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, 20);
+        game.batch.end();
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width,height);
+        stage.getViewport().update(width, height);
     }
 
     @Override
