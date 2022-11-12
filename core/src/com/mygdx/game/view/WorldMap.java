@@ -1,11 +1,9 @@
 package com.mygdx.game.view;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.mygdx.game.model.maps.Map;
-import controllers.MapView;
+import controllers.MapToRendererTransformator;
 
 public class WorldMap implements Screen {
     private int width;
@@ -20,16 +18,9 @@ public class WorldMap implements Screen {
     }
 
     private void init() {
-        map = Map.createMap(height, width, 0,0);
-        MapView mapView=new MapView(map);
-        mapView.create();
-        renderer=mapView.getRenderer();
-        printmap();
-    }
-
-    // FIXME - shitcode for debug only
-    private void printmap() {
-        System.out.println(map.toString());
+        map = new Map(height, width, 0,0);
+        MapToRendererTransformator mapToRendererTransformator =new MapToRendererTransformator(map);
+        renderer= mapToRendererTransformator.getRenderer();
     }
 
     @Override

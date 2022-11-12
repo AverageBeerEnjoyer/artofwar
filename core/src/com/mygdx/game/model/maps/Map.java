@@ -1,103 +1,93 @@
 package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
+import com.mygdx.game.view.utils.BiomUtils;
 import com.mygdx.game.view.utils.Pair;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import static com.mygdx.game.model.maps.CellType.LAND;
 import static com.mygdx.game.model.maps.CellType.WATER;
 
 public class Map {
-    /* coordinates of neighbour cells to current cell
-     * row with number i    odd <=> (i & 1) = 1
-     *                      even <=> (i & 0) = 0
+    /**
+     * coordinates of neighbour cells to current cell
+     * column with number i: odd <=> (i & 1) = 1, even <=> (i & 0) = 0
+     * <p>
      * pairs{row dif,column dif}
      */
-    public static int[][] neighbourodd = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, 1}, {1, 1}};
-    public static int[][] neighboureven = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}};
+    public static int[][]
+            neighbourodd = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}},
+            neighboureven = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, 1}, {1, 1}};
 
-    static final String ANSI_RESET = "\u001B[0m";
-    private Random random;
-    public MapCell[][] cells;
+    private final Random random;
+    private final MapCell[][] cells;
+    private final long seed;
+    private int mode;
+    private double degree = 1.5;
+    private int octaves = 2;
+    private double persistence = 0.1;
+    private final java.util.Map<String, Integer> statInfo = new HashMap<>();
 
-    private Map(MapCell[][] cells, long seed) {
-        this.random = new Random(seed);
-        this.cells = cells;
-    }
+    private final int width, height;
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        int width = cells.length;
-        int height = cells[0].length;
-        for (int i = 0; i < height; ++i) {
-            if ((i & 1) == 1) sb.append(" ");
-            for (int j = 0; j < width; ++j) {
-                int h = (int) (cells[i][j].elevation * 10);
-                String s;
-                if (cells[i][j].type == WATER) s = "@";
-                else s = "" + h;
-                sb.append(cells[i][j].type.color()).append(s).append(ANSI_RESET).append(" ");
-            }
-            sb.append("\n");
+    public Map(int width, int height, int mode, long seed) {
+        if (width < 10 || height < 10) throw new IllegalArgumentException("Too small map");
+        this.width = width;
+        this.height = height;
+        this.mode = mode;
+        if (seed == -1) {
+            this.seed = (long) (Math.random() * 2000);
+        } else {
+            this.seed = seed;
         }
-        sb.append("\n");
-        return sb.toString();
+        random = new Random(this.seed);
+        this.cells = new MapCell[width][height];
+        createMap();
+        view_Up(0);
     }
 
     /**
-     * creates map with 0.2 < land part < 0.5 else tries again
+     * creates map consists of only 2 types of cells (land and water) with 0.2 < land part < 0.5 else tries again
      * (if mode == 1 land part can be a bit bigger)
-     *
-     * @param height height of matrix
-     * @param width  width of matrix
-     * @param mode   0 - continent, 1 - island (could be removed)
-     * @param seed   seed for Random
-     * @return Map with only two types of cells: LAND and WATER
      */
-    public static Map createMap(int height, int width, int mode, long seed) {
-        assert height >= 1 && width >= 1;
+    private void createMap() {
         int landcnt = 0;
-        Map map = new Map(new MapCell[height][width], seed);
         while ((double) landcnt / (width * height) < 0.2 || (double) landcnt / (height * width) > 0.5) {
-            map.initMap(height, width);
-            landcnt = map.cntCell(LAND);
+            initMap();
+            landcnt = cntCell(LAND);
             if (mode == 1) {
                 for (int i = 0; i < 7; ++i) {
-                    map.removeWater();
+                    removeWater();
                 }
             }
         }
         if (mode == 0) {
             for (int i = 0; i < 7; ++i) {
-                map.removeWater();
+                removeWater();
             }
         }
-        return map;
     }
 
     /**
      * generate map with BFS from the center
-     *
-     * @param height
-     * @param width
      */
-    private void initMap(int height, int width) {
+    private void initMap() {
         for (MapCell[] row : cells) {
-            for (int i = 0; i < row.length; ++i) {
+            for (int i = 0; i < height; ++i) {
                 row[i] = new MapCell();
             }
         }
         Queue<Pair<Integer, Integer>> q = new Queue<>();
-        q.addFirst(Pair.pair(height / 2, width / 2));
+        q.addFirst(Pair.pair(width / 2, height / 2));
         while (q.notEmpty()) {
             Pair<Integer, Integer> p = q.removeLast();
             int x = p.first;
             int y = p.second;
             MapCell cell = safeAccess(x, y);
             if (cell == null) continue;
-            if (cell.type != CellType.NOTDEFINED) continue;
+            if (cell.type != CellType.UNDEFINED) continue;
 
             if (x == width / 2 && y == height / 2) {
                 cell.type = LAND;
@@ -113,14 +103,14 @@ public class Map {
                 q.addFirst(Pair.pair(x + dx, y + dy));
             }
         }
-        changeCells(CellType.NOTDEFINED, WATER);
+        changeCells(CellType.UNDEFINED, WATER);
     }
 
     private void changeCells(CellType cellTypeOld, CellType cellTypeNew) {
         for (MapCell[] row : cells) {
-            for (int i = 0; i < row.length; ++i) {
-                if (row[i].type == cellTypeOld)
-                    row[i].type = cellTypeNew;
+            for (MapCell mapCell : row) {
+                if (mapCell.type == cellTypeOld)
+                    mapCell.type = cellTypeNew;
             }
         }
     }
@@ -139,10 +129,10 @@ public class Map {
      * set the LAND type to all WATER cells with number of neighbour WATER cells less than 3
      */
     private void removeWater() {
-        int[][] neighbours_map = neighboursMap(WATER);
-        for (int i = 0; i < neighbours_map.length; ++i) {
-            for (int j = 0; j < neighbours_map[0].length; ++j) {
-                if (cells[i][j].type == WATER && neighbours_map[i][j] < 3) {
+        int[][] neighboursLandMap = neighboursMap(LAND);
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
+                if (cells[i][j].type == WATER && neighboursLandMap[i][j]>=4) {
                     cells[i][j].type = LAND;
                 }
             }
@@ -154,9 +144,9 @@ public class Map {
      * @return matrix with numbers of neighbour cells with chosen type
      */
     private int[][] neighboursMap(CellType cellType) {
-        int[][] neighboursMap = new int[cells.length][cells[0].length];
-        for (int i = 0; i < neighboursMap.length; ++i) {
-            for (int j = 0; j < neighboursMap[0].length; ++j) {
+        int[][] neighboursMap = new int[width][height];
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
                 neighboursMap[i][j] = cntNeighbours(i, j, cellType);
             }
         }
@@ -168,11 +158,63 @@ public class Map {
         int[][] nb;
         if ((x & 1) == 1) nb = neighbourodd;
         else nb = neighboureven;
-        for(int i=0;i<6;++i){
-            MapCell cell = safeAccess(x+nb[i][0],y+nb[i][1]);
+        for (int i = 0; i < 6; ++i) {
+            MapCell cell = safeAccess(x + nb[i][0], y + nb[i][1]);
             if (cell != null && cell.type == cellType) ++res;
         }
         return res;
+    }
+
+    public void view_Up(int restart) {
+        Perlin2D elevation_map = new Perlin2D(seed);
+        Perlin2D humidity_map = new Perlin2D(this.seed + 1234);
+
+        for (int i = 0; i < height; ++i) {//y
+            for (int j = 0; j < width; ++j) {//x
+                MapCell cell = cells[i][j];
+                if (cell.type == CellType.LAND) {
+                    double e = elevation_map.getNoise(i / (double) height, j / (double) width, octaves, persistence) + .5f;
+                    //e = terrace(e, 22);
+                    //e = exponent(e);
+                    e = BiomUtils.round(e, 3);
+                    cells[i][j].elevation = e;
+
+                    double m = humidity_map.getNoise(i / (double) height, j / (double) width, 10, 0.1f) + .5f;
+//                    m = exponent(m);
+                    m = BiomUtils.round(m, 3);
+                    cells[i][j].humidity = m;
+                    cells[i][j].type = CellType.defineBiom(e, m);
+                    countStat(cells[i][j].type);
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                System.out.print(cells[i][j].elevation + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println();
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                System.out.print(cells[i][j].humidity + " ");
+            }
+            System.out.println();
+        }
+//        System.out.println("srednee: \n" + countLand / (width * height));
+//        System.out.println(countWater / (width * height));
+    }
+
+    private void countStat(CellType t) {
+        String key = String.valueOf(t);
+        if (!statInfo.containsKey(key)) {
+            statInfo.put(key, 1);
+            return;
+        }
+        statInfo.put(key, statInfo.get(key) + 1);
     }
 
     /**
@@ -192,6 +234,58 @@ public class Map {
         int res = random.nextInt(2);
         if (res == 0) return LAND;
         return WATER;
+    }
+
+
+    private double exponent(double e) {
+        return Math.pow(Math.abs(e), degree);
+    }
+
+    private double growUp(double e) {
+        double res = e * 1.3;
+        if (res > 1) return 1;
+        else return res;
+    }
+
+    private double terrace(double e, double n) {
+        return Math.round(e * n) / n;
+    }
+
+    //    private double ridgenoise(double nx, double ny) {//������������� ���
+//        return 2 * (0.5 - Math.abs(0.5 - elevation_map.getNoiseStandart((double) nx, (double) ny)));
+//    }
+
+
+    public void setDegree(double e) {
+        this.degree = e;
+    }
+
+    public void setOctaves(int e) {
+        this.octaves = e;
+    }
+
+    public void setPersistence(double e) {
+        this.persistence = e;
+    }
+
+    public long getSeed() {
+        return seed;
+    }
+
+    public java.util.Map<String, Integer> getStatInfo() {
+        return statInfo;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public MapCell[][] getCells() {
+        return cells;
     }
 }
 

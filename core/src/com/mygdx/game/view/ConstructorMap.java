@@ -5,16 +5,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.model.maps.BiomCreator;
 import com.mygdx.game.model.maps.Map;
-import com.mygdx.game.model.maps.MapCell;
-import controllers.MapView;
+import controllers.MapToRendererTransformator;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -22,12 +20,12 @@ import java.util.Objects;
 public class ConstructorMap implements Screen {
     final Start game;
     private final Stage stage;
+    private MapToRendererTransformator mapToRendererTransformator;
     private Map map;
-    private String n1 = "25", n2 = "25", n3 = "5", n4 = "1.5", n5 = "2", n6 = "0.1";
+    private String labelWidth = "25", labelHeight = "25", labelSeed = "5", n4 = "1.5", n5 = "2", n6 = "0.1";
     private String textRandom = "Random: off";
     private java.util.Map<String, Integer> statInfo = new HashMap<>();
     private OrthographicCamera camera;
-    private HexagonalTiledMapRenderer renderer;
     private BitmapFont font;
 
     public ConstructorMap(final Start game) {
@@ -37,12 +35,14 @@ public class ConstructorMap implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         CreateTypeCell();
-//        stage.addActor(CreateWindow());
+        stage.addActor(CreateMenu());
 
-
-        MapView mapView = new MapView(map);
-        mapView.create();
-        renderer = mapView.getRenderer();
+        mapToRendererTransformator = new MapToRendererTransformator(new Map(
+                Integer.parseInt(labelWidth),
+                Integer.parseInt(labelHeight),
+                0,
+                Integer.parseInt(labelSeed)
+        ));
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1080, 720);
@@ -50,18 +50,6 @@ public class ConstructorMap implements Screen {
         font = new BitmapFont();
     }
 
-    //Menu+Map
-    public Table CreateWindow() {
-        Table window = new Table();
-        window.setFillParent(true);
-
-        window.add(CreateMenu()).width(350).top().left();
-
-        ScrollPane scrollPane = new ScrollPane(CreateMap());
-        window.add(scrollPane).fill().expand();
-
-        return window;
-    }
 
     //buttons,settings
     public Table CreateMenu() {
@@ -87,9 +75,9 @@ public class ConstructorMap implements Screen {
         final Label labelOctaves = new Label("octaves:", labelStyle);
         final Label labelPersistence = new Label("persistence:", labelStyle);
 
-        final TextField fieldX = new TextField(this.n1, labelStyle1);
-        final TextField fieldY = new TextField(this.n2, labelStyle1);
-        final TextField fieldSeed = new TextField(this.n3, labelStyle1);
+        final TextField fieldX = new TextField(this.labelWidth, labelStyle1);
+        final TextField fieldY = new TextField(this.labelHeight, labelStyle1);
+        final TextField fieldSeed = new TextField(this.labelSeed, labelStyle1);
         final TextField fieldDegree = new TextField(this.n4, labelStyle1);
         final TextField fieldOctaves = new TextField(this.n5, labelStyle1);
         final TextField fieldPersistence = new TextField(this.n6, labelStyle1);
@@ -113,23 +101,23 @@ public class ConstructorMap implements Screen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                n1 = fieldX.getText();
-                n2 = fieldY.getText();
+                labelWidth = fieldX.getText();
+                labelHeight = fieldY.getText();
                 if (Objects.equals(textRandom, "Random: on")) {
-                    n3 = "-1";
-                } else n3 = fieldSeed.getText();
+                    ConstructorMap.this.labelSeed = "-1";
+                } else ConstructorMap.this.labelSeed = fieldSeed.getText();
                 n4 = fieldDegree.getText();
                 n5 = fieldOctaves.getText();
                 n6 = fieldPersistence.getText();
-                BiomCreator a = new BiomCreator(
-                        Integer.parseInt(n1),//x
-                        Integer.parseInt(n2),//y
-                        (long) Double.parseDouble(n3)//seed
+                map = new Map(
+                        Integer.parseInt(labelWidth),//x
+                        Integer.parseInt(labelHeight),//y
+                        0,//mode
+                        Long.parseLong(ConstructorMap.this.labelSeed)//seed
                 );
-                UpdateSettings(a);
-                map = a.view_Up(0);
-                n3 = String.valueOf(a.getSeed());
-                statInfo = a.getStatInfo();
+                UpdateSettings();
+                ConstructorMap.this.labelSeed = String.valueOf(map.getSeed());
+                statInfo = map.getStatInfo();
                 UpdateWindow();
             }
         });
@@ -156,27 +144,11 @@ public class ConstructorMap implements Screen {
         return CreateTableStatInfo(table);
     }
 
-    //Take Map in type_cell
-    public Table CreateMap() {
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
-        Table table = new Table();
-        for (int i = 0; i < map.cells.length; ++i) {
-            if ((i & 1) == 1) table.add(new Label(" ", new Label.LabelStyle(labelStyle)));
-            for (MapCell cell : map.cells[i]) {
-                labelStyle.fontColor = cell.type.color();
-                table.add(new Label(" ", new Label.LabelStyle(labelStyle)));
-                table.add(new Label("@", new Label.LabelStyle(labelStyle)));
-            }
-            table.row();
-        }
-        return table;
-    }
 
     private void CreateTypeCell() {
-        BiomCreator a = new BiomCreator(Integer.parseInt(n1), Integer.parseInt(n2), Integer.parseInt(n3));
-        map = a.view_Up(0);
-        statInfo = a.getStatInfo();
+        map = new Map(Integer.parseInt(labelWidth), Integer.parseInt(labelHeight), 0, Integer.parseInt(labelSeed));
+        map.view_Up(0);
+        statInfo = map.getStatInfo();
     }
 
     private Table CreateTableStatInfo(Table tableMenu) {
@@ -193,34 +165,47 @@ public class ConstructorMap implements Screen {
             tableMenu.add(new Label(key, new Label.LabelStyle(labelStyle)));
             tableMenu.add(new Label(value, new Label.LabelStyle(labelStyle)));
         }
+        tableMenu.setBounds(0,0,350,stage.getHeight());
         return tableMenu;
     }
 
     private void UpdateWindow() {
         stage.getActors().clear();
-        stage.addActor(CreateWindow());
+        stage.addActor(CreateMenu());
     }
 
-    private void UpdateSettings(BiomCreator a) {
-        a.setDegree(Double.parseDouble(n4));
-        a.setOctaves(Integer.parseInt(n5));
-        a.setPersistence(Double.parseDouble(n6));
+    private void UpdateSettings() {
+        mapToRendererTransformator.setMap(map);
+        map.setDegree(Double.parseDouble(n4));
+        map.setOctaves(Integer.parseInt(n5));
+        map.setPersistence(Double.parseDouble(n6));
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
         camera.update();
-        //game.batch.setProjectionMatrix(camera.combined);
-        renderer.setView(camera);
+        game.batch.setProjectionMatrix(camera.combined);
 
-        renderer.render();
+        mapToRendererTransformator.getRenderer().setView(camera);
+        mapToRendererTransformator.getRenderer().render();
 
         game.batch.begin();
-//        stage.act();
-//        stage.draw();
-        font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, 20);
+        if (Gdx.input.isTouched()) {
+            Vector3 touchPos = new Vector3();
+
+            touchPos.set(Gdx.input.getX(),Gdx.input.getY(), 0);
+            camera.position.set(camera.position.x-Gdx.input.getDeltaX(),camera.position.y+Gdx.input.getDeltaY(), 0);
+//            System.out.println(touchPos.x+" "+touchPos.y);
+
+            camera.unproject(touchPos);
+
+        }
+        stage.act();
+        stage.draw();
+        font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond()+" "+Gdx.input.getX()+" "+Gdx.input.getY(), 10, 20);
         game.batch.end();
+
     }
 
     @Override
@@ -248,6 +233,7 @@ public class ConstructorMap implements Screen {
 
     @Override
     public void dispose() {
+        mapToRendererTransformator.getRenderer().dispose();
         stage.dispose();
         game.dispose();
     }

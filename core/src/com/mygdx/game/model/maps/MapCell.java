@@ -7,7 +7,7 @@ public class MapCell {
     public double humidity;
 
     public MapCell() {
-        this.type = CellType.NOTDEFINED;
+        this.type = CellType.UNDEFINED;
         this.elevation = -1;
         this.humidity = -1;
     }
