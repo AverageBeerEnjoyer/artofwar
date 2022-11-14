@@ -31,11 +31,7 @@ public class ConstructorMap implements Screen {
     public ConstructorMap(final Start game) {
         this.game = game;
 
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-
-        CreateTypeCell();
-        stage.addActor(CreateMenu());
+//        stage = new Stage();
 
         mapToRendererTransformator = new MapToRendererTransformator(new Map(
                 Integer.parseInt(labelWidth),
@@ -43,6 +39,13 @@ public class ConstructorMap implements Screen {
                 0,
                 Integer.parseInt(labelSeed)
         ));
+
+        stage = new MapToRendererTransformator(mapToRendererTransformator.getTiledMap());
+        Gdx.input.setInputProcessor(stage);
+
+        CreateTypeCell();
+        stage.addActor(CreateMenu());
+
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1080, 720);
@@ -189,6 +192,8 @@ public class ConstructorMap implements Screen {
 
         mapToRendererTransformator.getRenderer().setView(camera);
         mapToRendererTransformator.getRenderer().render();
+        stage.act();
+        stage.draw();
 
         game.batch.begin();
         if (Gdx.input.isTouched()) {
@@ -201,11 +206,9 @@ public class ConstructorMap implements Screen {
             camera.unproject(touchPos);
 
         }
-        stage.act();
-        stage.draw();
+
         font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond()+" "+Gdx.input.getX()+" "+Gdx.input.getY(), 10, 20);
         game.batch.end();
-
     }
 
     @Override

@@ -174,8 +174,8 @@ public class Map {
                 MapCell cell = cells[i][j];
                 if (cell.type == CellType.LAND) {
                     double e = elevation_map.getNoise(i / (double) height, j / (double) width, octaves, persistence) + .5f;
-                    //e = terrace(e, 22);
-                    //e = exponent(e);
+//                    e = terrace(e, 22);
+//                    e = exponent(e);
                     e = BiomUtils.round(e, 3);
                     cells[i][j].elevation = e;
 
@@ -189,6 +189,10 @@ public class Map {
             }
             System.out.println();
         }
+        printStat();
+    }
+
+    private void printStat(){
         System.out.println();
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
@@ -204,8 +208,8 @@ public class Map {
             }
             System.out.println();
         }
-//        System.out.println("srednee: \n" + countLand / (width * height));
-//        System.out.println(countWater / (width * height));
+        //        System.out.println("srednee: \n" + countLand / (width * height));
+        //        System.out.println(countWater / (width * height));
     }
 
     private void countStat(CellType t) {
