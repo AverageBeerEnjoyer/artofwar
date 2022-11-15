@@ -1,6 +1,7 @@
 package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
+import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.units.Unit;
 import com.mygdx.game.view.utils.BiomUtils;
 import com.mygdx.game.view.utils.Pair;
@@ -239,9 +240,17 @@ public class Map {
         return WATER;
     }
 
+    public void setGameObjectOnCell(int x, int y, GameObject gameObject) {
+        MapCell cell = safeAccess(x,y);
+        if(cell==null) return;
+        if (gameObject.getPlacement() != null) gameObject.getPlacement().setGameObject(null);
+        gameObject.setPlacement(cell);
+        cell.setGameObject(gameObject);
+    }
+
     public int[][] selectCellsToMove(int xValue, int yValue) {
         int[][] mirror = new int[width][height];
-        Arrays.fill(mirror, width+height);
+        Arrays.fill(mirror, width + height);
         MapCell startCell = safeAccess(xValue, yValue);
         if (startCell == null) return null;
         Unit unit = (Unit) startCell.getGameObject();
@@ -257,12 +266,12 @@ public class Map {
             boolean stop = false;
             if (cell == null) continue;
             if (cell.getType() == WATER) continue;
-            if (mirror[x][y]<width+height) stop = true;
+            if (mirror[x][y] < width + height) stop = true;
             if (!startCell.getOwner().equals(cell.getOwner()) && cell.getDefence() >= unit.getPower()) continue;
 
-             mirror[x][y] = Math.min(mirror[x][y],n);
+            mirror[x][y] = Math.min(mirror[x][y], n);
 
-            if (n>=unit.getDistance() || stop) continue;
+            if (n >= unit.getDistance() || stop) continue;
             int[][] nb;
             if ((x & 1) == 1) nb = neighbourodd;
             else nb = neighboureven;
