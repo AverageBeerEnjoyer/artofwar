@@ -33,12 +33,14 @@ public class ConstructorMap implements Screen {
 
 //        stage = new Stage();
 
-        mapToRendererTransformator = new MapToRendererTransformator(new Map(
-                Integer.parseInt(labelWidth),
-                Integer.parseInt(labelHeight),
-                0,
-                Integer.parseInt(labelSeed)
-        ));
+        mapToRendererTransformator = new MapToRendererTransformator(
+                new Map(
+                    Integer.parseInt(labelWidth),
+                    Integer.parseInt(labelHeight),
+                    0,
+                    Integer.parseInt(labelSeed)
+                )
+        );
 
         stage = new MapToRendererTransformator(mapToRendererTransformator.getTiledMap());
         Gdx.input.setInputProcessor(stage);
