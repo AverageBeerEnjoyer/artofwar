@@ -1,9 +1,12 @@
 package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
+import com.mygdx.game.model.gameobjects.units.Unit;
 import com.mygdx.game.view.utils.BiomUtils;
 import com.mygdx.game.view.utils.Pair;
+import com.mygdx.game.view.utils.Triple;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -74,9 +77,9 @@ public class Map {
      * generate map with BFS from the center
      */
     private void initMap() {
-        for (MapCell[] row : cells) {
-            for (int i = 0; i < height; ++i) {
-                row[i] = new MapCell();
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
+                cells[i][j] = new MapCell(i, j);
             }
         }
         Queue<Pair<Integer, Integer>> q = new Queue<>();
@@ -87,13 +90,13 @@ public class Map {
             int y = p.second;
             MapCell cell = safeAccess(x, y);
             if (cell == null) continue;
-            if (cell.type != CellType.UNDEFINED) continue;
+            if (cell.getType() != CellType.UNDEFINED) continue;
 
             if (x == width / 2 && y == height / 2) {
-                cell.type = LAND;
-            } else cell.type = randomLandOrWater();
+                cell.setType(LAND);
+            } else cell.setType(randomLandOrWater());
 
-            if (cell.type == WATER) continue;
+            if (cell.getType() == WATER) continue;
             int[][] nb;
             if ((x & 1) == 1) nb = neighbourodd;
             else nb = neighboureven;
@@ -109,8 +112,8 @@ public class Map {
     private void changeCells(CellType cellTypeOld, CellType cellTypeNew) {
         for (MapCell[] row : cells) {
             for (MapCell mapCell : row) {
-                if (mapCell.type == cellTypeOld)
-                    mapCell.type = cellTypeNew;
+                if (mapCell.getType() == cellTypeOld)
+                    mapCell.setType(cellTypeNew);
             }
         }
     }
@@ -119,7 +122,7 @@ public class Map {
         int res = 0;
         for (MapCell[] row : cells) {
             for (MapCell cell : row) {
-                if (cell.type == cellType) ++res;
+                if (cell.getType() == cellType) ++res;
             }
         }
         return res;
@@ -132,8 +135,8 @@ public class Map {
         int[][] neighboursLandMap = neighboursMap(LAND);
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
-                if (cells[i][j].type == WATER && neighboursLandMap[i][j]>=4) {
-                    cells[i][j].type = LAND;
+                if (cells[i][j].getType() == WATER && neighboursLandMap[i][j] >= 4) {
+                    cells[i][j].setType(LAND);
                 }
             }
         }
@@ -160,7 +163,7 @@ public class Map {
         else nb = neighboureven;
         for (int i = 0; i < 6; ++i) {
             MapCell cell = safeAccess(x + nb[i][0], y + nb[i][1]);
-            if (cell != null && cell.type == cellType) ++res;
+            if (cell != null && cell.getType() == cellType) ++res;
         }
         return res;
     }
@@ -172,19 +175,19 @@ public class Map {
         for (int i = 0; i < height; ++i) {//y
             for (int j = 0; j < width; ++j) {//x
                 MapCell cell = cells[i][j];
-                if (cell.type == CellType.LAND) {
+                if (cell.getType() == CellType.LAND) {
                     double e = elevation_map.getNoise(i / (double) height, j / (double) width, octaves, persistence) + .5f;
                     //e = terrace(e, 22);
                     //e = exponent(e);
                     e = BiomUtils.round(e, 3);
-                    cells[i][j].elevation = e;
+                    cells[i][j].setElevation(e);
 
                     double m = humidity_map.getNoise(i / (double) height, j / (double) width, 10, 0.1f) + .5f;
 //                    m = exponent(m);
                     m = BiomUtils.round(m, 3);
-                    cells[i][j].humidity = m;
-                    cells[i][j].type = CellType.defineBiom(e, m);
-                    countStat(cells[i][j].type);
+                    cells[i][j].setHumidity(m);
+                    cells[i][j].setType(CellType.defineBiom(e, m));
+                    countStat(cells[i][j].getType());
                 }
             }
             System.out.println();
@@ -192,7 +195,7 @@ public class Map {
         System.out.println();
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
-                System.out.print(cells[i][j].elevation + " ");
+                System.out.print(cells[i][j].getElevation() + " ");
             }
             System.out.println();
         }
@@ -200,7 +203,7 @@ public class Map {
         System.out.println();
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
-                System.out.print(cells[i][j].humidity + " ");
+                System.out.print(cells[i][j].getHumidity() + " ");
             }
             System.out.println();
         }
@@ -236,6 +239,41 @@ public class Map {
         return WATER;
     }
 
+    public int[][] selectCellsToMove(int xValue, int yValue) {
+        int[][] mirror = new int[width][height];
+        Arrays.fill(mirror, width+height);
+        MapCell startCell = safeAccess(xValue, yValue);
+        if (startCell == null) return null;
+        Unit unit = (Unit) startCell.getGameObject();
+        Queue<Triple<Integer, Integer, Integer>> q = new Queue<>();
+        q.addFirst(Triple.triple(width / 2, height / 2, 0));
+        while (q.notEmpty()) {
+            Triple<Integer, Integer, Integer> t = q.removeLast();
+            int x = t.first;
+            int y = t.second;
+            int n = t.third;
+            MapCell cell = safeAccess(x, y);
+
+            boolean stop = false;
+            if (cell == null) continue;
+            if (cell.getType() == WATER) continue;
+            if (mirror[x][y]<width+height) stop = true;
+            if (!startCell.getOwner().equals(cell.getOwner()) && cell.getDefence() >= unit.getPower()) continue;
+
+             mirror[x][y] = Math.min(mirror[x][y],n);
+
+            if (n>=unit.getDistance() || stop) continue;
+            int[][] nb;
+            if ((x & 1) == 1) nb = neighbourodd;
+            else nb = neighboureven;
+            for (int[] ints : nb) {
+                int dx = ints[0];
+                int dy = ints[1];
+                q.addFirst(Triple.triple(x + dx, y + dy, n + 1));
+            }
+        }
+        return mirror;
+    }
 
     private double exponent(double e) {
         return Math.pow(Math.abs(e), degree);

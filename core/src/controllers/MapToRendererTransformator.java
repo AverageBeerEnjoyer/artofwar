@@ -41,7 +41,7 @@ public class MapToRendererTransformator {
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(map.getCells()[i][j].type.tile());
+                cell.setTile(map.getCells()[i][j].getType().tile());
                 lay.setCell(i, j, cell);
             }
         }
@@ -57,7 +57,7 @@ public class MapToRendererTransformator {
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 TiledMapTileLayer.Cell cell = lay.getCell(i,j);
-                cell.setTile(map.getCells()[i][j].type.tile());
+                cell.setTile(map.getCells()[i][j].getType().tile());
                 lay.setCell(i, j, cell);
             }
         }
