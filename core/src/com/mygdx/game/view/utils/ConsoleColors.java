@@ -1,9 +1,10 @@
 package com.mygdx.game.view.utils;
 
+import com.badlogic.gdx.graphics.Color;
+
 public class ConsoleColors {
     // Reset
     public String RESET = "\033[0m";  // Text Reset
-
     // Regular Colors
     public  String BLACK = "\033[0;30m";   // BLACK
     public  String RED = "\033[0;31m";     // RED

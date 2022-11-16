@@ -1,8 +1,11 @@
 package com.mygdx.game.model.gameobjects.units;
 
+import com.mygdx.game.model.ProjectVariables.*;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
+
+import static com.mygdx.game.model.ProjectVariables.*;
 
 public class Militia extends Unit {
     public Militia(
@@ -14,11 +17,11 @@ public class Militia extends Unit {
                 map,
                 placement,
                 owner,
-                20,
-                -3,
-                2,
-                2,
-                5
+                militiaCost,
+                militiaMoneyPerTurn,
+                militiaPower,
+                militiaDefence,
+                militiaDistance
         );
     }
 }

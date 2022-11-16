@@ -1,8 +1,11 @@
 package com.mygdx.game.model.gameobjects.units;
 
+import com.mygdx.game.model.ProjectVariables.*;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
+
+import static com.mygdx.game.model.ProjectVariables.*;
 
 public class Peasant extends Unit {
     public Peasant(
@@ -13,11 +16,11 @@ public class Peasant extends Unit {
                 map,
                 placement,
                 owner,
-                10,
-                -1,
-                1,
-                1,
-                5
+                peasantCost,
+                peasantMoneyPerTurn,
+                peasantPower,
+                peasantDefence,
+                peasantDistance
         );
     }
 }

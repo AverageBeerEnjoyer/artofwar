@@ -267,11 +267,11 @@ public class Map {
             if (cell == null) continue;
             if (cell.getType() == WATER) continue;
             if (mirror[x][y] < width + height) stop = true;
-            if (!startCell.getOwner().equals(cell.getOwner()) && cell.getDefence() >= unit.getPower()) continue;
+            if (!startCell.getOwner().equals(cell.getOwner()) && cell.getDefence() >= unit.power) continue;
 
             mirror[x][y] = Math.min(mirror[x][y], n);
 
-            if (n >= unit.getDistance() || stop) continue;
+            if (n >= unit.distance || stop) continue;
             int[][] nb;
             if ((x & 1) == 1) nb = neighbourodd;
             else nb = neighboureven;
