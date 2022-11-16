@@ -5,7 +5,20 @@ import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
 public class Militia extends Unit {
-    public Militia(Map map, MapCell placement, Player owner) {
-        super(map, placement, owner, 2, 2, 5);
+    public Militia(
+            Map map,
+            MapCell placement,
+            Player owner
+    ) {
+        super(
+                map,
+                placement,
+                owner,
+                20,
+                -3,
+                2,
+                2,
+                5
+        );
     }
 }

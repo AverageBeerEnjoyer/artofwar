@@ -9,7 +9,7 @@ public class MapCell {
     private double elevation;
     private double humidity;
     private int defence;
-    private final int x, y;
+    public final int x, y;
     private Player owner;
     private GameObject gameObject;
 
@@ -19,14 +19,6 @@ public class MapCell {
         this.humidity = -1;
         this.x = x;
         this.y = y;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getX() {
-        return x;
     }
 
     public double getHumidity() {

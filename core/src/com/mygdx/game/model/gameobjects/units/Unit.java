@@ -7,14 +7,28 @@ import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
 public abstract class Unit extends GameObject implements Movable {
-    private final int power;
-    private final int defence;
-    private final int distance;
+    public final int power;
+    public final int distance;
 
-    public Unit(Map map, MapCell placement, Player owner, int power, int defence, int distance) {
-        super(map, placement, owner);
+    public Unit(
+            Map map,
+            MapCell placement,
+            Player owner,
+            int cost,
+            int moneyPerTurn,
+            int power,
+            int defence,
+            int distance
+    ) {
+        super(
+                map,
+                placement,
+                owner,
+                cost,
+                moneyPerTurn,
+                defence
+        );
         this.power = power;
-        this.defence = defence;
         this.distance = distance;
     }
 
@@ -27,18 +41,6 @@ public abstract class Unit extends GameObject implements Movable {
         int[][] availableCells = getMap().selectCellsToMove(x, y);
         int dist = availableCells[x][y];
         return dist > 0 && dist <= distance;
-    }
-
-    public int getDefence() {
-        return defence;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public int getPower() {
-        return power;
     }
 
 

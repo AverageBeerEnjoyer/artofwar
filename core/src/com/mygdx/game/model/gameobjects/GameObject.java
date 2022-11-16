@@ -7,12 +7,25 @@ import com.mygdx.game.model.players.Player;
 public abstract class GameObject {
     private final Map map;
     private MapCell placement;
-    private final Player owner;
+    public final Player owner;
+    public final int defence;
+    public final int moneyPerTurn;
+    public final int cost;
 
-    public GameObject(Map map, MapCell placement, Player owner) {
+    public GameObject(
+            Map map,
+            MapCell placement,
+            Player owner,
+            int cost,
+            int moneyPerTurn,
+            int defence
+    ) {
         this.map = map;
         this.placement = placement;
-        this.owner=owner;
+        this.owner = owner;
+        this.cost=cost;
+        this.moneyPerTurn=moneyPerTurn;
+        this.defence = defence;
     }
 
     public Map getMap() {
