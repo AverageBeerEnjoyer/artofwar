@@ -42,7 +42,8 @@ public class ConstructorMap implements Screen {
                 )
         );
 
-        stage = new MapToRendererTransformator(mapToRendererTransformator.getTiledMap());
+        stage = new MapToRendererTransformator(mapToRendererTransformator.getTiledMap(), mapToRendererTransformator.getMap());
+//        stage = mapToRendererTransformator;
         Gdx.input.setInputProcessor(stage);
 
         CreateTypeCell();
@@ -194,6 +195,7 @@ public class ConstructorMap implements Screen {
 
         mapToRendererTransformator.getRenderer().setView(camera);
         mapToRendererTransformator.getRenderer().render();
+
         stage.act();
         stage.draw();
 
@@ -204,9 +206,9 @@ public class ConstructorMap implements Screen {
             touchPos.set(Gdx.input.getX(),Gdx.input.getY(), 0);
             camera.position.set(camera.position.x-Gdx.input.getDeltaX(),camera.position.y+Gdx.input.getDeltaY(), 0);
 //            System.out.println(touchPos.x+" "+touchPos.y);
+            mapToRendererTransformator.updateLayer();
 
             camera.unproject(touchPos);
-
         }
 
         font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond()+" "+Gdx.input.getX()+" "+Gdx.input.getY(), 10, 20);
