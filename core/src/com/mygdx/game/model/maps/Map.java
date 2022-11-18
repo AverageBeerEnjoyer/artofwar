@@ -7,19 +7,22 @@ import com.mygdx.game.view.utils.BiomUtils;
 import com.mygdx.game.view.utils.Pair;
 import com.mygdx.game.view.utils.Triple;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
-import static com.mygdx.game.model.maps.CellType.LAND;
-import static com.mygdx.game.model.maps.CellType.WATER;
+import static com.mygdx.game.model.maps.CellType.*;
 
 public class Map {
     /**
-     * coordinates of neighbour cells to current cell
-     * column with number i: odd <=> (i & 1) = 1, even <=> (i & 0) = 0
+     * <p>
+     * coordinates of neighbour cells to current cell<br>
+     * column with number i:<br> odd <=> (i & 1) = 1<br> even <=> (i & 0) = 0
+     * </p>
      * <p>
      * pairs{row dif,column dif}
+     * </p>
      */
     public static int[][]
             neighbourodd = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}},
@@ -78,20 +81,23 @@ public class Map {
      * generate map with BFS from the center
      */
     private void initMap() {
+
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 cells[i][j] = new MapCell(i, j);
             }
         }
+
         Queue<Pair<Integer, Integer>> q = new Queue<>();
         q.addFirst(Pair.pair(width / 2, height / 2));
+
         while (q.notEmpty()) {
             Pair<Integer, Integer> p = q.removeLast();
             int x = p.first;
             int y = p.second;
             MapCell cell = safeAccess(x, y);
             if (cell == null) continue;
-            if (cell.getType() != CellType.UNDEFINED) continue;
+            if (cell.getType() != UNDEFINED) continue;
 
             if (x == width / 2 && y == height / 2) {
                 cell.setType(LAND);
@@ -172,7 +178,6 @@ public class Map {
     public void view_Up(int restart) {
         Perlin2D elevation_map = new Perlin2D(seed);
         Perlin2D humidity_map = new Perlin2D(this.seed + 1234);
-
         for (int i = 0; i < height; ++i) {//y
             for (int j = 0; j < width; ++j) {//x
                 MapCell cell = cells[i][j];
@@ -229,7 +234,7 @@ public class Map {
     public MapCell safeAccess(int x, int y) {
         try {
             return cells[x][y];
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
             return null;
         }
     }
@@ -241,8 +246,8 @@ public class Map {
     }
 
     public void setGameObjectOnCell(int x, int y, GameObject gameObject) {
-        MapCell cell = safeAccess(x,y);
-        if(cell==null) return;
+        MapCell cell = safeAccess(x, y);
+        if (cell == null) return;
         if (gameObject.getPlacement() != null) gameObject.getPlacement().setGameObject(null);
         gameObject.setPlacement(cell);
         cell.setGameObject(gameObject);

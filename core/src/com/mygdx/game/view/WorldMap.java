@@ -3,7 +3,7 @@ package com.mygdx.game.view;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.mygdx.game.model.maps.Map;
-import controllers.MapToRendererTransformator;
+import com.mygdx.game.controllers.MapToRendererTransformator;
 
 public class WorldMap implements Screen {
     private int width;

@@ -23,8 +23,8 @@ public abstract class GameObject {
         this.map = map;
         this.placement = placement;
         this.owner = owner;
-        this.cost=cost;
-        this.moneyPerTurn=moneyPerTurn;
+        this.cost = cost;
+        this.moneyPerTurn = moneyPerTurn;
         this.defence = defence;
     }
 

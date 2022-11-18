@@ -7,8 +7,10 @@ import java.util.List;
 
 public class Player {
     public final String name;
-    public final List<GameObject> objects;
+    private final List<GameObject> objects;
+    private GameObject capital;
     private int farmCounter;
+    private int gold;
 
     public Player(String name) {
         this.name = name;
@@ -17,5 +19,25 @@ public class Player {
 
     public int getFarmCounter() {
         return farmCounter;
+    }
+
+    public List<GameObject> getObjects() {
+        return objects;
+    }
+
+    public void addGameObject(GameObject gameObject){
+        if(objects.contains(gameObject)) return;
+        objects.add(gameObject);
+    }
+
+    public void removeGameObject(GameObject gameObject){
+        objects.remove(gameObject);
+    }
+
+    public void countIncome(){
+        for(GameObject gameObject:objects){
+            gold+=gameObject.moneyPerTurn;
+        }
+        gold+=capital.moneyPerTurn;
     }
 }
