@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -31,8 +32,6 @@ public class ConstructorMap implements Screen {
     public ConstructorMap(final Start game) {
         this.game = game;
 
-//        stage = new Stage();
-
         mapToRendererTransformator = new MapToRendererTransformator(
                 new Map(
                     Integer.parseInt(labelWidth),
@@ -41,9 +40,7 @@ public class ConstructorMap implements Screen {
                     Integer.parseInt(labelSeed)
                 )
         );
-
-        stage = new MapToRendererTransformator(mapToRendererTransformator.getTiledMap(), mapToRendererTransformator.getMap());
-//        stage = mapToRendererTransformator;
+        stage = mapToRendererTransformator;
         Gdx.input.setInputProcessor(stage);
 
         CreateTypeCell();
@@ -206,8 +203,9 @@ public class ConstructorMap implements Screen {
             touchPos.set(Gdx.input.getX(),Gdx.input.getY(), 0);
             camera.position.set(camera.position.x-Gdx.input.getDeltaX(),camera.position.y+Gdx.input.getDeltaY(), 0);
 //            System.out.println(touchPos.x+" "+touchPos.y);
-            mapToRendererTransformator.updateLayer();
-
+            //mapToRendererTransformator.updateLayer();
+            Group g = mapToRendererTransformator.group;
+            g.setPosition(g.getX()+Gdx.input.getDeltaX(),g.getY()-Gdx.input.getDeltaY());
             camera.unproject(touchPos);
         }
 
