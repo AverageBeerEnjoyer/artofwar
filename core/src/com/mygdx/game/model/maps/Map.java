@@ -47,7 +47,7 @@ public class Map {
         createMap();
         view_Up(0);
 
-        createMagic();
+        //createMagic();
     }
 
     private void createMagic(){

@@ -10,19 +10,19 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 
-public class MapToRendererTransformator extends Stage {
+public class MainGameStage extends Stage {
     private Map map;
     private TiledMap tiledMap;
     private HexagonalTiledMapRenderer renderer;
     public Group group = new Group();
 
-    public MapToRendererTransformator(Map map) {
+    public MainGameStage(Map map) {
         this.map = map;
         createTiledMap();
         renderer = new HexagonalTiledMapRenderer(tiledMap);
         createActorsLayer();
     }
-    public MapToRendererTransformator(){
+    public MainGameStage(){
         this.map=new Map(10,10,0,0);
         createTiledMap();
         renderer = new HexagonalTiledMapRenderer(tiledMap);
