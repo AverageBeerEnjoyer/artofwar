@@ -17,7 +17,7 @@ public class Start extends Game {
         // this.setScreen(new MenuScreen(this));
         menuScreen = new MenuScreen(this);
         mainGameScreen = new MainGameScreen(25,25,this);
-        this.setScreen(menuScreen);
+        this.setScreen(mainGameScreen);
     }
 
     public void render() {

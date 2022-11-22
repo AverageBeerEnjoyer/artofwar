@@ -1,4 +1,4 @@
-package controllers;
+package com.mygdx.game.controllers;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -8,10 +8,8 @@ import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 
 public class TiledMapActor extends Actor {
-    public TiledMap tiledMap;
 
-    public TiledMapActor(TiledMap tiledMap, MapCell cell){
-        this.tiledMap = tiledMap;
+    public TiledMapActor(MapCell cell){
         this.setUserObject(cell);
     }
 

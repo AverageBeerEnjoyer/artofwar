@@ -1,4 +1,4 @@
-package controllers;
+package com.mygdx.game.controllers;
 
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -88,7 +88,7 @@ public class MainGameStage extends Stage {
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(map.getCells()[i][j].type.tile());
+                cell.setTile(map.getCells()[i][j].getType().tile());
                 lay.setCell(i, j, cell);
             }
         }
@@ -105,7 +105,7 @@ public class MainGameStage extends Stage {
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 TiledMapTileLayer.Cell cell = lay.getCell(i, j);
-                cell.setTile(map.getCells()[i][j].type.tile());
+                cell.setTile(map.getCells()[i][j].getType().tile());
                 lay.setCell(i, j, cell);
             }
         }
@@ -123,7 +123,7 @@ public class MainGameStage extends Stage {
 
     private TiledMapActor createActorForCell(int i, int j) {
         MapCell cell = map.safeAccess(i, j);
-        TiledMapActor actor = new TiledMapActor(tiledMap, cell);
+        TiledMapActor actor = new TiledMapActor(cell);
         actor.setUserObject(cell);
         actor.setWidth(tileWidth);
         actor.setHeight(tileHeight);

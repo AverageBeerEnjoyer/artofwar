@@ -1,4 +1,4 @@
-package controllers;
+package com.mygdx.game.controllers;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;

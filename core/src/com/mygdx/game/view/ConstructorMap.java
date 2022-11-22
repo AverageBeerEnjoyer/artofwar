@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.controllers.MainGameStage;
 import com.mygdx.game.model.maps.Map;
-import controllers.MainGameStage;
 
 import java.util.HashMap;
 import java.util.Objects;

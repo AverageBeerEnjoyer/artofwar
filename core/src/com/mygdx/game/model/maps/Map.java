@@ -64,7 +64,7 @@ public class Map {
                 y = random.nextInt(width-area*2)+area;
 
         MapCell cell = safeAccess(x, y);
-        while(cell == null || cell.type == WATER){
+        while(cell == null || cell.getType() == WATER){
             x = random.nextInt(height-area*2)+area;
             y = random.nextInt(width-area*2)+area;
 
@@ -73,7 +73,7 @@ public class Map {
         }
 
         double[] mean = isNeighbour(x,y,2);
-        mean[0] += 1;   mean[1] += cell.elevation;  mean[2] += cell.humidity;
+        mean[0] += 1;   mean[1] += cell.getElevation();  mean[2] += cell.getHumidity();
 //        System.out.println(mean[1]+" / "+mean[0]+" = "+mean[1]/mean[0]+" :elevation");
 //        System.out.println(mean[2]+" / "+mean[0]+" = "+mean[2]/mean[0]+" :humidity");
 //        System.out.println(mean[3]+" :min elevation");
@@ -87,12 +87,12 @@ public class Map {
     private double[] isNeighbour(int x, int y,int area){
         double[] mean = new double[5];
         mean[3] = 1;    mean[4] = 1;
-        if (safeAccess(x,y).type == WATER) return mean;
-        else if(safeAccess(x,y).type == MOUNTAIN) return mean;
+        if (safeAccess(x,y).getType() == WATER) return mean;
+        else if(safeAccess(x,y).getType() == MOUNTAIN) return mean;
         if(area <= 0){
             mean[0] += 1;
-            mean[1] += safeAccess(x,y).elevation;
-            mean[2] += safeAccess(x,y).humidity;
+            mean[1] += safeAccess(x,y).getElevation();
+            mean[2] += safeAccess(x,y).getHumidity();
             if(mean[3] >= mean[1])
                 mean[3] = mean[1];
             if(mean[4] >= mean[2])
@@ -118,8 +118,8 @@ public class Map {
     }
 
     private boolean isNeighbourSet(int x, int y, int area, double[] mean){
-        if (safeAccess(x,y).type == WATER) return false;
-        else if(safeAccess(x,y).type == MOUNTAIN) return false;
+        if (safeAccess(x,y).getType() == WATER) return false;
+        else if(safeAccess(x,y).getType() == MOUNTAIN) return false;
         if(area <= 0) return true;
 
         int[][] nb;
@@ -140,18 +140,20 @@ public class Map {
                 rightLimit = BiomUtils.round(mean[1]+mean[3],3);
                 System.out.println("left "+leftLimit+" right "+rightLimit+"\n");
 
-                cell.elevation = BiomUtils.round(
+                cell.setElevation(BiomUtils.round(
                         leftLimit + random.nextDouble() * (rightLimit - leftLimit),
-                        3);
+                        3)
+                );
 
                 leftLimit = BiomUtils.round(mean[2]-mean[4],3);
                 rightLimit = BiomUtils.round(mean[2]+mean[4],3);
 
-                cell.humidity = BiomUtils.round(
+                cell.setHumidity(BiomUtils.round(
                         leftLimit + random.nextDouble() * (rightLimit - leftLimit),
-                        3);
+                        3)
+                );
 
-                cell.type = defineBiom(cell.elevation,cell.humidity);
+                cell.setType(defineBiom(cell.getElevation(),cell.getHumidity()));
 
 //                System.out.print(" | Elevation new "+cell.elevation);
 //                System.out.print(" | Humidity new "+cell.humidity);

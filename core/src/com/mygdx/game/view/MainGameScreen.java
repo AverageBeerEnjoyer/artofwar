@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.controllers.MainGameStage;
 import com.mygdx.game.model.maps.Map;
-import controllers.MainGameStage;
 
 public class MainGameScreen implements Screen {
     private final Start start;
