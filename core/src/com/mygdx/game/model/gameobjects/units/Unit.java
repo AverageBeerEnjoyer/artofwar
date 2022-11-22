@@ -2,7 +2,7 @@ package com.mygdx.game.model.gameobjects.units;
 
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.Movable;
-import com.mygdx.game.model.maps.MapCreator;
+import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
@@ -11,7 +11,7 @@ public abstract class Unit extends GameObject implements Movable {
     public final int distance;
 
     public Unit(
-            MapCreator mapCreator,
+            Map Map,
             MapCell placement,
             Player owner,
             int cost,
@@ -21,7 +21,7 @@ public abstract class Unit extends GameObject implements Movable {
             int distance
     ) {
         super(
-                mapCreator,
+                Map,
                 placement,
                 owner,
                 cost,

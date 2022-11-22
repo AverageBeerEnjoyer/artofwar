@@ -42,7 +42,7 @@ public class MapCreator {
 
     private final int width, height;
 
-    public MapCreator(int width, int height, int mode, long seed) {
+    public MapCreator(int width, int height, int mode, long seed) throws IllegalArgumentException {
         if (width < 10 || height < 10) throw new IllegalArgumentException("Too small map");
         this.width = width;
         this.height = height;
@@ -363,54 +363,9 @@ public class MapCreator {
         return WATER;
     }
 
-    public void setGameObjectOnCell(int x, int y, GameObject gameObject) {
-        MapCell cell = safeAccess(x, y);
-        if (cell == null) return;
-        if (gameObject.getPlacement() != null) gameObject.getPlacement().setGameObject(null);
-        gameObject.setPlacement(cell);
-        cell.setGameObject(gameObject);
-    }
 
-    public int[][] selectCellsToMove(int xValue, int yValue) {
-        int[][] mirror = new int[width][height];
-        Arrays.fill(mirror, -1);
-        MapCell startCell;
-        Unit unit;
-        try {
-            startCell = safeAccess(xValue, yValue);
-            unit = (Unit) startCell.getGameObject();
-        } catch (NullPointerException | ClassCastException e) {
-            return null;
-        }
-        Queue<Triple<Integer, Integer, Integer>> q = new Queue<>();
-        q.addFirst(Triple.triple(xValue, yValue, unit.distance));
-        while (q.notEmpty()) {
-            Triple<Integer, Integer, Integer> t = q.removeLast();
-            int x = t.first;
-            int y = t.second;
-            int n = t.third;
-            MapCell cell = safeAccess(x, y);
 
-            boolean stop = false;
-            if (cell == null) continue;
-            if (cell.getType() == WATER) continue;
-            if (mirror[x][y] > 0) stop = true;
-            if (!startCell.getOwner().equals(cell.getOwner()) && cell.getDefence() >= unit.power) continue;
 
-            mirror[x][y] = Math.max(mirror[x][y], n);
-
-            if (n <= 0 || stop) continue;
-            int[][] nb;
-            if ((x & 1) == 1) nb = neighbourodd;
-            else nb = neighboureven;
-            for (int[] ints : nb) {
-                int dx = ints[0];
-                int dy = ints[1];
-                q.addFirst(Triple.triple(x + dx, y + dy, n - 1));
-            }
-        }
-        return mirror;
-    }
 
     private double exponent(double e) {
         return Math.pow(Math.abs(e), degree);

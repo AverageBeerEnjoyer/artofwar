@@ -8,14 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.game.model.gameobjects.GameObject;
-import com.mygdx.game.model.maps.MapCreator;
+import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.view.utils.HexagonUtils;
 
 public class MainGameStage extends Stage {
     private final int tileWidth = 64;
     private final int tileHeight = 55;
-    private MapCreator mapCreator;
+    private Map map;
     private TiledMap tiledMap;
     private final HexagonalTiledMapRenderer renderer;
     private Group cellActors;
@@ -23,14 +24,14 @@ public class MainGameStage extends Stage {
     private GameObject gameObjectToPlace = null;
     private Group moveArea;
 
-    public MainGameStage(MapCreator mapCreator) {
-        this.mapCreator = mapCreator;
+    public MainGameStage(Map Map) {
+        this.map = Map;
         loadNewTiledMap();
         renderer = new HexagonalTiledMapRenderer(tiledMap);
     }
 
     public MainGameStage() {
-        this.mapCreator = new MapCreator(10, 10, 0, 0);
+        this.map = new Map(10, 10, 0, 0);
         loadNewTiledMap();
         renderer = new HexagonalTiledMapRenderer(tiledMap);
     }
@@ -39,8 +40,8 @@ public class MainGameStage extends Stage {
         return this.tiledMap;
     }
 
-    public MapCreator getMap() {
-        return this.mapCreator;
+    public Map getMap() {
+        return this.map;
     }
 
     public Group getCellActors() {
@@ -55,8 +56,8 @@ public class MainGameStage extends Stage {
         return renderer;
     }
 
-    public void setMap(MapCreator mapCreator) {
-        this.mapCreator = mapCreator;
+    public void setMap(Map Map) {
+        this.map = Map;
         loadNewTiledMap();
         renderer.setMap(tiledMap);
     }
@@ -70,8 +71,8 @@ public class MainGameStage extends Stage {
     private void createActorsLayer() {
         cellActors = new Group();
         cellActors.setName("cellActors");
-        for (int i = 0; i < mapCreator.getWidth(); ++i) {
-            for (int j = 0; j < mapCreator.getHeight(); ++j) {
+        for (int i = 0; i < map.getWidth(); ++i) {
+            for (int j = 0; j < map.getHeight(); ++j) {
                 TiledMapActor actor = createActorForCell(i,j);
                 cellActors.addActor(actor);
             }
@@ -80,15 +81,15 @@ public class MainGameStage extends Stage {
     }
 
     private void createMapLayer() {
-        int width = mapCreator.getWidth();
-        int height = mapCreator.getHeight();
+        int width = map.getWidth();
+        int height = map.getHeight();
         TiledMap tiledMap = new TiledMap();
         MapLayers layers = tiledMap.getLayers();
         TiledMapTileLayer lay = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(mapCreator.getCells()[i][j].getType().tile());
+                cell.setTile(map.getCells()[i][j].getType().tile());
                 lay.setCell(i, j, cell);
             }
         }
@@ -102,14 +103,14 @@ public class MainGameStage extends Stage {
     }
 
     public void update() {
-        int width = mapCreator.getWidth();
-        int height = mapCreator.getHeight();
+        int width = map.getWidth();
+        int height = map.getHeight();
         MapLayers layers = tiledMap.getLayers();
         TiledMapTileLayer lay = (TiledMapTileLayer) layers.get(0);
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 TiledMapTileLayer.Cell cell = lay.getCell(i, j);
-                cell.setTile(mapCreator.getCells()[i][j].getType().tile());
+                cell.setTile(map.getCells()[i][j].getType().tile());
                 lay.setCell(i, j, cell);
             }
         }
@@ -126,7 +127,7 @@ public class MainGameStage extends Stage {
     }
 
     private TiledMapActor createActorForCell(int i, int j) {
-        MapCell cell = mapCreator.safeAccess(i, j);
+        MapCell cell = map.safeAccess(i, j);
         TiledMapActor actor = new TiledMapActor(this, cell);
         actor.setUserObject(cell);
         actor.setWidth(tileWidth);

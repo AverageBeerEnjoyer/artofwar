@@ -8,17 +8,17 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.controllers.MainGameStage;
-import com.mygdx.game.model.maps.MapCreator;
+import com.mygdx.game.model.maps.Map;
 
 public class MainGameScreen implements Screen {
     private final Start start;
-    private final MapCreator mapCreator;
+    private final Map map;
     private final MainGameStage stage;
     private final OrthographicCamera camera = new OrthographicCamera();
 
     public MainGameScreen(int width, int height, Start start) {
-        mapCreator = new MapCreator(width, height, 0, -1);
-        stage = new MainGameStage(mapCreator);
+        map = new Map(width, height);
+        stage = new MainGameStage(map);
         this.start = start;
         initialize();
     }
