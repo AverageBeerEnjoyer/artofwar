@@ -12,7 +12,9 @@ public enum CellType {
     BEACH("desertHex.gif"),
     WATER("waterHex.gif"),
     MOUNTAIN("oreHex.gif"),
-    JUNGLE("woodHex.gif");
+    JUNGLE("woodHex.gif"),
+    CLAY("clayHex.gif"),
+    WHEAT("wheatHex.gif");
     private final TiledMapTile tile;
     private static final String resourceCatalog = "pastel_resources_hex/rotat/";
 
@@ -23,7 +25,8 @@ public enum CellType {
         }
         this.tile = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(resourceCatalog + tileTexturePath))));
     }
-
+    // e elevation
+    // m
     public static CellType defineBiom(double e, double m) {
         if (e < 0) {
             return CellType.WATER;
@@ -31,28 +34,28 @@ public enum CellType {
         if (e < 0.2) return CellType.BEACH;
 
         if (e > 0.8) {
-            if (m < 0.1) return CellType.MOUNTAIN;
-            if (m < 0.2) return CellType.MOUNTAIN;
             if (m < 0.5) return CellType.MOUNTAIN;
             return CellType.MOUNTAIN;
         }
 
         if (e > 0.6) {
-            if (m < 0.33) return CellType.JUNGLE;
-            if (m < 0.66) return CellType.JUNGLE;
+            if (m < 0.3) return CellType.JUNGLE;
+            if (m < 0.5) return CellType.LAND;
+            if (m < 0.8) return CellType.MOUNTAIN;
             return CellType.JUNGLE;
         }
 
         if (e > 0.3) {
-            if (m < 0.16) return CellType.LAND;
-            if (m < 0.50) return CellType.LAND;
-            if (m < 0.83) return CellType.LAND;
+            if (m < 0.15) return CellType.CLAY;
+            if (m < 0.30) return CellType.WHEAT;
+            if (m < 0.45) return CellType.LAND;
+            if (m < 0.60) return CellType.JUNGLE;
             return CellType.LAND;
         }
 
-        if (m < 0.16) return CellType.LAND;
-        if (m < 0.33) return CellType.LAND;
-        if (m < 0.66) return CellType.LAND;
+        if (m < 0.15) return CellType.CLAY;
+        if (m < 0.30) return CellType.LAND;
+        if (m < 0.60) return CellType.JUNGLE;
         return CellType.LAND;
     }
 

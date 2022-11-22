@@ -3,6 +3,7 @@ package com.mygdx.game.model.maps;
 import com.badlogic.gdx.utils.Queue;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.units.Unit;
+import com.dongbat.jbump.Cell;
 import com.mygdx.game.view.utils.BiomUtils;
 import com.mygdx.game.view.utils.Pair;
 import com.mygdx.game.view.utils.Triple;
@@ -53,6 +54,111 @@ public class Map {
         this.cells = new MapCell[width][height];
         createMap();
         view_Up(0);
+
+        //createMagic();
+    }
+
+    private void createMagic(){
+        int area = 5,
+                x = random.nextInt(height-area*2)+area,
+                y = random.nextInt(width-area*2)+area;
+
+        MapCell cell = safeAccess(x, y);
+        while(cell == null || cell.type == WATER){
+            x = random.nextInt(height-area*2)+area;
+            y = random.nextInt(width-area*2)+area;
+
+            cell = safeAccess(x, y);
+//            System.out.println("type "+cell.type+ " cod "+width+"-"+x+ ":"+height+"-"+y);
+        }
+
+        double[] mean = isNeighbour(x,y,2);
+        mean[0] += 1;   mean[1] += cell.elevation;  mean[2] += cell.humidity;
+//        System.out.println(mean[1]+" / "+mean[0]+" = "+mean[1]/mean[0]+" :elevation");
+//        System.out.println(mean[2]+" / "+mean[0]+" = "+mean[2]/mean[0]+" :humidity");
+//        System.out.println(mean[3]+" :min elevation");
+//        System.out.println(mean[4]+" :min humidity");
+
+        mean[1] = mean[1] / mean[0];//mean ele...
+        mean[2] = mean[2] / mean[0];// mean hum..
+        isNeighbourSet(x,y,area, mean);
+    }
+
+    private double[] isNeighbour(int x, int y,int area){
+        double[] mean = new double[5];
+        mean[3] = 1;    mean[4] = 1;
+        if (safeAccess(x,y).type == WATER) return mean;
+        else if(safeAccess(x,y).type == MOUNTAIN) return mean;
+        if(area <= 0){
+            mean[0] += 1;
+            mean[1] += safeAccess(x,y).elevation;
+            mean[2] += safeAccess(x,y).humidity;
+            if(mean[3] >= mean[1])
+                mean[3] = mean[1];
+            if(mean[4] >= mean[2])
+                mean[4] = mean[2];
+            return mean;
+        }
+
+        int[][] nb;
+        if ((x & 1) == 1) nb = neighbourodd;
+        else nb = neighboureven;
+
+        for (int i = 0; i < 6; ++i) {
+            double[] tmp_mean = isNeighbour(x + nb[i][0], y + nb[i][1], area-1);
+            mean[0] += tmp_mean[0];
+            mean[1] += tmp_mean[1];
+            mean[2] += tmp_mean[2];
+            if(mean[3] >= tmp_mean[3])
+                mean[3] = tmp_mean[3];
+            if(mean[4] >= tmp_mean[4])
+                mean[4] = tmp_mean[4];
+        }
+        return mean;
+    }
+
+    private boolean isNeighbourSet(int x, int y, int area, double[] mean){
+        if (safeAccess(x,y).type == WATER) return false;
+        else if(safeAccess(x,y).type == MOUNTAIN) return false;
+        if(area <= 0) return true;
+
+        int[][] nb;
+        double leftLimit, rightLimit;
+
+        if ((x & 1) == 1) nb = neighbourodd;
+        else nb = neighboureven;
+
+        for (int i = 0; i < 6; ++i) {
+            if(isNeighbourSet(x + nb[i][0], y + nb[i][1], area-1,mean)){
+                MapCell cell = safeAccess(x + nb[i][0], y + nb[i][1]);
+
+//                System.out.print(" Elevation old "+cell.elevation);
+//                System.out.print(" Humidity old "+cell.humidity);
+//                System.out.print(" Type old "+cell.type);
+
+                leftLimit = BiomUtils.round(mean[1]-mean[3],3);
+                rightLimit = BiomUtils.round(mean[1]+mean[3],3);
+                System.out.println("left "+leftLimit+" right "+rightLimit+"\n");
+
+                cell.elevation = BiomUtils.round(
+                        leftLimit + random.nextDouble() * (rightLimit - leftLimit),
+                        3);
+
+                leftLimit = BiomUtils.round(mean[2]-mean[4],3);
+                rightLimit = BiomUtils.round(mean[2]+mean[4],3);
+
+                cell.humidity = BiomUtils.round(
+                        leftLimit + random.nextDouble() * (rightLimit - leftLimit),
+                        3);
+
+                cell.type = defineBiom(cell.elevation,cell.humidity);
+
+//                System.out.print(" | Elevation new "+cell.elevation);
+//                System.out.print(" | Humidity new "+cell.humidity);
+//                System.out.print(" |Type new "+cell.type+"\n");
+            }
+        }
+        return false;
     }
 
     /**
@@ -178,6 +284,7 @@ public class Map {
     public void view_Up(int restart) {
         Perlin2D elevation_map = new Perlin2D(seed);
         Perlin2D humidity_map = new Perlin2D(this.seed + 1234);
+
         for (int i = 0; i < height; ++i) {//y
             for (int j = 0; j < width; ++j) {//x
                 MapCell cell = cells[i][j];
@@ -198,6 +305,10 @@ public class Map {
             }
             System.out.println();
         }
+        printStat();
+    }
+
+    private void printStat(){
         System.out.println();
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {

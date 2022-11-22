@@ -6,12 +6,16 @@ import com.mygdx.game.view.Start;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
-	public static void main (String[] arg) {
-		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setForegroundFPS(60);
-		config.setTitle("ArtofWar");
-		config.setWindowedMode(1080,720);
-		config.useVsync(true);
-		new Lwjgl3Application(new Start(), config);
-	}
+    public static int
+            screenWidth = 1080,
+            screenHeight = 720;
+
+    public static void main(String[] arg) {
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        config.setForegroundFPS(60);
+        config.setTitle("ArtofWar");
+        config.setWindowedMode(screenWidth, screenHeight);
+        config.useVsync(true);
+        new Lwjgl3Application(new Start(), config);
+    }
 }
