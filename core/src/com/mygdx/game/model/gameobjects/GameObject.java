@@ -1,11 +1,11 @@
 package com.mygdx.game.model.gameobjects;
 
-import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.MapCreator;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
 public abstract class GameObject {
-    private final Map map;
+    private final MapCreator mapCreator;
     private MapCell placement;
     public final Player owner;
     public final int defence;
@@ -13,14 +13,14 @@ public abstract class GameObject {
     public final int cost;
 
     public GameObject(
-            Map map,
+            MapCreator mapCreator,
             MapCell placement,
             Player owner,
             int cost,
             int moneyPerTurn,
             int defence
     ) {
-        this.map = map;
+        this.mapCreator = mapCreator;
         this.placement = placement;
         this.owner = owner;
         this.cost = cost;
@@ -28,8 +28,8 @@ public abstract class GameObject {
         this.defence = defence;
     }
 
-    public Map getMap() {
-        return map;
+    public MapCreator getMap() {
+        return mapCreator;
     }
 
     public MapCell getPlacement() {

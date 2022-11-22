@@ -46,6 +46,7 @@ public class MapCell {
     }
 
     public void setGameObject(GameObject gameObject) {
+        if(type == CellType.WATER) return;
         this.gameObject = gameObject;
     }
 
@@ -62,6 +63,7 @@ public class MapCell {
     }
 
     public void setType(CellType type) {
+        if(type == CellType.UNDEFINED) return;
         this.type = type;
     }
 

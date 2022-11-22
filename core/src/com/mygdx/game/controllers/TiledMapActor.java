@@ -1,15 +1,14 @@
 package com.mygdx.game.controllers;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 
 public class TiledMapActor extends Actor {
 
-    public TiledMapActor(MapCell cell){
+    public final MainGameStage stage;
+    public TiledMapActor(MainGameStage stage,MapCell cell){
+        this.stage = stage;
         this.setUserObject(cell);
     }
 

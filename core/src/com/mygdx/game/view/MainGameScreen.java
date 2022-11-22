@@ -3,24 +3,22 @@ package com.mygdx.game.view;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.controllers.MainGameStage;
-import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.MapCreator;
 
 public class MainGameScreen implements Screen {
     private final Start start;
-    private final Map map;
+    private final MapCreator mapCreator;
     private final MainGameStage stage;
     private final OrthographicCamera camera = new OrthographicCamera();
 
     public MainGameScreen(int width, int height, Start start) {
-        map = new Map(width, height, 0, -1);
-        stage = new MainGameStage(map);
+        mapCreator = new MapCreator(width, height, 0, -1);
+        stage = new MainGameStage(mapCreator);
         this.start = start;
         initialize();
     }
