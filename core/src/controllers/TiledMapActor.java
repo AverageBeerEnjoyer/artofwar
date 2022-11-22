@@ -9,11 +9,9 @@ import com.mygdx.game.model.maps.MapCell;
 
 public class TiledMapActor extends Actor {
     public TiledMap tiledMap;
-    public TiledMapTileLayer tiledLayer;
 
-    public TiledMapActor(TiledMap tiledMap, TiledMapTileLayer tiledLayer, MapCell cell){
+    public TiledMapActor(TiledMap tiledMap, MapCell cell){
         this.tiledMap = tiledMap;
-        this.tiledLayer = tiledLayer;
         this.setUserObject(cell);
     }
 

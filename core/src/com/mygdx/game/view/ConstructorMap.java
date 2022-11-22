@@ -196,7 +196,7 @@ public class ConstructorMap implements Screen {
             camera.position.set(camera.position.x - Gdx.input.getDeltaX(), camera.position.y + Gdx.input.getDeltaY(), 0);
 //            System.out.println(touchPos.x+" "+touchPos.y);
             //mapToRendererTransformator.updateLayer();
-            Group g = stage.group;
+            Group g = stage.getCellActors();
             g.moveBy(Gdx.input.getDeltaX(), - Gdx.input.getDeltaY());
         }
         game.batch.begin();
