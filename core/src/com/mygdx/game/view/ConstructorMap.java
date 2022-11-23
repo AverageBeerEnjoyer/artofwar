@@ -10,7 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.controllers.MainGameStage;
+import com.mygdx.game.controllers.MapToRendererTransformator;
+import com.mygdx.game.controllers.stages.MainGameStage;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCreator;
 
@@ -20,6 +21,7 @@ import java.util.Objects;
 public class ConstructorMap implements Screen {
     final Start game;
     private final MainGameStage stage;
+    private MapToRendererTransformator mapToRendererTransformator;
     private Map map;
     private MapCreator mapCreator;
     private String labelWidth = "25", labelHeight = "25", labelSeed = "5", n4 = "1.5", n5 = "2", n6 = "0.1";
@@ -30,15 +32,13 @@ public class ConstructorMap implements Screen {
 
     public ConstructorMap(final Start game) {
         this.game = game;
-
-        stage = new MainGameStage(
-                new Map(
-                        Integer.parseInt(labelWidth),
-                        Integer.parseInt(labelHeight),
-                        0,
-                        Integer.parseInt(labelSeed)
-                )
+        map = new Map(
+                Integer.parseInt(labelWidth),
+                Integer.parseInt(labelHeight),
+                0,
+                Integer.parseInt(labelSeed)
         );
+        stage = new MainGameStage(map);
         mapCreator = stage.getMap().getMapCreator();
         Gdx.input.setInputProcessor(stage);
 
@@ -190,17 +190,17 @@ public class ConstructorMap implements Screen {
         camera.update();
         //game.batch.setProjectionMatrix(camera.combined);
 
-        stage.getRenderer().setView(camera);
-        stage.getRenderer().render();
+        mapToRendererTransformator.getRenderer().setView(camera);
+        mapToRendererTransformator.getRenderer().render();
 
         stage.act();
         stage.draw();
-        if (Gdx.input.isTouched() && (Gdx.input.getDeltaX() != 0 || Gdx.input.getDeltaY() != 0)){
+        if (Gdx.input.isTouched() && (Gdx.input.getDeltaX() != 0 || Gdx.input.getDeltaY() != 0)) {
             camera.position.set(camera.position.x - Gdx.input.getDeltaX(), camera.position.y + Gdx.input.getDeltaY(), 0);
 //            System.out.println(touchPos.x+" "+touchPos.y);
             //mapToRendererTransformator.updateLayer();
             Group g = stage.getCellActors();
-            g.moveBy(Gdx.input.getDeltaX(), - Gdx.input.getDeltaY());
+            g.moveBy(Gdx.input.getDeltaX(), -Gdx.input.getDeltaY());
         }
         game.batch.begin();
         font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond() + " " + Gdx.input.getX() + " " + Gdx.input.getY(), 10, 20);
@@ -232,7 +232,7 @@ public class ConstructorMap implements Screen {
 
     @Override
     public void dispose() {
-        stage.getRenderer().dispose();
+        mapToRendererTransformator.getRenderer().dispose();
         stage.dispose();
         game.dispose();
     }

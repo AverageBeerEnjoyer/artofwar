@@ -1,5 +1,6 @@
 package com.mygdx.game.model.gameobjects;
 
+import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCreator;
 import com.mygdx.game.model.maps.MapCell;
@@ -38,6 +39,7 @@ public abstract class GameObject {
     }
 
     public void setPlacement(MapCell placement) {
+        if(placement.getType() == CellType.WATER) return;
         this.placement = placement;
     }
 }

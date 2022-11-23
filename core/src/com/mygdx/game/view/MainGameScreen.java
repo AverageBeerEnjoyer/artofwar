@@ -7,7 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.controllers.MainGameStage;
+import com.mygdx.game.controllers.MapToRendererTransformator;
+import com.mygdx.game.controllers.stages.MainGameStage;
 import com.mygdx.game.model.maps.Map;
 
 public class MainGameScreen implements Screen {
@@ -15,10 +16,12 @@ public class MainGameScreen implements Screen {
     private final Map map;
     private final MainGameStage stage;
     private final OrthographicCamera camera = new OrthographicCamera();
+    private final MapToRendererTransformator mapToRendererTransformator;
 
     public MainGameScreen(int width, int height, Start start) {
         map = new Map(width, height);
         stage = new MainGameStage(map);
+        mapToRendererTransformator = new MapToRendererTransformator(map);
         this.start = start;
         initialize();
     }
@@ -48,8 +51,8 @@ public class MainGameScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
         camera.update();
-        stage.getRenderer().setView(camera);
-        stage.getRenderer().render();
+        mapToRendererTransformator.getRenderer().setView(camera);
+        mapToRendererTransformator.getRenderer().render();
 
         stage.act();
         stage.draw();

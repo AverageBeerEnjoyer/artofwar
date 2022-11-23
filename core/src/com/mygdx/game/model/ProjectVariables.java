@@ -2,6 +2,10 @@ package com.mygdx.game.model;
 
 public class ProjectVariables {
 
+    public static int
+            tileWidth = 64,
+            tileHeight = 55;
+
     public static final int
             peasantPower = 1,
             peasantDefence = 1,

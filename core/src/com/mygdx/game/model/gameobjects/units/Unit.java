@@ -38,9 +38,9 @@ public abstract class Unit extends GameObject implements Movable {
     }
 
     private boolean canMove(int x, int y) {
-        int[][] availableCells = getMap().selectCellsToMove(x, y);
-        int dist = availableCells[x][y];
-        return dist > 0 && dist <= distance;
+        MapCell moveTo = getMap().getCell(x,y);
+        if(moveTo.getOwner() == owner) return moveTo.getGameObject() == null;
+        return power>moveTo.getDefence();
     }
 
 
