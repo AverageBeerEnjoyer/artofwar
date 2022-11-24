@@ -42,7 +42,7 @@ public class DBController {
             "CREATE TABLE IF NOT EXISTS player" +
                 "(" +
                 "    id   INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                "    name VARCHAR(63) NOT NULL" +
+                "    name VARCHAR(63) NOT NULL UNIQUE" +
                 ");"
         );
         statement.execute(
