@@ -3,12 +3,14 @@ package com.mygdx.game.view;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.controllers.MapToRendererTransformator;
 import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.model.ProjectVariables;
 import com.mygdx.game.model.maps.Map;
 
 public class MainGameScreen implements Screen {
@@ -21,7 +23,7 @@ public class MainGameScreen implements Screen {
     public MainGameScreen(int width, int height, Start start) {
         map = new Map(width, height);
         stage = new MainGameStage(map);
-        mapToRendererTransformator = new MapToRendererTransformator(map);
+        mapToRendererTransformator = map.getMapToRendererTransformator();
         this.start = start;
         initialize();
     }
@@ -34,7 +36,8 @@ public class MainGameScreen implements Screen {
                     @Override
                     public void drag(InputEvent event, float x, float y, int pointer) {
                         camera.position.set(camera.position.x - getDeltaX(), camera.position.y - getDeltaY(), 0);
-                        Group g = stage.getRoot().findActor("cellActors");
+                        Group g = stage.getMovableActors();
+
                         g.moveBy(getDeltaX(), getDeltaY());
 
                     }
@@ -53,7 +56,6 @@ public class MainGameScreen implements Screen {
         camera.update();
         mapToRendererTransformator.getRenderer().setView(camera);
         mapToRendererTransformator.getRenderer().render();
-
         stage.act();
         stage.draw();
     }

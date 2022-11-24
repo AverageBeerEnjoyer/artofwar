@@ -1,5 +1,6 @@
 package com.mygdx.game.model.gameobjects.units;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
@@ -21,5 +22,15 @@ public class Peasant extends Unit {
                 peasantDefence,
                 peasantDistance
         );
+    }
+
+    @Override
+    public int getCost() {
+        return peasantCost;
+    }
+
+    @Override
+    public TiledMapTile getTile() {
+        return peasantPic;
     }
 }

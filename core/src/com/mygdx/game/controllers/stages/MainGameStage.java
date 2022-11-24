@@ -1,5 +1,7 @@
 package com.mygdx.game.controllers.stages;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -28,17 +30,19 @@ public class MainGameStage extends Stage {
     private Group cellActors;
     private Group controls;
     private Group selectedArea;
+    private Group movableActors = new Group();
     private GameObject gameObjectToPlace = null;
     private Unit unitToMove = null;
 
 
     public MainGameStage(Map Map) {
         this.map = Map;
+        loadActors();
     }
 
     public MainGameStage() {
         this.map = new Map(10, 10, 0, 0);
-
+        loadActors();
     }
 
 
@@ -49,14 +53,11 @@ public class MainGameStage extends Stage {
     private void loadActors(){
         createActorsLayer();
         createControls();
+        addActor(movableActors);
     }
 
-    public Group getCellActors() {
-        return cellActors;
-    }
-
-    public Group getControls() {
-        return controls;
+    public Group getMovableActors() {
+        return movableActors;
     }
 
     public void setMap(Map Map) {
@@ -94,7 +95,7 @@ public class MainGameStage extends Stage {
                 cellActors.addActor(actor);
             }
         }
-        addActor(cellActors);
+        movableActors.addActor(cellActors);
     }
 
     public void definePlaceArea() {
@@ -109,12 +110,12 @@ public class MainGameStage extends Stage {
                 }
             }
         }
-
+        movableActors.addActor(selectedArea);
     }
 
     public void defineMoveArea() {
         selectedArea = new Group();
-        int[][] area = map.selectCellsToMove(gameObjectToPlace.getPlacement().x, gameObjectToPlace.getPlacement().y);
+        int[][] area = map.selectCellsToMove(unitToMove.getPlacement().x, unitToMove.getPlacement().y);
         if (area == null) return;
         for (int i = 0; i < map.getWidth(); ++i) {
             for (int j = 0; j < map.getHeight(); ++j) {
@@ -123,9 +124,11 @@ public class MainGameStage extends Stage {
                 selectedArea.addActor(actor);
             }
         }
+        movableActors.addActor(selectedArea);
     }
 
     public void clearSelectedArea() {
+        movableActors.removeActor(selectedArea);
         unitToMove = null;
         gameObjectToPlace = null;
         selectedArea = null;
@@ -136,28 +139,55 @@ public class MainGameStage extends Stage {
 
     private void createControls() {
         controls = new Group();
+
+        BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = myFont;
 
         Button addPeasant = new TextButton("Peasant", style);
         addPeasant.addListener(new PeasantCreationCL(this));
+        addPeasant.moveBy(0,30);
+        addPeasant.debug();
 
         Button addMilitia = new TextButton("Militia", style);
         addMilitia.addListener(new MilitiaCreationCL(this));
+        addMilitia.moveBy(0,60);
+        addMilitia.debug();
 
         Button addKnight = new TextButton("Knight", style);
         addKnight.addListener(new KnightCreationCL(this));
+        addKnight.moveBy(0,90);
+        addKnight.debug();
 
         Button addPaladin = new TextButton("Paladin", style);
         addPaladin.addListener(new PaladinCreationCL(this));
+        addPaladin.moveBy(0,120);
+        addPaladin.debug();
 
         Button addFarm = new TextButton("Farm", style);
         addFarm.addListener(new FarmCreationCL(this));
+        addFarm.moveBy(0,150);
+        addFarm.debug();
 
         Button addTower = new TextButton("Tower", style);
         addTower.addListener(new TowerCreationCL(this));
+        addTower.moveBy(0,180);
+        addTower.debug();
 
         Button addSuperTower = new TextButton("Supertower",style);
         addSuperTower.addListener(new SuperTowerCreationCL(this));
+        addSuperTower.moveBy(0,210);
+        addSuperTower.debug();
+
+        controls.addActor(addPeasant);
+        controls.addActor(addMilitia);
+        controls.addActor(addKnight);
+        controls.addActor(addPaladin);
+        controls.addActor(addFarm);
+        controls.addActor(addTower);
+        controls.addActor(addSuperTower);
+
+        addActor(controls);
     }
 
     private TiledMapActor createSelectActorForCell(int i, int j) {
@@ -182,11 +212,13 @@ public class MainGameStage extends Stage {
 
     private TiledMapActor createPlaceActorForCell(int i, int j) {
         MapCell cell = map.getCell(i, j);
-        return new TiledMapActor(
+        TiledMapActor  actor = new TiledMapActor(
                 this,
                 cell,
                 new PlaceToCellCL(this, cell),
                 3
         );
+        actor.debug();
+        return actor;
     }
 }

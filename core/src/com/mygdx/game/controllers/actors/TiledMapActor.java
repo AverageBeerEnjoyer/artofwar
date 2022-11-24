@@ -25,7 +25,6 @@ public class TiledMapActor extends Actor {
                 HexagonUtils.countYLayout(cell.x, cell.y) * tileHeight
         );
         setZIndex(zIndex);
-        debug();
     }
 
     @Override

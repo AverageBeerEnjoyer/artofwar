@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
+    public static Player NOBODY = new Player("");
     public final String name;
     private final List<GameObject> objects;
     private GameObject capital;

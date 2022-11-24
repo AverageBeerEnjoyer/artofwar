@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Queue;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.units.Unit;
 import com.dongbat.jbump.Cell;
+import com.mygdx.game.model.players.Player;
 import com.mygdx.game.view.utils.BiomUtils;
 import com.mygdx.game.view.utils.Pair;
 import com.mygdx.game.view.utils.Triple;
@@ -198,6 +199,7 @@ public class MapCreator {
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 cells[i][j] = new MapCell(i, j);
+                cells[i][j].setOwner(Player.NOBODY);
             }
         }
 

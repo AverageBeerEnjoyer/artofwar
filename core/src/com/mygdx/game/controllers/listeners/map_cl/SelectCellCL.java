@@ -14,7 +14,10 @@ public class SelectCellCL extends ActionMapCL {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        if (!(cell.getGameObject() instanceof Unit)) return;
+        if (!(cell.getGameObject() instanceof Unit)) {
+            stage.clearSelectedArea();
+            return;
+        }
         Unit unit = (Unit) cell.getGameObject();
         stage.setUnitToMove(unit);
     }

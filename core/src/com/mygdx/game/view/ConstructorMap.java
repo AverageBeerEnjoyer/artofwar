@@ -38,7 +38,7 @@ public class ConstructorMap implements Screen {
                 0,
                 Integer.parseInt(labelSeed)
         );
-        stage = new MainGameStage(map);
+        stage = null;
         mapCreator = stage.getMap().getMapCreator();
         Gdx.input.setInputProcessor(stage);
 
@@ -199,7 +199,7 @@ public class ConstructorMap implements Screen {
             camera.position.set(camera.position.x - Gdx.input.getDeltaX(), camera.position.y + Gdx.input.getDeltaY(), 0);
 //            System.out.println(touchPos.x+" "+touchPos.y);
             //mapToRendererTransformator.updateLayer();
-            Group g = stage.getCellActors();
+            Group g = stage.getMovableActors();
             g.moveBy(Gdx.input.getDeltaX(), -Gdx.input.getDeltaY());
         }
         game.batch.begin();

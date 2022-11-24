@@ -1,5 +1,6 @@
 package com.mygdx.game.model.gameobjects.units;
 
+import com.mygdx.game.model.ProjectVariables;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.Movable;
 import com.mygdx.game.model.maps.Map;
@@ -42,6 +43,4 @@ public abstract class Unit extends GameObject implements Movable {
         if(moveTo.getOwner() == owner) return moveTo.getGameObject() == null;
         return power>moveTo.getDefence();
     }
-
-
 }

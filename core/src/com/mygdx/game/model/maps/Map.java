@@ -1,6 +1,7 @@
 package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
+import com.mygdx.game.controllers.MapToRendererTransformator;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.units.Unit;
 import com.mygdx.game.model.players.Player;
@@ -14,13 +15,16 @@ import static com.mygdx.game.model.maps.MapCreator.neighbourodd;
 
 public class Map {
     private final MapCreator mapCreator;
+    private final MapToRendererTransformator mapToRendererTransformator;
 
     public Map(int width, int height) throws IllegalArgumentException {
         this.mapCreator = new MapCreator(width, height, 0, -1);
+        this.mapToRendererTransformator = new MapToRendererTransformator(this);
     }
 
     public Map(int width, int height, int mode, long seed) {
         this.mapCreator = new MapCreator(width, height, mode, seed);
+        this.mapToRendererTransformator = new MapToRendererTransformator(this);
     }
 
     public MapCell getCell(int x, int y) {
@@ -34,6 +38,7 @@ public class Map {
         gameObject.setPlacement(cell);
         cell.setGameObject(gameObject);
         cell.setOwner(gameObject.owner);
+        mapToRendererTransformator.update();
     }
 
     public int[][] selectCellsToMove(int xValue, int yValue) {
@@ -104,5 +109,9 @@ public class Map {
 
     public MapCreator getMapCreator() {
         return mapCreator;
+    }
+
+    public MapToRendererTransformator getMapToRendererTransformator() {
+        return mapToRendererTransformator;
     }
 }

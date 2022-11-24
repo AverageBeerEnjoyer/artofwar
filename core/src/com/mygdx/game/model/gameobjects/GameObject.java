@@ -1,5 +1,6 @@
 package com.mygdx.game.model.gameobjects;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCreator;
@@ -42,4 +43,7 @@ public abstract class GameObject {
         if(placement.getType() == CellType.WATER) return;
         this.placement = placement;
     }
+
+    public abstract int getCost();
+    public abstract TiledMapTile getTile();
 }

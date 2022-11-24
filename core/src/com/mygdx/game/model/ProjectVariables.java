@@ -1,6 +1,31 @@
 package com.mygdx.game.model;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+
 public class ProjectVariables {
+
+    public static String
+            unitAssetsDirectory = "units/",
+            buildingAssetsDirectory=null;
+
+
+    public static StaticTiledMapTile
+            peasantPic = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(unitAssetsDirectory + "peasant.png")))),
+            militiaPic = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(unitAssetsDirectory +"militia.png")))),
+            knightPic= new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(unitAssetsDirectory + "knight.png")))),
+            paladinPic = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(unitAssetsDirectory + "paladin.png"))));
+
+
+
+    public static StaticTiledMapTile
+            farmPic=null,
+            towerPic=null,
+            superTowerPic=null,
+            capitalPic=null;
 
     public static int
             tileWidth = 64,

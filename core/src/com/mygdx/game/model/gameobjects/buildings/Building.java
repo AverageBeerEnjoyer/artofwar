@@ -1,5 +1,6 @@
 package com.mygdx.game.model.gameobjects.buildings;
 
+import com.mygdx.game.model.ProjectVariables;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCreator;
