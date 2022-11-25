@@ -1,18 +1,16 @@
 package com.mygdx.game.controllers;
 
-import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.mygdx.game.controllers.actors.TiledMapActor;
-import com.mygdx.game.model.ProjectVariables;
+import com.mygdx.game.ProjectVariables;
 import com.mygdx.game.model.gameobjects.GameObject;
-import com.mygdx.game.model.gameobjects.units.Paladin;
-import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.MapCell;
 
-import static com.mygdx.game.model.ProjectVariables.tileHeight;
-import static com.mygdx.game.model.ProjectVariables.tileWidth;
+import static com.mygdx.game.ProjectVariables.tileHeight;
+import static com.mygdx.game.ProjectVariables.tileWidth;
 
 public class MapToRendererTransformator {
     private final HexagonalTiledMapRenderer renderer;
@@ -45,31 +43,48 @@ public class MapToRendererTransformator {
 
     private void createGameObjectsLayer() {
         TiledMapTileLayer gameObjectsLayer = new TiledMapTileLayer(map.getWidth(), map.getHeight(), tileWidth, tileHeight);
-        for(int i=0;i< map.getWidth();++i){
-            for(int j=0;j< map.getHeight();++j){
-                TiledMapTileLayer.Cell cell =new TiledMapTileLayer.Cell();
+        for (int i = 0; i < map.getWidth(); ++i) {
+            for (int j = 0; j < map.getHeight(); ++j) {
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                 GameObject obj = map.getMapCreator().getCells()[i][j].getGameObject();
-                gameObjectsLayer.setCell(i,j,cell);
-                if(obj == null) continue;
+                gameObjectsLayer.setCell(i, j, cell);
+                if (obj == null) continue;
                 cell.setTile(obj.getTile());
             }
         }
         tiledMap.getLayers().add(gameObjectsLayer);
     }
 
-    public void update() {
-        TiledMapTileLayer gameObjectsLayer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
+    public void createSelectedArea(int[][] area) {
+        TiledMapTileLayer black = new TiledMapTileLayer(map.getWidth(), map.getHeight(), tileWidth, tileHeight);
+        black.setName("selected");
         for (int i = 0; i < map.getWidth(); ++i) {
             for (int j = 0; j < map.getHeight(); ++j) {
-                TiledMapTileLayer.Cell cell = gameObjectsLayer.getCell(i, j);
-                GameObject obj = map.getMapCreator().getCells()[i][j].getGameObject();
-                if(obj == null){
-                    cell.setTile(null);
-                    continue;
-                }
-                cell.setTile(ProjectVariables.paladinPic);
+                if (area[i][j] != -1) continue;
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(ProjectVariables.blackTile);
+                black.setCell(i, j, cell);
             }
         }
+        black.setOpacity(0.7f);
+        tiledMap.getLayers().add(black);
+    }
+
+    public void clearSelectedArea() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get("selected");
+        if (layer != null) tiledMap.getLayers().remove(layer);
+
+    }
+
+    public void update(int x, int y) {
+        TiledMapTileLayer gameObjectsLayer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
+        MapCell mapCell = map.getCell(x, y);
+        TiledMapTileLayer.Cell cell = gameObjectsLayer.getCell(x, y);
+        if (mapCell.getGameObject() == null) {
+            cell.setTile(null);
+            return;
+        }
+        gameObjectsLayer.getCell(x, y).setTile(map.getCell(x, y).getGameObject().getTile());
     }
 
     public HexagonalTiledMapRenderer getRenderer() {

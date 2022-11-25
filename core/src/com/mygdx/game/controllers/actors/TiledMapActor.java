@@ -3,19 +3,16 @@ package com.mygdx.game.controllers.actors;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mygdx.game.controllers.stages.MainGameStage;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.view.utils.HexagonUtils;
 
-import static com.mygdx.game.model.ProjectVariables.tileHeight;
-import static com.mygdx.game.model.ProjectVariables.tileWidth;
+import static com.mygdx.game.ProjectVariables.tileHeight;
+import static com.mygdx.game.ProjectVariables.tileWidth;
 
 public class TiledMapActor extends Actor {
 
-    public final MainGameStage stage;
     public final MapCell cell;
-    public TiledMapActor(MainGameStage stage, MapCell cell, ClickListener listener, int zIndex){
-        this.stage = stage;
+    public TiledMapActor(MapCell cell, ClickListener listener, int zIndex){
         this.cell = cell;
         this.addListener(listener);
         setWidth(tileWidth);

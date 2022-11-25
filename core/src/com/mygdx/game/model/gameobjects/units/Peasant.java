@@ -5,7 +5,8 @@ import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
-import static com.mygdx.game.model.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.UnitSpec.*;
 
 public class Peasant extends Unit {
     public Peasant(
@@ -15,13 +16,28 @@ public class Peasant extends Unit {
         super(
                 Map,
                 placement,
-                owner,
-                peasantCost,
-                peasantMoneyPerTurn,
-                peasantPower,
-                peasantDefence,
-                peasantDistance
+                owner
         );
+    }
+
+    @Override
+    public int getPower() {
+        return peasantPower;
+    }
+
+    @Override
+    public int getDistance() {
+        return peasantDistance;
+    }
+
+    @Override
+    public int getMoneyPerTurn() {
+        return peasantMoneyPerTurn;
+    }
+
+    @Override
+    public int getDefence() {
+        return peasantDefence;
     }
 
     @Override

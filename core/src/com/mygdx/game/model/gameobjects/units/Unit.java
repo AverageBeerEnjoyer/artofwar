@@ -1,6 +1,5 @@
 package com.mygdx.game.model.gameobjects.units;
 
-import com.mygdx.game.model.ProjectVariables;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.Movable;
 import com.mygdx.game.model.maps.Map;
@@ -8,39 +7,34 @@ import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
 public abstract class Unit extends GameObject implements Movable {
-    public final int power;
-    public final int distance;
 
     public Unit(
             Map Map,
             MapCell placement,
-            Player owner,
-            int cost,
-            int moneyPerTurn,
-            int power,
-            int defence,
-            int distance
+            Player owner
     ) {
         super(
                 Map,
                 placement,
-                owner,
-                cost,
-                moneyPerTurn,
-                defence
+                owner
         );
-        this.power = power;
-        this.distance = distance;
     }
+
+    public abstract int getPower();
+
+    public abstract int getDistance();
 
     @Override
     public void move(int x, int y) {
-        if (canMove(x, y)) getMap().setGameObjectOnCell(x, y, this);
+        if (canMove(x, y)) {
+            getMap().removeGameObject(this);
+            getMap().setGameObjectOnCell(x, y, this);
+        }
     }
 
     private boolean canMove(int x, int y) {
-        MapCell moveTo = getMap().getCell(x,y);
-        if(moveTo.getOwner() == owner) return moveTo.getGameObject() == null;
-        return power>moveTo.getDefence();
+        MapCell moveTo = getMap().getCell(x, y);
+        if (moveTo.getOwner() == owner) return moveTo.getGameObject() == null;
+        return getPower() > moveTo.getDefence();
     }
 }

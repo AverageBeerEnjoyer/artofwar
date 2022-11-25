@@ -1,6 +1,7 @@
 package com.mygdx.game.model.gameobjects.buildings;
 
-import static com.mygdx.game.model.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.BuildingSpec.*;
 
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.mygdx.game.model.maps.Map;
@@ -16,11 +17,18 @@ public class Farm extends Building{
         super(
                 Map,
                 placement,
-                owner,
-                defaultFarmCost+additionalFarmCost*owner.getFarmCounter(),
-                farmMoneyPerTurn,
-                farmDefence
+                owner
         );
+    }
+
+    @Override
+    public int getMoneyPerTurn() {
+        return farmMoneyPerTurn;
+    }
+
+    @Override
+    public int getDefence() {
+        return farmDefence;
     }
 
     @Override

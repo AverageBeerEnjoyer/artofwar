@@ -5,7 +5,8 @@ import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
-import static com.mygdx.game.model.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.UnitSpec.*;
 
 public class Militia extends Unit {
     public Militia(
@@ -16,13 +17,28 @@ public class Militia extends Unit {
         super(
                 Map,
                 placement,
-                owner,
-                militiaCost,
-                militiaMoneyPerTurn,
-                militiaPower,
-                militiaDefence,
-                militiaDistance
+                owner
         );
+    }
+
+    @Override
+    public int getPower() {
+        return militiaPower;
+    }
+
+    @Override
+    public int getDistance() {
+        return militiaDistance;
+    }
+
+    @Override
+    public int getMoneyPerTurn() {
+        return militiaMoneyPerTurn;
+    }
+
+    @Override
+    public int getDefence() {
+        return militiaDefence;
     }
 
     @Override

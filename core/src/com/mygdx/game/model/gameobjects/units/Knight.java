@@ -1,6 +1,7 @@
 package com.mygdx.game.model.gameobjects.units;
 
-import static com.mygdx.game.model.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.UnitSpec.*;
 
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.mygdx.game.model.maps.Map;
@@ -16,13 +17,28 @@ public class Knight extends Unit {
         super(
                 Map,
                 placement,
-                owner,
-                knightCost,
-                knightMoneyPerTurn,
-                knightPower,
-                knightDefence,
-                knightDistance
+                owner
         );
+    }
+
+    @Override
+    public int getPower() {
+        return knightPower;
+    }
+
+    @Override
+    public int getDistance() {
+        return knightDistance;
+    }
+
+    @Override
+    public int getMoneyPerTurn() {
+        return knightMoneyPerTurn;
+    }
+
+    @Override
+    public int getDefence() {
+        return knightDefence;
     }
 
     @Override

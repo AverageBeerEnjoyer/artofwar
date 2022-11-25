@@ -1,6 +1,7 @@
 package com.mygdx.game.model.gameobjects.units;
 
-import static com.mygdx.game.model.ProjectVariables.*;
+import static com.mygdx.game.ProjectVariables.UnitSpec.*;
+import static com.mygdx.game.ProjectVariables.paladinPic;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.mygdx.game.model.maps.Map;
@@ -16,13 +17,28 @@ public class Paladin extends Unit {
         super(
                 Map,
                 placement,
-                owner,
-                paladinCost,
-                paladinMoneyPerTurn,
-                paladinPower,
-                paladinDefence,
-                paladinDistance
+                owner
         );
+    }
+
+    @Override
+    public int getPower() {
+        return paladinPower;
+    }
+
+    @Override
+    public int getDistance() {
+        return paladinDistance;
+    }
+
+    @Override
+    public int getMoneyPerTurn() {
+        return paladinMoneyPerTurn;
+    }
+
+    @Override
+    public int getDefence() {
+        return paladinDefence;
     }
 
     @Override

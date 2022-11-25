@@ -11,24 +11,15 @@ public abstract class GameObject {
     private final Map map;
     private MapCell placement;
     public final Player owner;
-    public final int defence;
-    public final int moneyPerTurn;
-    public final int cost;
 
     public GameObject(
             Map map,
             MapCell placement,
-            Player owner,
-            int cost,
-            int moneyPerTurn,
-            int defence
+            Player owner
     ) {
         this.map = map;
         this.placement = placement;
         this.owner = owner;
-        this.cost = cost;
-        this.moneyPerTurn = moneyPerTurn;
-        this.defence = defence;
     }
 
     public Map getMap() {
@@ -41,9 +32,11 @@ public abstract class GameObject {
 
     public void setPlacement(MapCell placement) {
         if(placement.getType() == CellType.WATER) return;
+        placement.setGameObject(this);
         this.placement = placement;
     }
-
+    public abstract int getMoneyPerTurn();
+    public abstract int getDefence();
     public abstract int getCost();
     public abstract TiledMapTile getTile();
 }

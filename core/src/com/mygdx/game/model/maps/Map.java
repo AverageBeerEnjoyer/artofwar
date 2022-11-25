@@ -31,14 +31,30 @@ public class Map {
         return mapCreator.safeAccess(x, y);
     }
 
+    public void killGameObject(GameObject gameObject) {
+        gameObject.getPlacement().setGameObject(null);
+        gameObject.owner.removeGameObject(gameObject);
+        mapToRendererTransformator.update(gameObject.getPlacement().x,gameObject.getPlacement().y);
+    }
+
+    public void removeGameObject(GameObject gameObject) {
+        gameObject.getPlacement().setGameObject(null);
+        mapToRendererTransformator.update(gameObject.getPlacement().x,gameObject.getPlacement().y);
+    }
+
     public void setGameObjectOnCell(int x, int y, GameObject gameObject) {
         MapCell cell = mapCreator.safeAccess(x, y);
         if (cell == null) return;
-        if (gameObject.getPlacement() != null) gameObject.getPlacement().setGameObject(null);
+        if (gameObject.getPlacement() == null) {
+            gameObject.owner.addGameObject(gameObject);
+        }
+        if (cell.getGameObject()!=null){
+            killGameObject(gameObject);
+        }
         gameObject.setPlacement(cell);
         cell.setGameObject(gameObject);
         cell.setOwner(gameObject.owner);
-        mapToRendererTransformator.update();
+        mapToRendererTransformator.update(x,y);
     }
 
     public int[][] selectCellsToMove(int xValue, int yValue) {
@@ -55,7 +71,7 @@ public class Map {
             return null;
         }
         Queue<Triple<Integer, Integer, Integer>> q = new Queue<>();
-        q.addFirst(Triple.triple(xValue, yValue, unit.distance));
+        q.addFirst(Triple.triple(xValue, yValue, unit.getDistance()));
         while (q.notEmpty()) {
             Triple<Integer, Integer, Integer> t = q.removeLast();
             int x = t.first;
@@ -67,7 +83,7 @@ public class Map {
             if (cell == null) continue;
             if (cell.getType() == WATER) continue;
             if (mirror[x][y] > 0) stop = true;
-            if (!startCell.getOwner().equals(cell.getOwner()) && cell.getDefence() >= unit.power) continue;
+            if (!startCell.getOwner().equals(cell.getOwner()) && cell.getDefence() >= unit.getPower()) continue;
 
             mirror[x][y] = Math.max(mirror[x][y], n);
 
