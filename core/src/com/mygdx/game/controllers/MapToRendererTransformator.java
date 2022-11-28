@@ -66,7 +66,7 @@ public class MapToRendererTransformator {
                 black.setCell(i, j, cell);
             }
         }
-        black.setOpacity(0.7f);
+        black.setOpacity(0.3f);
         tiledMap.getLayers().add(black);
     }
 

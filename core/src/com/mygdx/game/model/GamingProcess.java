@@ -6,6 +6,7 @@ import com.mygdx.game.model.players.Player;
 import java.util.List;
 
 public class GamingProcess {
+    private int round;
     private int currentPlayer;
     private final List<Player> playerList;
     private int playersNumber;
@@ -16,14 +17,21 @@ public class GamingProcess {
         this.playersNumber = playerList.size();
         this.map = map;
         this.currentPlayer = 0;
+        this.round = 0;
     }
 
     public Player getCurrentPlayer() {
         return playerList.get(currentPlayer);
     }
 
-    public void nextTurn() {
+    private void nextPlayer(){
+        if(isLast()) ++round;
         currentPlayer = (++currentPlayer) % playersNumber;
+    }
+
+    public void nextTurn() {
+        nextPlayer();
+        if(round == 0) return;
         Player player = getCurrentPlayer();
         player.countIncome();
     }
@@ -32,5 +40,11 @@ public class GamingProcess {
         playerList.remove(getCurrentPlayer());
         playersNumber = playerList.size();
         currentPlayer = (--currentPlayer) % playersNumber;
+    }
+    public boolean isFirst(){
+        return currentPlayer == 0;
+    }
+    public boolean isLast(){
+        return currentPlayer == playersNumber - 1;
     }
 }

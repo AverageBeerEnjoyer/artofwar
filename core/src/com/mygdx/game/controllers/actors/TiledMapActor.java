@@ -10,16 +10,13 @@ import static com.mygdx.game.ProjectVariables.tileHeight;
 import static com.mygdx.game.ProjectVariables.tileWidth;
 
 public class TiledMapActor extends Actor {
-
-    public final MapCell cell;
-    public TiledMapActor(MapCell cell, ClickListener listener, int zIndex){
-        this.cell = cell;
+    public TiledMapActor(int x, int y, ClickListener listener, int zIndex){
         this.addListener(listener);
         setWidth(tileWidth);
         setHeight(tileHeight);
         setPosition(
-                HexagonUtils.countXLayout(cell.x, cell.y) * tileWidth,
-                HexagonUtils.countYLayout(cell.x, cell.y) * tileHeight
+                HexagonUtils.countXLayout(x, y) * tileWidth,
+                HexagonUtils.countYLayout(x, y) * tileHeight
         );
         setZIndex(zIndex);
     }

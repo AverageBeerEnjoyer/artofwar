@@ -5,7 +5,10 @@ import com.mygdx.game.model.gameobjects.buildings.Building;
 import com.mygdx.game.model.gameobjects.buildings.Capital;
 import com.mygdx.game.model.gameobjects.buildings.Farm;
 import com.mygdx.game.model.gameobjects.units.Unit;
+import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.MapCell;
+import com.mygdx.game.model.maps.MapCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,19 +48,22 @@ public class Player {
     }
 
     public void addGameObject(GameObject gameObject) {
-        gold-=gameObject.getCost();
+        gold -= gameObject.getCost();
         if (gameObject instanceof Unit) {
             addUnit((Unit) gameObject);
             return;
         }
         if (gameObject instanceof Building) {
+            if(gameObject instanceof Capital){
+                capital = (Capital) gameObject;
+                return;
+            }
             addBuilding((Building) gameObject);
-            if(gameObject instanceof Farm){
+            if (gameObject instanceof Farm) {
                 ++farmCounter;
             }
             return;
         }
-        capital = (Capital) gameObject;
     }
 
     private void addBuilding(Building building) {
@@ -71,25 +77,45 @@ public class Player {
     }
 
     private void removeBuilding(Building building) {
-        if(building instanceof Farm) --farmCounter;
+        if (building instanceof Farm) --farmCounter;
         buildings.remove(building);
+    }
+
+    public void createCapitalArea() {
+        int x = capital.getPlacement().x;
+        int y = capital.getPlacement().y;
+        int[][] nb;
+        if ((x & 1) == 0) nb = MapCreator.neighboureven;
+        else nb = MapCreator.neighbourodd;
+        for (int i = 0; i < 6; ++i) {
+            int dx = nb[i][0];
+            int dy = nb[i][1];
+            MapCell cell = map.getCell(x + dx, y + dy);
+            if (cell == null) continue;
+            if (cell.getType() != CellType.WATER && cell.getOwner() == NOBODY) {
+                cell.setOwner(this);
+            }
+            map.getMapToRendererTransformator().update(x + dx, x + dy);
+        }
     }
 
     private void removeUnit(Unit unit) {
         units.remove(unit);
     }
-    private void armyWipe(){
-        for(Unit unit:units){
+
+    private void armyWipe() {
+        for (Unit unit : units) {
             map.removeGameObject(unit);
             map.killGameObject(unit);
         }
     }
+
     public void countIncome() {
         for (Building building : buildings) {
             gold += building.getMoneyPerTurn();
         }
-        for(Unit unit: units){
-            gold+=unit.getMoneyPerTurn();
+        for (Unit unit : units) {
+            gold += unit.getMoneyPerTurn();
         }
         gold += capital.getMoneyPerTurn();
         if (gold < 0) {

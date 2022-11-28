@@ -34,12 +34,12 @@ public class Map {
     public void killGameObject(GameObject gameObject) {
         gameObject.getPlacement().setGameObject(null);
         gameObject.owner.removeGameObject(gameObject);
-        mapToRendererTransformator.update(gameObject.getPlacement().x,gameObject.getPlacement().y);
+        mapToRendererTransformator.update(gameObject.getPlacement().x, gameObject.getPlacement().y);
     }
 
     public void removeGameObject(GameObject gameObject) {
         gameObject.getPlacement().setGameObject(null);
-        mapToRendererTransformator.update(gameObject.getPlacement().x,gameObject.getPlacement().y);
+        mapToRendererTransformator.update(gameObject.getPlacement().x, gameObject.getPlacement().y);
     }
 
     public void setGameObjectOnCell(int x, int y, GameObject gameObject) {
@@ -48,13 +48,13 @@ public class Map {
         if (gameObject.getPlacement() == null) {
             gameObject.owner.addGameObject(gameObject);
         }
-        if (cell.getGameObject()!=null){
+        if (cell.getGameObject() != null) {
             killGameObject(gameObject);
         }
         gameObject.setPlacement(cell);
         cell.setGameObject(gameObject);
         cell.setOwner(gameObject.owner);
-        mapToRendererTransformator.update(x,y);
+        mapToRendererTransformator.update(x, y);
     }
 
     public int[][] selectCellsToMove(int xValue, int yValue) {

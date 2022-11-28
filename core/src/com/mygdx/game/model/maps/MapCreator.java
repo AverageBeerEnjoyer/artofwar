@@ -62,25 +62,25 @@ public class MapCreator {
         System.out.println(1);
     }
 
-    private void createMagic(int countBiomMean){
-        if(height < 20) return;
-        if(width < 20) return;
+    private void createMagic(int countBiomMean) {
+        if (height < 20) return;
+        if (width < 20) return;
 
         //count biom create
         int count = 1, oldX = 0, oldY = 0;
-        while(countBiomMean >= count){
+        while (countBiomMean >= count) {
             int area = 5,
-                    x = random.nextInt(height-area*2)+area,
-                    y = random.nextInt(width-area*2)+area;
+                    x = random.nextInt(height - area * 2) + area,
+                    y = random.nextInt(width - area * 2) + area;
             MapCell cell = safeAccess(x, y);
-            while(cell == null || cell.getType() == WATER || cell.getType() == MOUNTAIN){
-                x = random.nextInt(height-area*2)+area;
-                y = random.nextInt(width-area*2)+area;
+            while (cell == null || cell.getType() == WATER || cell.getType() == MOUNTAIN) {
+                x = random.nextInt(height - area * 2) + area;
+                y = random.nextInt(width - area * 2) + area;
 
                 cell = safeAccess(x, y);
             }
             //0/countCell/1/sumElevation/2/sumHumidity/3/minElevation/4/minHumidity
-            double[] mean = isNeighbour(x,y,area);
+            double[] mean = isNeighbour(x, y, area);
 //        System.out.println(mean[1]+" / "+mean[0]+" = "+mean[1]/mean[0]+" :elevation MEAN");
 //        System.out.println(mean[2]+" / "+mean[0]+" = "+mean[2]/mean[0]+" :humidity MEAN");
 //        System.out.println(mean[3]+" :min elevation");
@@ -89,98 +89,106 @@ public class MapCreator {
             mean[1] = mean[1] / mean[0];// mean ele...
             mean[2] = mean[2] / mean[0];// mean hum..
 
-            isNeighbourChange(x,y,area, mean);
-            ++count;    oldX = x;   oldY = y;
+            isNeighbourChange(x, y, area, mean);
+            ++count;
+            oldX = x;
+            oldY = y;
         }
     }
 
-    private double[] isNeighbour(int x, int y,int area){
+    private double[] isNeighbour(int x, int y, int area) {
         double[] mean = new double[5];
-        mean[3] = 1;    mean[4] = 1;
+        mean[3] = 1;
+        mean[4] = 1;
         //other - change; water, mountain - don't change
-        if (safeAccess(x,y).getType() == WATER || safeAccess(x,y).getType() == MOUNTAIN){   return mean;    }
-        if(area <= 0){  return addMean(mean,x,y);   }
+        if (safeAccess(x, y).getType() == WATER || safeAccess(x, y).getType() == MOUNTAIN) {
+            return mean;
+        }
+        if (area <= 0) {
+            return addMean(mean, x, y);
+        }
 
         int[][] nb;
         if ((x & 1) == 1) nb = neighbourodd;
         else nb = neighboureven;
 
         for (int i = 0; i < 6; ++i) {
-            double[] tmp_mean = isNeighbour(x + nb[i][0], y + nb[i][1], area-1);
+            double[] tmp_mean = isNeighbour(x + nb[i][0], y + nb[i][1], area - 1);
             mergeMean(mean, tmp_mean);
         }
 
         double[] curCell = new double[5];
-        curCell[3] = 1;    curCell[4] = 1;
+        curCell[3] = 1;
+        curCell[4] = 1;
         addMean(curCell, x, y);
         mergeMean(mean, curCell);
         return mean;
     }
 
-    private boolean isNeighbourChange(int x, int y, int area, double[] mean){
+    private boolean isNeighbourChange(int x, int y, int area, double[] mean) {
         //true - change, false - don't change
-        if (safeAccess(x,y).getType() == WATER) return false;
-        else if(safeAccess(x,y).getType() == MOUNTAIN) return false;
-        if(area <= 0) return true;
+        if (safeAccess(x, y).getType() == WATER) return false;
+        else if (safeAccess(x, y).getType() == MOUNTAIN) return false;
+        if (area <= 0) return true;
 
         int[][] nb;
         if ((x & 1) == 1) nb = neighbourodd;
         else nb = neighboureven;
 
         for (int i = 0; i < 6; ++i) {
-            if(isNeighbourChange(x + nb[i][0], y + nb[i][1], area-1, mean)){
+            if (isNeighbourChange(x + nb[i][0], y + nb[i][1], area - 1, mean)) {
                 changeCell(x + nb[i][0], y + nb[i][1], mean);
             }
         }
         return true;
     }
 
-    private double[] mergeMean(double[] mean, double[] tmp_mean){
+    private double[] mergeMean(double[] mean, double[] tmp_mean) {
         mean[0] += tmp_mean[0];
         mean[1] += tmp_mean[1];
         mean[2] += tmp_mean[2];
-        if(mean[3] >= tmp_mean[3])
+        if (mean[3] >= tmp_mean[3])
             mean[3] = tmp_mean[3];
-        if(mean[4] >= tmp_mean[4])
+        if (mean[4] >= tmp_mean[4])
             mean[4] = tmp_mean[4];
         return mean;
     }
 
-    private double[] addMean(double[] mean, int x, int y){
-        if(safeAccess(x,y).getType() == UNDEFINED)
+    private double[] addMean(double[] mean, int x, int y) {
+        if (safeAccess(x, y).getType() == UNDEFINED)
             return mean;
-        safeAccess(x,y).setType(UNDEFINED);
+        safeAccess(x, y).setType(UNDEFINED);
         mean[0] += 1;
-        mean[1] += safeAccess(x,y).getElevation();
-        mean[2] += safeAccess(x,y).getHumidity();
-        if(mean[3] >= mean[1])
+        mean[1] += safeAccess(x, y).getElevation();
+        mean[2] += safeAccess(x, y).getHumidity();
+        if (mean[3] >= mean[1])
             mean[3] = mean[1];
-        if(mean[4] >= mean[2])
+        if (mean[4] >= mean[2])
             mean[4] = mean[2];
         return mean;
     }
 
-    private boolean changeCell(int x, int y, double[] mean){
+    private boolean changeCell(int x, int y, double[] mean) {
         MapCell cell = safeAccess(x, y);
 
-        if(safeAccess(x,y).getType() != UNDEFINED)
+        if (safeAccess(x, y).getType() != UNDEFINED)
             return false;
 
-        double leftLimit = BiomUtils.round(mean[1]-mean[3],3);
-        double rightLimit = BiomUtils.round(mean[1]+mean[3],3);
+        double leftLimit = BiomUtils.round(mean[1] - mean[3], 3);
+        double rightLimit = BiomUtils.round(mean[1] + mean[3], 3);
         cell.setElevation(BiomUtils.round(
                 leftLimit + random.nextDouble() * (rightLimit - leftLimit),
                 3)
         );
 
-        leftLimit = BiomUtils.round(mean[2]-mean[4],3);
-        rightLimit = BiomUtils.round(mean[2]+mean[4],3);
+        leftLimit = BiomUtils.round(mean[2] - mean[4], 3);
+        rightLimit = BiomUtils.round(mean[2] + mean[4], 3);
         cell.setHumidity(BiomUtils.round(
                 leftLimit + random.nextDouble() * (rightLimit - leftLimit),
                 3)
         );
 
-        cell.setType(defineBiom(cell.getElevation(),cell.getHumidity()));
+        cell.setType(defineBiom(cell.getElevation(), cell.getHumidity()));
         return true;
     }
 
@@ -193,15 +201,13 @@ public class MapCreator {
         while ((double) landcnt / (width * height) < 0.2 || (double) landcnt / (height * width) > 0.5) {
             initMap();
             landcnt = cntCell(LAND);
-            if (mode == 1) {
-                for (int i = 0; i < 7; ++i) {
-                    removeWater();
-                }
-            }
         }
-        if (mode == 0) {
-            for (int i = 0; i < 7; ++i) {
-                removeWater();
+        for (int i = 0; i < 7; ++i) {
+            removeWater();
+        }
+        for(MapCell[] col:cells){
+            for(MapCell cell:col){
+                if(cell.getType()!=WATER) cell.setOwner(Player.NOBODY);
             }
         }
     }
@@ -214,7 +220,6 @@ public class MapCreator {
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
                 cells[i][j] = new MapCell(i, j);
-                cells[i][j].setOwner(Player.NOBODY);
             }
         }
 
@@ -379,9 +384,6 @@ public class MapCreator {
         if (res == 0) return LAND;
         return WATER;
     }
-
-
-
 
 
     private double exponent(double e) {
