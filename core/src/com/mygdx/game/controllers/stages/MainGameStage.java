@@ -18,6 +18,8 @@ import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
+import java.util.Arrays;
+
 public class MainGameStage extends Stage {
     private Map map;
     private Group cellActors;
@@ -26,6 +28,11 @@ public class MainGameStage extends Stage {
     private Group movableActors = new Group();
     private GameObject gameObjectToPlace = null;
     private Unit unitToMove = null;
+
+    private Group playerFogArea;
+    private Unit unitObjectPlayer = null;
+    private GameObject[] gameObjects = new GameObject[10];
+    private int count = 0;
 
 
     public MainGameStage(Map Map) {
@@ -61,6 +68,8 @@ public class MainGameStage extends Stage {
     public void setGameObjectToPlace(GameObject gameObjectToPlace) {
         clearSelectedArea();
         this.gameObjectToPlace = gameObjectToPlace;
+        this.gameObjects[count]= gameObjectToPlace;
+        count++;
         definePlaceArea();
     }
 
@@ -68,6 +77,12 @@ public class MainGameStage extends Stage {
         clearSelectedArea();
         unitToMove = unit;
         defineMoveArea();
+    }
+
+    public void setFogOfWar(Unit unit) {
+        clearFogOfWarArea();
+        unitObjectPlayer = unit;
+        defineFogOfWarArea();
     }
 
     public Unit getUnitToMove() {
@@ -123,12 +138,52 @@ public class MainGameStage extends Stage {
         movableActors.addActor(selectedArea);
     }
 
+    public void defineFogOfWarArea(){
+        playerFogArea = new Group();
+        int[][] area = new int[map.getWidth()][map.getHeight()];
+        for (int[] row : area) {
+            Arrays.fill(row, -1);
+        }
+
+        for(int i = 0; i < this.count; ++i){
+            if(gameObjects[i].getOwner() == gameObjects[0].getOwner()){
+                area = mergeFogArea(
+                        area,
+                        map.selectCellsToFogArea(gameObjects[i].getPlacement().x, gameObjects[i].getPlacement().y)
+                );
+            }
+
+        }
+
+        map.getMapToRendererTransformator().fogOfWar(area);
+    }
+
+    public int[][] mergeFogArea(int[][] area, int[][] merge){
+        for(int i=0;i<area.length;++i){
+            for(int j=0;j<area[i].length;++j){
+                if(area[i][j] == -1 ){
+                    if(merge[i][j] != -1)
+                        area[i][j] = merge[i][j];
+                }
+            }
+        }
+        return area;
+    }
+
     public void clearSelectedArea() {
         movableActors.removeActor(selectedArea);
         map.getMapToRendererTransformator().clearSelectedArea();
         unitToMove = null;
         gameObjectToPlace = null;
         selectedArea = null;
+    }
+
+    public void clearFogOfWarArea() {
+        movableActors.removeActor(playerFogArea);
+        map.getMapToRendererTransformator().clearSelectedFogArea();
+        unitObjectPlayer = null;
+//        gameObjectToPlace = null;
+        playerFogArea = null;
     }
 
     public void update() {

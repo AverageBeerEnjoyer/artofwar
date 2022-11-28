@@ -15,5 +15,9 @@ public class MoveToCellCL extends ActionMapCL {
         Unit movingUnit = stage.getUnitToMove();
         movingUnit.move(cell.x, cell.y);
         stage.clearSelectedArea();
+
+        stage.clearFogOfWarArea();
+        Unit unit = (Unit) cell.getGameObject();
+        stage.setFogOfWar(unit);
     }
 }

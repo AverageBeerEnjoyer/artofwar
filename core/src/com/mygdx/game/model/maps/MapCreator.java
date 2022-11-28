@@ -59,7 +59,6 @@ public class MapCreator {
         view_Up(0);
 
         createMagic(0);
-        System.out.println(1);
     }
 
     private void createMagic(int countBiomMean){

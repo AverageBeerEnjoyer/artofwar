@@ -9,6 +9,7 @@ import com.mygdx.game.view.utils.Triple;
 
 import java.util.Arrays;
 
+import static com.mygdx.game.model.maps.CellType.MOUNTAIN;
 import static com.mygdx.game.model.maps.CellType.WATER;
 import static com.mygdx.game.model.maps.MapCreator.neighboureven;
 import static com.mygdx.game.model.maps.MapCreator.neighbourodd;
@@ -16,6 +17,8 @@ import static com.mygdx.game.model.maps.MapCreator.neighbourodd;
 public class Map {
     private final MapCreator mapCreator;
     private final MapToRendererTransformator mapToRendererTransformator;
+
+    private int FogArea = 5;
 
     public Map(int width, int height) throws IllegalArgumentException {
         this.mapCreator = new MapCreator(width, height, 0, -1);
@@ -57,6 +60,50 @@ public class Map {
         mapToRendererTransformator.update(x,y);
     }
 
+    public int getFogArea(){
+        return this.FogArea;
+    }
+
+    public int[][] selectCellsToFogArea(int xValue, int yValue){
+        int[][] mirror = new int[mapCreator.getWidth()][mapCreator.getHeight()];
+        for (int[] row : mirror) {
+            Arrays.fill(row, -1);
+        }
+        MapCell startCell;
+        try {
+            startCell = getCell(xValue, yValue);
+        } catch (NullPointerException | ClassCastException e) {
+            return null;
+        }
+        Queue<Triple<Integer, Integer, Integer>> q = new Queue<>();
+        q.addFirst(Triple.triple(xValue, yValue, getFogArea() ));
+        while (q.notEmpty()) {
+            Triple<Integer, Integer, Integer> t = q.removeLast();
+            int x = t.first;
+            int y = t.second;
+            int n = t.third;
+            MapCell cell = getCell(x, y);
+
+            boolean stop = false;
+            if (cell == null) continue;
+            if (mirror[x][y] > 0) stop = true;
+            if (!startCell.getOwner().equals(cell.getOwner())) continue;
+
+            mirror[x][y] = Math.max(mirror[x][y], n);
+
+            if (n <= 0 || stop) continue;
+            int[][] nb;
+            if ((x & 1) == 1) nb = neighbourodd;
+            else nb = neighboureven;
+            for (int[] ints : nb) {
+                int dx = ints[0];
+                int dy = ints[1];
+                q.addFirst(Triple.triple(x + dx, y + dy, n - 1));
+            }
+        }
+        return mirror;
+    }
+
     public int[][] selectCellsToMove(int xValue, int yValue) {
         int[][] mirror = new int[mapCreator.getWidth()][mapCreator.getHeight()];
         for (int[] row : mirror) {
@@ -71,7 +118,7 @@ public class Map {
             return null;
         }
         Queue<Triple<Integer, Integer, Integer>> q = new Queue<>();
-        q.addFirst(Triple.triple(xValue, yValue, unit.getDistance()));
+        q.addFirst(Triple.triple(xValue, yValue, unit.getDistance() ));
         while (q.notEmpty()) {
             Triple<Integer, Integer, Integer> t = q.removeLast();
             int x = t.first;

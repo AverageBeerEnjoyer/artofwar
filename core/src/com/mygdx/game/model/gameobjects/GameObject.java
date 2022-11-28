@@ -22,6 +22,8 @@ public abstract class GameObject {
         this.owner = owner;
     }
 
+    public Player getOwner(){return owner;}
+
     public Map getMap() {
         return map;
     }

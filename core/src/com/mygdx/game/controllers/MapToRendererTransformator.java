@@ -70,8 +70,30 @@ public class MapToRendererTransformator {
         tiledMap.getLayers().add(black);
     }
 
+    public void fogOfWar(int[][] area){
+        TiledMapTileLayer black = new TiledMapTileLayer(map.getWidth(), map.getHeight(), tileWidth, tileHeight);
+        black.setName("fog");
+        for (int i = 0; i < map.getWidth(); ++i) {
+            for (int j = 0; j < map.getHeight(); ++j) {
+                if (area[i][j] != -1) continue;
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(ProjectVariables.blackTile);
+                black.setCell(i, j, cell);
+            }
+        }
+        black.setOpacity(1f);
+        tiledMap.getLayers().add(black);
+    }
+
+
     public void clearSelectedArea() {
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get("selected");
+        if (layer != null) tiledMap.getLayers().remove(layer);
+
+    }
+
+    public void clearSelectedFogArea() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get("fog");
         if (layer != null) tiledMap.getLayers().remove(layer);
 
     }

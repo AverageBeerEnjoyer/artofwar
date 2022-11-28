@@ -11,7 +11,6 @@ public class SelectCellCL extends ActionMapCL {
         super(stage, cell);
     }
 
-
     @Override
     public void clicked(InputEvent event, float x, float y) {
         if (!(cell.getGameObject() instanceof Unit)) {
@@ -20,5 +19,6 @@ public class SelectCellCL extends ActionMapCL {
         }
         Unit unit = (Unit) cell.getGameObject();
         stage.setUnitToMove(unit);
+        stage.setFogOfWar(unit);
     }
 }
