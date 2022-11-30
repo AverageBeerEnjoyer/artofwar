@@ -37,7 +37,7 @@ public class ProjectVariables {
                 knightMoneyPerTurn = -10;
 
         public static final int
-                paladinPower = 3,
+                paladinPower = 5,
                 paladinDefence = 3,
                 paladinDistance = 4,
                 paladinCost = 30,
@@ -69,7 +69,7 @@ public class ProjectVariables {
 
     public static String
             unitAssetsDirectory = "units/",
-            buildingAssetsDirectory=null;
+            buildingAssetsDirectory="buildings/";
 
 
     public static StaticTiledMapTile
@@ -81,10 +81,10 @@ public class ProjectVariables {
 
 
     public static StaticTiledMapTile
-            farmPic=null,
+            farmPic = null,
             towerPic=null,
             superTowerPic=null,
-            capitalPic=null;
+            capitalPic=new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(buildingAssetsDirectory + "castle10.png"))));
 
     public static int
             tileWidth = 64,

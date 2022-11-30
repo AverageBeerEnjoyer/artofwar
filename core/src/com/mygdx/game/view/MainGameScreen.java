@@ -9,7 +9,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.controllers.MapToRendererTransformator;
 import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.players.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainGameScreen implements Screen {
     private final Start start;
@@ -20,7 +25,14 @@ public class MainGameScreen implements Screen {
 
     public MainGameScreen(int width, int height, Start start) {
         map = new Map(width, height);
-        stage = new MainGameStage(map);
+
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("player 1", map));
+        players.add(new Player("player 2", map));
+        players.add(new Player("player 3", map));
+        GamingProcess gamingProcess = new GamingProcess(players, map);
+        map.setPlayerList(players);
+        stage = new MainGameStage(map, gamingProcess);
         mapToRendererTransformator = map.getMapToRendererTransformator();
         this.start = start;
         initialize();

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.mygdx.game.controllers.actors.ActorsFactory;
 import com.mygdx.game.controllers.actors.TiledMapActor;
+import com.mygdx.game.controllers.listeners.controls_cl.NextTurnCL;
 import com.mygdx.game.controllers.listeners.creation_cl.*;
 import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.gameobjects.GameObject;
@@ -30,16 +31,13 @@ public class MainGameStage extends Stage {
     private ActorsFactory factory;
 
 
-    public MainGameStage(Map Map) {
+    public MainGameStage(Map Map, GamingProcess gamingProcess) {
         this.map = Map;
         factory = new ActorsFactory(this);
-        loadActors();
-
-        List<Player> players = new ArrayList<>();
-        players.add(new Player("player 1", map));
-        players.add(new Player("player 2", map));
-        players.add(new Player("player 3", map));
-        gamingProcess = new GamingProcess(players, map);
+        this.gamingProcess = gamingProcess;
+        this.gamingProcess.setStage(this);
+        addActor(movableActors);
+        placeCapitalArea();
     }
 
     public MainGameStage() {
@@ -52,11 +50,9 @@ public class MainGameStage extends Stage {
         return this.map;
     }
 
-    private void loadActors() {
+    public void loadActors() {
         createActorsLayer();
         createControls();
-        placeCapitalArea();
-        addActor(movableActors);
         movableActors.toBack();
     }
 
@@ -91,7 +87,6 @@ public class MainGameStage extends Stage {
 
 
     public void placeCapitalArea(){
-        movableActors.getChild(0).setVisible(false);
         selectArea(factory::createPlaceCapitalActor, map.getPlayerTerritory(Player.NOBODY));
     }
     private void createActorsLayer() {
@@ -110,7 +105,7 @@ public class MainGameStage extends Stage {
         selectedArea = new Group();
         for (int i = 0; i < map.getWidth(); ++i) {
             for (int j = 0; j < map.getHeight(); ++j) {
-                if (area[i][j] == 0) {
+                if (area[i][j] != -1) {
                     TiledMapActor actor = actorCreator.apply(i, j);
                     selectedArea.addActor(actor);
                 }
@@ -178,6 +173,12 @@ public class MainGameStage extends Stage {
         supertower.setZIndex(10);
         supertower.debug();
 
+        Button nextTurn = new TextButton("Next turn", style);
+        nextTurn.addListener(new NextTurnCL(this));
+        nextTurn.moveBy(0,240);
+        nextTurn.setZIndex(10);
+        nextTurn.debug();
+
         controls.addActor(peasant);
         controls.addActor(militia);
         controls.addActor(knight);
@@ -185,6 +186,7 @@ public class MainGameStage extends Stage {
         controls.addActor(farm);
         controls.addActor(tower);
         controls.addActor(supertower);
+        controls.addActor(nextTurn);
 
         controls.setZIndex(10);
         addActor(controls);

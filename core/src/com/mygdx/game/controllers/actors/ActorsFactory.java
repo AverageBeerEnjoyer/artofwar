@@ -24,11 +24,13 @@ public class ActorsFactory {
 
     public TiledMapActor createMoveActor(int i, int j) {
         MapCell cell = stage.getMap().getCell(i, j);
-        return new TiledMapActor(
+        TiledMapActor actor = new TiledMapActor(
                 i, j,
                 new MoveToCellCL(stage, cell),
                 3
         );
+        actor.debug();
+        return actor;
     }
 
     public TiledMapActor createPlaceActor(int i, int j) {

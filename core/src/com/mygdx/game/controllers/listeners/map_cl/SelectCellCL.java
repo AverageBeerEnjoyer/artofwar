@@ -14,11 +14,13 @@ public class SelectCellCL extends ActionMapCL {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        if (!(cell.getGameObject() instanceof Unit)) {
-            stage.clearSelectedArea();
+        System.out.println(cell.getDefence());
+
+
+        if (cell.getOwner() == stage.getGamingProcess().getCurrentPlayer() && cell.getGameObject() instanceof Unit unit) {
+            stage.setUnitToMove(unit);
             return;
         }
-        Unit unit = (Unit) cell.getGameObject();
-        stage.setUnitToMove(unit);
+        stage.clearSelectedArea();
     }
 }

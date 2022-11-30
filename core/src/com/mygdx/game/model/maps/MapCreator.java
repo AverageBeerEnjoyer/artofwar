@@ -26,9 +26,13 @@ public class MapCreator {
      * pairs{row dif,column dif}
      * </p>
      */
-    public static final int[][]
+    private static final int[][]
             neighbourodd = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}},
             neighboureven = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, 1}, {1, 1}};
+    public static int[][] getNeighbours(int x){
+        if((x&1)==0) return neighboureven;
+        return neighbourodd;
+    }
 
     private final Random random;
     private final MapCell[][] cells;
@@ -108,9 +112,7 @@ public class MapCreator {
             return addMean(mean, x, y);
         }
 
-        int[][] nb;
-        if ((x & 1) == 1) nb = neighbourodd;
-        else nb = neighboureven;
+        int[][] nb = getNeighbours(x);
 
         for (int i = 0; i < 6; ++i) {
             double[] tmp_mean = isNeighbour(x + nb[i][0], y + nb[i][1], area - 1);
@@ -131,9 +133,7 @@ public class MapCreator {
         else if (safeAccess(x, y).getType() == MOUNTAIN) return false;
         if (area <= 0) return true;
 
-        int[][] nb;
-        if ((x & 1) == 1) nb = neighbourodd;
-        else nb = neighboureven;
+        int[][] nb = getNeighbours(x);
 
         for (int i = 0; i < 6; ++i) {
             if (isNeighbourChange(x + nb[i][0], y + nb[i][1], area - 1, mean)) {
@@ -239,9 +239,8 @@ public class MapCreator {
             } else cell.setType(randomLandOrWater());
 
             if (cell.getType() == WATER) continue;
-            int[][] nb;
-            if ((x & 1) == 1) nb = neighbourodd;
-            else nb = neighboureven;
+            int[][] nb = getNeighbours(x);
+
             for (int i = 0; i < nb.length; ++i) {
                 int dx = nb[i][0];
                 int dy = nb[i][1];
@@ -300,9 +299,7 @@ public class MapCreator {
 
     private int cntNeighbours(int x, int y, CellType cellType) {
         int res = 0;
-        int[][] nb;
-        if ((x & 1) == 1) nb = neighbourodd;
-        else nb = neighboureven;
+        int[][] nb = getNeighbours(x);
         for (int i = 0; i < 6; ++i) {
             MapCell cell = safeAccess(x + nb[i][0], y + nb[i][1]);
             if (cell != null && cell.getType() == cellType) ++res;

@@ -20,6 +20,7 @@ public class PlaceCapitalFirstRoundCL extends ActionMapCL{
         );
         stage.getGamingProcess().getCurrentPlayer().createCapitalArea();
         if(!stage.getGamingProcess().isLast()) stage.placeCapitalArea();
+        else stage.loadActors();
         stage.getGamingProcess().nextTurn();
     }
 }

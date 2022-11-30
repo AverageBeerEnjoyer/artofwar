@@ -20,9 +20,11 @@ public class Player {
     private final List<Building> buildings;
     private final List<Unit> units;
 
+    boolean done = false;
     private Capital capital;
     private int farmCounter;
     private int gold;
+    private int territory = 0;
 
     public Player(String name, Map map) {
         this.map = map;
@@ -84,9 +86,7 @@ public class Player {
     public void createCapitalArea() {
         int x = capital.getPlacement().x;
         int y = capital.getPlacement().y;
-        int[][] nb;
-        if ((x & 1) == 0) nb = MapCreator.neighboureven;
-        else nb = MapCreator.neighbourodd;
+        int[][] nb = MapCreator.getNeighbours(x);
         for (int i = 0; i < 6; ++i) {
             int dx = nb[i][0];
             int dy = nb[i][1];
@@ -121,5 +121,30 @@ public class Player {
         if (gold < 0) {
             armyWipe();
         }
+    }
+
+    public boolean isDone(){
+        return done;
+    }
+
+    public void addTerritory(){
+        ++territory;
+    }
+
+    public void removeTerritory(){
+        --territory;
+        if(territory == 0) done = true;
+    }
+
+    public Capital getCapital() {
+        return capital;
+    }
+
+    public List<Building> getBuildings() {
+        return buildings;
+    }
+
+    public List<Unit> getUnits() {
+        return units;
     }
 }

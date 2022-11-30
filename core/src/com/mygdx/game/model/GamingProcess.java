@@ -1,5 +1,6 @@
 package com.mygdx.game.model;
 
+import com.mygdx.game.controllers.stages.MainGameStage;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
 
@@ -8,20 +9,22 @@ import java.util.List;
 public class GamingProcess {
     private int round;
     private int currentPlayer;
-    private final List<Player> playerList;
+
     private int playersNumber;
     private final Map map;
+    private MainGameStage stage;
 
     public GamingProcess(List<Player> playerList, Map map) {
-        this.playerList = playerList;
         this.playersNumber = playerList.size();
         this.map = map;
         this.currentPlayer = 0;
         this.round = 0;
     }
-
+    public void setStage(MainGameStage stage){
+        this.stage = stage;
+    }
     public Player getCurrentPlayer() {
-        return playerList.get(currentPlayer);
+        return map.getPlayerList().get(currentPlayer);
     }
 
     private void nextPlayer(){
@@ -37,8 +40,8 @@ public class GamingProcess {
     }
 
     public void removeCurrentPlayer() {
-        playerList.remove(getCurrentPlayer());
-        playersNumber = playerList.size();
+        map.getPlayerList().remove(getCurrentPlayer());
+        playersNumber = map.getPlayerList().size();
         currentPlayer = (--currentPlayer) % playersNumber;
     }
     public boolean isFirst(){
