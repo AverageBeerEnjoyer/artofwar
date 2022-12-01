@@ -3,6 +3,8 @@ package com.mygdx.game.view;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.mygdx.game.controllers.stages.MenuStage;
 import com.mygdx.game.db.DBController;
 
 import java.sql.SQLException;
@@ -12,6 +14,8 @@ public class Start extends Game {
     public SpriteBatch batch;
     public BitmapFont font;
     public MainGameScreen mainGameScreen;
+
+    public TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
 
     public Start() {
         super();
@@ -27,10 +31,12 @@ public class Start extends Game {
 
     public void create() {
         batch = new SpriteBatch();
-        font = new BitmapFont(); // use libGDX's default Arial font
+        font = new BitmapFont();
+        style.font =font;// use libGDX's default Arial font
         // this.setScreen(new MenuScreen(this));
         mainGameScreen = new MainGameScreen(100,100,this);
-        this.setScreen(mainGameScreen);
+        MenuStage menu = new MenuStage(this);
+        this.setScreen(menu);
     }
 
     public void render() {

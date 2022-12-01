@@ -30,9 +30,9 @@ public class MainGameScreen implements Screen {
         players.add(new Player("player 1", map));
         players.add(new Player("player 2", map));
         players.add(new Player("player 3", map));
-        GamingProcess gamingProcess = new GamingProcess(players, map);
         map.setPlayerList(players);
-        stage = new MainGameStage(map, gamingProcess);
+        GamingProcess gamingProcess = new GamingProcess( map);
+        stage = new MainGameStage(map, gamingProcess, start);
         mapToRendererTransformator = map.getMapToRendererTransformator();
         this.start = start;
         initialize();

@@ -26,8 +26,6 @@ public class MenuScreen implements Screen {
         stage.batch.setProjectionMatrix(camera.combined);
 
         stage.batch.begin();
-        stage.font.draw(stage.batch, "Welcome to Drop!!! ", 100, 150);
-        stage.font.draw(stage.batch, "Tap anywhere to begin!", 100, 100);
         a.getObjects().draw();
         stage.batch.end();
 

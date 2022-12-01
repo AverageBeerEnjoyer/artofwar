@@ -14,8 +14,8 @@ public class GamingProcess {
     private final Map map;
     private MainGameStage stage;
 
-    public GamingProcess(List<Player> playerList, Map map) {
-        this.playersNumber = playerList.size();
+    public GamingProcess(Map map) {
+        this.playersNumber = map.getPlayerList().size();
         this.map = map;
         this.currentPlayer = 0;
         this.round = 0;
@@ -30,6 +30,9 @@ public class GamingProcess {
     private void nextPlayer(){
         if(isLast()) ++round;
         currentPlayer = (++currentPlayer) % playersNumber;
+        while(getCurrentPlayer().isDone()){
+            removeCurrentPlayer();
+        }
     }
 
     public void nextTurn() {

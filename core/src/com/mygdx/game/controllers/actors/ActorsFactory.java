@@ -1,18 +1,16 @@
 package com.mygdx.game.controllers.actors;
 
-import com.mygdx.game.controllers.listeners.map_cl.MoveToCellCL;
-import com.mygdx.game.controllers.listeners.map_cl.PlaceCapitalFirstRoundCL;
-import com.mygdx.game.controllers.listeners.map_cl.PlaceToCellCL;
-import com.mygdx.game.controllers.listeners.map_cl.SelectCellCL;
+import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel;
+import com.kotcrab.vis.ui.widget.spinner.Spinner;
+import com.mygdx.game.controllers.listeners.game_cl.MoveToCellCL;
+import com.mygdx.game.controllers.listeners.game_cl.PlaceCapitalFirstRoundCL;
+import com.mygdx.game.controllers.listeners.game_cl.PlaceToCellCL;
+import com.mygdx.game.controllers.listeners.game_cl.SelectCellCL;
 import com.mygdx.game.controllers.stages.MainGameStage;
 import com.mygdx.game.model.maps.MapCell;
 
-public class ActorsFactory {
-    private final MainGameStage stage;
+public record ActorsFactory(MainGameStage stage) {
 
-    public ActorsFactory(MainGameStage stage) {
-        this.stage = stage;
-    }
     public TiledMapActor createSelectActor(int i, int j) {
         MapCell cell = stage.getMap().getCell(i, j);
         return new TiledMapActor(
@@ -53,5 +51,10 @@ public class ActorsFactory {
         );
         actor.debug();
         return actor;
+    }
+
+    private Spinner createIntSpinner(int lowerBound, int upperBound, String name) {
+        IntSpinnerModel model = new IntSpinnerModel(lowerBound, lowerBound, upperBound);
+        return new Spinner(name, model);
     }
 }

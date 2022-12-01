@@ -68,6 +68,8 @@ public class MapCell {
     }
 
     public void setOwner(Player owner) {
+        if(this.owner!=null) this.owner.removeTerritory();
         this.owner = owner;
+        this.owner.addTerritory();
     }
 }

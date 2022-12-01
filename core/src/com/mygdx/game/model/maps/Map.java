@@ -33,10 +33,8 @@ public class Map {
     }
 
     public void killGameObject(GameObject gameObject) {
-        gameObject.getPlacement().setGameObject(null);
         gameObject.owner.removeGameObject(gameObject);
-        recountDefenceCoverage();
-        mapToRendererTransformator.update(gameObject.getPlacement().x, gameObject.getPlacement().y);
+        removeGameObject(gameObject);
     }
 
     public void removeGameObject(GameObject gameObject) {

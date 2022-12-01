@@ -38,6 +38,6 @@ public class Farm extends Building{
 
     @Override
     public int getCost() {
-        return defaultFarmCost+owner.getFarmCounter()*additionalFarmCost;
+        return defaultFarmCost+owner.getFarmsNumber()*additionalFarmCost;
     }
 }

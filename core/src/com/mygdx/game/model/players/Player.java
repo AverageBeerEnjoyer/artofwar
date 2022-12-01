@@ -1,5 +1,6 @@
 package com.mygdx.game.model.players;
 
+import com.mygdx.game.ProjectVariables;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.buildings.Building;
 import com.mygdx.game.model.gameobjects.buildings.Capital;
@@ -19,11 +20,11 @@ public class Player {
     public final String name;
     private final List<Building> buildings;
     private final List<Unit> units;
+    private final List<Farm> farms;
 
     boolean done = false;
     private Capital capital;
-    private int farmCounter;
-    private int gold;
+    private int gold = 0;
     private int territory = 0;
 
     public Player(String name, Map map) {
@@ -31,45 +32,53 @@ public class Player {
         this.name = name;
         buildings = new ArrayList<>();
         units = new ArrayList<>();
+        farms = new ArrayList<>();
     }
 
-    public int getFarmCounter() {
-        return farmCounter;
+    public int getFarmsNumber() {
+        return farms.size();
     }
 
     public void removeGameObject(GameObject gameObject) {
         if (gameObject instanceof Unit) {
             removeUnit((Unit) gameObject);
-            return;
         }
         if (gameObject instanceof Building) {
-            removeBuilding((Building) gameObject);
-            return;
+            if(gameObject instanceof Capital){
+                this.capital = null;
+            }
+            if(gameObject instanceof Farm){
+                removeFarm((Farm) gameObject);
+            } else {
+                removeBuilding((Building) gameObject);
+            }
         }
-        capital = null;
     }
 
     public void addGameObject(GameObject gameObject) {
         gold -= gameObject.getCost();
         if (gameObject instanceof Unit) {
             addUnit((Unit) gameObject);
-            return;
         }
         if (gameObject instanceof Building) {
-            if(gameObject instanceof Capital){
+            if (gameObject instanceof Capital) {
                 capital = (Capital) gameObject;
-                return;
             }
-            addBuilding((Building) gameObject);
             if (gameObject instanceof Farm) {
-                ++farmCounter;
+                addFarm((Farm) gameObject);
+            } else {
+                addBuilding((Building) gameObject);
             }
-            return;
         }
     }
 
+    private void addFarm(Farm farm){
+        if(farms.contains(farm)) return;
+        farms.add(farm);
+    }
+
     private void addBuilding(Building building) {
-        if (buildings.contains(building)) return;
+        if(buildings.contains(building)) return;
         buildings.add(building);
     }
 
@@ -78,8 +87,11 @@ public class Player {
         units.add(unit);
     }
 
+    private void removeFarm(Farm farm){
+        farms.remove(farm);
+    }
+
     private void removeBuilding(Building building) {
-        if (building instanceof Farm) --farmCounter;
         buildings.remove(building);
     }
 
@@ -111,29 +123,34 @@ public class Player {
     }
 
     public void countIncome() {
+        if(capital!=null){
+            for(Farm farm:farms){
+                gold+=farm.getMoneyPerTurn();
+            }
+            gold+=capital.getMoneyPerTurn();
+        }
         for (Building building : buildings) {
             gold += building.getMoneyPerTurn();
         }
         for (Unit unit : units) {
             gold += unit.getMoneyPerTurn();
         }
-        gold += capital.getMoneyPerTurn();
         if (gold < 0) {
             armyWipe();
         }
     }
 
-    public boolean isDone(){
+    public boolean isDone() {
         return done;
     }
 
-    public void addTerritory(){
+    public void addTerritory() {
         ++territory;
     }
 
-    public void removeTerritory(){
+    public void removeTerritory() {
         --territory;
-        if(territory == 0) done = true;
+        if (territory == 0) done = true;
     }
 
     public Capital getCapital() {
@@ -146,5 +163,9 @@ public class Player {
 
     public List<Unit> getUnits() {
         return units;
+    }
+
+    public int getGold() {
+        return gold;
     }
 }
