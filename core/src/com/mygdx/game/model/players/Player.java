@@ -124,10 +124,9 @@ public class Player {
 
     public void countIncome() {
         if(capital!=null){
-            for(Farm farm:farms){
-                gold+=farm.getMoneyPerTurn();
-            }
+            gold+=getFarmsNumber()*ProjectVariables.BuildingSpec.farmMoneyPerTurn;
             gold+=capital.getMoneyPerTurn();
+            gold+=territory;
         }
         for (Building building : buildings) {
             gold += building.getMoneyPerTurn();
@@ -137,6 +136,7 @@ public class Player {
         }
         if (gold < 0) {
             armyWipe();
+            gold = 0;
         }
     }
 

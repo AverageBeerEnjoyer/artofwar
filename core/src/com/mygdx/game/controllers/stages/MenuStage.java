@@ -4,93 +4,119 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
-import com.mygdx.game.controllers.actors.ActorsFactory;
-import com.mygdx.game.controllers.listeners.menu_cl.BackCL;
-import com.mygdx.game.controllers.listeners.menu_cl.ExitCL;
-import com.mygdx.game.controllers.listeners.menu_cl.PreGameCL;
-import com.mygdx.game.view.Start;
+import com.mygdx.game.controllers.listeners.menu_cl.*;
+import com.mygdx.game.view.ArtofWar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuStage extends Stage implements Screen {
-    private final Start start;
+    private final ArtofWar artofWar;
     private Group main;
     private Group preGame;
+    private Group enteringNames;
     private Group settings;
     private Texture backgroundImage = new Texture(Gdx.files.internal("menuBackground.jpg"));
     private Spinner
             playersNumber,
             mapWidth,
             mapHeight;
-    public MenuStage(Start start){
-        this.start = start;
+
+    public MenuStage(ArtofWar artofWar) {
+        this.artofWar = artofWar;
         VisUI.load();
         ((OrthographicCamera) getCamera()).setToOrtho(false, 1080, 720);
         createMainGroup();
         createPreGame();
         toMain();
     }
-    public void createMainGroup(){
+
+    public void createMainGroup() {
         main = new Group();
-        BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
+
+        Button play = artofWar.factory.createTextButton(50, 100, "Play", new PreGameCL(this));
+
+//        Button settings = new TextButton("Settings", start.style);
+//        settings.moveBy(50,200);
 
 
-        Button play = new TextButton("Play", start.style);
-        play.addListener(new PreGameCL(this));
-        play.moveBy(0,100);
-        play.debug();
+        Button exit = artofWar.factory.createTextButton(50, 300, "Exit", new ExitCL());
 
-        Button settings = new TextButton("Settings", start.style);
-        settings.moveBy(0,200);
-
-        Button exit = new TextButton("Exit", start.style);
-        exit.moveBy(0,300);
-        exit.addListener(new ExitCL());
-        exit.debug();
-
-        main.addActor(settings);
+//        main.addActor(settings);
         main.addActor(play);
         main.addActor(exit);
-        main.setPosition(0,0);
         main.debug();
     }
-    public void toMain(){
+
+    public void toMain() {
         setRoot(main);
     }
 
-    private void createPreGame(){
+    public void createPlayerTable() {
+        preGame.removeActor(preGame.findActor("names table"));
+        Table table = new Table();
+        table.debug();
+        table.setName("names table");
+        table.moveBy(500, 100);
+        int n = Integer.parseInt(playersNumber.getTextField().getText());
+        for (int i = 0; i < n; ++i) {
+            table.add(artofWar.factory.createTextField("player" + (i + 1)));
+            table.row();
+        }
+
+        preGame.addActor(table);
+    }
+
+    private void createPreGame() {
         preGame = new Group();
-        playersNumber = createIntSpinner(2,10,"Players");
-        playersNumber.moveBy(150,100);
-        mapWidth = createIntSpinner(10,125,"Width of map");
-        mapWidth.moveBy(150,200);
-        mapHeight = createIntSpinner(10,125,"Height of map");
-        mapHeight.moveBy(150,300);
+
+        Button startGame = artofWar.factory.createTextButton(150, 50, "Start game", new StartGameCL(this));
+
+        playersNumber = artofWar.factory.createIntSpinner(2, 10, "Players");
+        playersNumber.addListener(new FillCL(this));
+        playersNumber.moveBy(150, 150);
+
+        mapWidth = artofWar.factory.createIntSpinner(10, 125, "Width of map");
+        mapWidth.moveBy(150, 250);
+
+        mapHeight = artofWar.factory.createIntSpinner(10, 125, "Height of map");
+        mapHeight.moveBy(150, 350);
+
         preGame.addActor(playersNumber);
         preGame.addActor(mapWidth);
         preGame.addActor(mapHeight);
-        Button back = new TextButton("Back", start.style);
-        back.addListener(new BackCL(this));
-        back.moveBy(150,0);
+        preGame.addActor(startGame);
+
+        createPlayerTable();
+
+        Button back = artofWar.factory.createTextButton(150, 0, "Back to menu", new BackCL(this));
         preGame.addActor(back);
     }
-    public void toPreGame(){
+
+    public void toPreGame() {
         setRoot(preGame);
     }
-    private Spinner createIntSpinner(int lowerBound, int upperBound, String name) {
-        IntSpinnerModel model = new IntSpinnerModel(lowerBound, lowerBound, upperBound);
-        return new Spinner(name, model);
-    }
-    public void startGame(){
 
+    public void startGame() {
+        List<String> players = new ArrayList<>();
+        int n = Integer.parseInt(playersNumber.getTextField().getText());
+        Table table = preGame.findActor("names table");
+        for (int i = 0; i < n; ++i) {
+            String player = ((TextField) table.getChildren().get(i)).getText();
+            if (player.isEmpty()) player = "player" + (i + 1);
+            players.add(player);
+        }
+        int width = Integer.parseInt(mapWidth.getTextField().getText());
+        int height = Integer.parseInt(mapHeight.getTextField().getText());
+        artofWar.newGame(width, height, players);
     }
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(this);
@@ -98,10 +124,10 @@ public class MenuStage extends Stage implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0,0,0.2f,1);
+        ScreenUtils.clear(0, 0, 0.2f, 1);
         getCamera().update();
         getBatch().begin();
-        getBatch().draw(backgroundImage,0,0);
+        getBatch().draw(backgroundImage, 0, 0);
         getBatch().end();
         act();
         draw();

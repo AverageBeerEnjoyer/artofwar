@@ -3,16 +3,16 @@ package com.mygdx.game.controllers.stages;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.controllers.MapToRendererTransformator;
-import com.mygdx.game.controllers.actors.ActorsFactory;
 import com.mygdx.game.controllers.actors.TiledMapActor;
-import com.mygdx.game.controllers.listeners.game_cl.NextTurnCL;
-import com.mygdx.game.controllers.listeners.game_cl.GameObjectCreationCL;
+import com.mygdx.game.controllers.listeners.game_cl.*;
 import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.buildings.Farm;
@@ -21,13 +21,14 @@ import com.mygdx.game.model.gameobjects.buildings.Tower;
 import com.mygdx.game.model.gameobjects.units.*;
 import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
-import com.mygdx.game.view.Start;
+import com.mygdx.game.view.ArtofWar;
 
 import java.util.function.BiFunction;
 
 public class MainGameStage extends Stage implements Screen {
-    private final Start start;
+    private final ArtofWar artofWar;
     private final OrthographicCamera camera = new OrthographicCamera();
     private MapToRendererTransformator mapToRendererTransformator;
     private Map map;
@@ -36,32 +37,31 @@ public class MainGameStage extends Stage implements Screen {
     private GameObject gameObjectToPlace = null;
     private Unit unitToMove = null;
     private GamingProcess gamingProcess;
-    private ActorsFactory factory;
 
 
-    public MainGameStage(Map map, GamingProcess gamingProcess, Start start) {
-        this.start = start;
+    public MainGameStage(Map map, GamingProcess gamingProcess, ArtofWar artofWar) {
+        this.artofWar = artofWar;
         this.map = map;
         mapToRendererTransformator = map.getMapToRendererTransformator();
-        factory = new ActorsFactory(this);
         this.gamingProcess = gamingProcess;
         this.gamingProcess.setStage(this);
+        artofWar.factory.setGameStage(this);
         addActor(movableActors);
         placeCapitalArea();
-//        camera.setToOrtho(false, 1080, 720);
-//        addListener(
-//                new DragListener() {
-//                    @Override
-//                    public void drag(InputEvent event, float x, float y, int pointer) {
-//                        camera.position.set(camera.position.x - getDeltaX(), camera.position.y - getDeltaY(), 0);
-//                        movableActors.moveBy(getDeltaX(), getDeltaY());
-//                    }
-//                }
-////        );
+        camera.setToOrtho(false, 1080, 720);
+        addListener(
+                new DragListener() {
+                    @Override
+                    public void drag(InputEvent event, float x, float y, int pointer) {
+                        camera.position.set(camera.position.x - getDeltaX(), camera.position.y - getDeltaY(), 0);
+                        movableActors.moveBy(getDeltaX(), getDeltaY());
+                    }
+                }
+        );
     }
 
-    public MainGameStage(Start start) {
-        this.start = start;
+    public MainGameStage(ArtofWar artofWar) {
+        this.artofWar = artofWar;
         this.map = new Map(10, 10, 0, 0);
         loadActors();
     }
@@ -88,13 +88,13 @@ public class MainGameStage extends Stage implements Screen {
     public void setGameObjectToPlace(GameObject gameObjectToPlace) {
         clearSelectedArea();
         this.gameObjectToPlace = gameObjectToPlace;
-        selectArea(factory::createPlaceActor, map.getPlayerTerritory(gamingProcess.getCurrentPlayer()));
+        selectArea(PlaceToCellCL::new, map.getPlayerTerritory(gamingProcess.getCurrentPlayer()));
     }
 
     public void setUnitToMove(Unit unit) {
         clearSelectedArea();
         unitToMove = unit;
-        selectArea(factory::createMoveActor, map.selectCellsToMove(unitToMove.getPlacement().x, unitToMove.getPlacement().y));
+        selectArea(MoveToCellCL::new, map.selectCellsToMove(unitToMove.getPlacement().x, unitToMove.getPlacement().y));
     }
 
 
@@ -108,7 +108,7 @@ public class MainGameStage extends Stage implements Screen {
 
 
     public void placeCapitalArea() {
-        selectArea(factory::createPlaceCapitalActor, map.getPlayerTerritory(Player.NOBODY));
+        selectArea(PlaceCapitalFirstRoundCL::new, map.getPlayerTerritory(Player.NOBODY));
     }
 
     private void createActorsLayer() {
@@ -117,19 +117,19 @@ public class MainGameStage extends Stage implements Screen {
         for (int i = 0; i < map.getWidth(); ++i) {
             for (int j = 0; j < map.getHeight(); ++j) {
                 if (map.getMapCreator().getCells()[i][j].getType() == CellType.WATER) continue;
-                TiledMapActor actor = factory.createSelectActor(i, j);
+                TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i,j), new SelectCellCL(this, map.getCell(i,j)),2);
                 cellActors.addActor(actor);
             }
         }
         movableActors.addActor(cellActors);
     }
 
-    public void selectArea(BiFunction<Integer, Integer, TiledMapActor> actorCreator, int[][] area) {
+    public void selectArea(BiFunction<MainGameStage,MapCell, ClickListener> listenerCreator, int[][] area) {
         selectedArea = new Group();
         for (int i = 0; i < map.getWidth(); ++i) {
             for (int j = 0; j < map.getHeight(); ++j) {
                 if (area[i][j] != -1) {
-                    TiledMapActor actor = actorCreator.apply(i, j);
+                    TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i,j), listenerCreator.apply(this,map.getCell(i,j) ), 3);
                     selectedArea.addActor(actor);
                 }
             }
@@ -147,60 +147,30 @@ public class MainGameStage extends Stage implements Screen {
         selectedArea = null;
     }
 
+    public void endGame() {
+        artofWar.setScreen(artofWar.menuStage);
+        artofWar.menuStage.toMain();
+        dispose();
+    }
+
     private void createControls() {
         Group controls = new Group();
 
-        BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.font = myFont;
+        Button peasant = artofWar.factory.createTextButton(0, 30, "Peasant", new GameObjectCreationCL(this, Peasant.class));
 
-        Button peasant = new TextButton("Peasant", style);
-        peasant.addListener(new GameObjectCreationCL(this, Peasant.class));
-        peasant.moveBy(0, 30);
-        peasant.setZIndex(10);
-        peasant.debug();
+        Button militia = artofWar.factory.createTextButton(0, 60, "Militia", new GameObjectCreationCL(this, Militia.class));
 
-        Button militia = new TextButton("Militia", style);
-        militia.addListener(new GameObjectCreationCL(this, Militia.class));
-        militia.moveBy(0, 60);
-        militia.setZIndex(10);
-        militia.debug();
+        Button knight = artofWar.factory.createTextButton(0, 90, "Knight", new GameObjectCreationCL(this, Knight.class));
 
-        Button knight = new TextButton("Knight", style);
-        knight.addListener(new GameObjectCreationCL(this, Knight.class));
-        knight.moveBy(0, 90);
-        knight.setZIndex(10);
-        knight.debug();
+        Button paladin = artofWar.factory.createTextButton(0, 120, "Paladin", new GameObjectCreationCL(this, Paladin.class));
 
-        Button paladin = new TextButton("Paladin", style);
-        paladin.addListener(new GameObjectCreationCL(this, Paladin.class));
-        paladin.moveBy(0, 120);
-        paladin.setZIndex(10);
-        paladin.debug();
+        Button farm = artofWar.factory.createTextButton(0, 150, "Farm", new GameObjectCreationCL(this, Farm.class));
 
-        Button farm = new TextButton("Farm", style);
-        farm.addListener(new GameObjectCreationCL(this, Farm.class));
-        farm.moveBy(0, 150);
-        farm.setZIndex(10);
-        farm.debug();
+        Button tower = artofWar.factory.createTextButton(0, 180, "Tower", new GameObjectCreationCL(this, Tower.class));
 
-        Button tower = new TextButton("Tower", style);
-        tower.addListener(new GameObjectCreationCL(this, Tower.class));
-        tower.moveBy(0, 180);
-        tower.setZIndex(10);
-        tower.debug();
+        Button supertower = artofWar.factory.createTextButton(0, 210, "Supertower", new GameObjectCreationCL(this, SuperTower.class));
 
-        Button supertower = new TextButton("Supertower", style);
-        supertower.addListener(new GameObjectCreationCL(this, SuperTower.class));
-        supertower.moveBy(0, 210);
-        supertower.setZIndex(10);
-        supertower.debug();
-
-        Button nextTurn = new TextButton("Next turn", style);
-        nextTurn.addListener(new NextTurnCL(this));
-        nextTurn.moveBy(0, 240);
-        nextTurn.setZIndex(10);
-        nextTurn.debug();
+        Button nextTurn = artofWar.factory.createTextButton(0,240,"Next turn",new NextTurnCL(this));
 
         controls.addActor(peasant);
         controls.addActor(militia);
@@ -222,17 +192,17 @@ public class MainGameStage extends Stage implements Screen {
 
     @Override
     public void show() {
-//        Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void render(float delta) {
-//        ScreenUtils.clear(0, 0, 0.2f, 1);
-//        camera.update();
-//        mapToRendererTransformator.getRenderer().setView(camera);
-//        mapToRendererTransformator.getRenderer().render();
-//        act();
-//        draw();
+        ScreenUtils.clear(0, 0, 0.2f, 1);
+        camera.update();
+        mapToRendererTransformator.getRenderer().setView(camera);
+        mapToRendererTransformator.getRenderer().render();
+        act();
+        draw();
     }
 
     @Override
@@ -253,5 +223,11 @@ public class MainGameStage extends Stage implements Screen {
     @Override
     public void hide() {
 
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        mapToRendererTransformator.getRenderer().dispose();
     }
 }

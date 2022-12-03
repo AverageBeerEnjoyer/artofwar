@@ -1,5 +1,12 @@
 package com.mygdx.game.controllers.actors;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
 import com.mygdx.game.controllers.listeners.game_cl.MoveToCellCL;
@@ -7,54 +14,51 @@ import com.mygdx.game.controllers.listeners.game_cl.PlaceCapitalFirstRoundCL;
 import com.mygdx.game.controllers.listeners.game_cl.PlaceToCellCL;
 import com.mygdx.game.controllers.listeners.game_cl.SelectCellCL;
 import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.controllers.stages.MenuStage;
 import com.mygdx.game.model.maps.MapCell;
+import org.w3c.dom.Text;
 
-public record ActorsFactory(MainGameStage stage) {
+public class ActorsFactory {
+    private MainGameStage gameStage;
+    private MenuStage menuStage;
+    public TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+    public TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
 
-    public TiledMapActor createSelectActor(int i, int j) {
-        MapCell cell = stage.getMap().getCell(i, j);
-        return new TiledMapActor(
-                i, j,
-                new SelectCellCL(stage, cell),
-                2
-        );
+    public ActorsFactory() {
+        BitmapFont font = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
+        textButtonStyle.font = font;
+        textFieldStyle.font = font;
+        textFieldStyle.fontColor = Color.WHITE;
     }
 
-    public TiledMapActor createMoveActor(int i, int j) {
-        MapCell cell = stage.getMap().getCell(i, j);
-        TiledMapActor actor = new TiledMapActor(
-                i, j,
-                new MoveToCellCL(stage, cell),
-                3
-        );
-        actor.debug();
+    public void setGameStage(MainGameStage gameStage) {
+        this.gameStage = gameStage;
+    }
+
+    public void setMenuStage(MenuStage menuStage) {
+        this.menuStage = menuStage;
+    }
+
+    public TiledMapActor createTiledMapActor(MapCell cell, ClickListener listener, int zIndex) {
+        TiledMapActor actor = new TiledMapActor(cell, zIndex);
+        actor.addListener(listener);
         return actor;
     }
 
-    public TiledMapActor createPlaceActor(int i, int j) {
-        MapCell cell = stage.getMap().getCell(i, j);
-        TiledMapActor actor = new TiledMapActor(
-                i, j,
-                new PlaceToCellCL(stage, cell),
-                3
-        );
-        actor.debug();
-        return actor;
-    }
-
-    public TiledMapActor createPlaceCapitalActor(int i, int j) {
-        MapCell cell = stage.getMap().getCell(i, j);
-        TiledMapActor actor = new TiledMapActor(
-                i, j,
-                new PlaceCapitalFirstRoundCL(stage, cell),
-                3
-        );
-        actor.debug();
-        return actor;
-    }
-
-    private Spinner createIntSpinner(int lowerBound, int upperBound, String name) {
+    public Spinner createIntSpinner(int lowerBound, int upperBound, String name) {
         IntSpinnerModel model = new IntSpinnerModel(lowerBound, lowerBound, upperBound);
         return new Spinner(name, model);
+    }
+
+    public Button createTextButton(int x, int y, String text, ClickListener listener) {
+        Button button = new TextButton(text, textButtonStyle);
+        button.moveBy(x, y);
+        button.addListener(listener);
+        return button;
+    }
+
+    public TextField createTextField(String text) {
+        TextField textField = new TextField(text, textFieldStyle);
+        return textField;
     }
 }

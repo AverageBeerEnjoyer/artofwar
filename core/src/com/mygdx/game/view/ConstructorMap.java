@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ConstructorMap implements Screen {
-    final Start game;
+    final ArtofWar game;
     private final MainGameStage stage;
     private MapToRendererTransformator mapToRendererTransformator;
     private Map map;
@@ -30,7 +30,7 @@ public class ConstructorMap implements Screen {
     private OrthographicCamera camera;
     private BitmapFont font;
 
-    public ConstructorMap(final Start game) {
+    public ConstructorMap(final ArtofWar game) {
         this.game = game;
         map = new Map(
                 Integer.parseInt(labelWidth),

@@ -2,9 +2,7 @@ package com.mygdx.game.view;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -12,15 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.mygdx.game.view.Start;
 
 public class CreateMenuScreen extends Game {
-    Start game;
+    ArtofWar game;
     Stage stage;
     TextButton.TextButtonStyle textButtonStyle;
     BitmapFont font;
 
-    public CreateMenuScreen(Start game){
+    public CreateMenuScreen(ArtofWar game){
         this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);

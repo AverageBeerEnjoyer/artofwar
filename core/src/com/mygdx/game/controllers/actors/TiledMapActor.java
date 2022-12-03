@@ -10,8 +10,9 @@ import static com.mygdx.game.ProjectVariables.tileHeight;
 import static com.mygdx.game.ProjectVariables.tileWidth;
 
 public class TiledMapActor extends Actor {
-    public TiledMapActor(int x, int y, ClickListener listener, int zIndex){
-        this.addListener(listener);
+    public TiledMapActor(MapCell cell, int zIndex){
+        int x = cell.x;
+        int y= cell.y;
         setWidth(tileWidth);
         setHeight(tileHeight);
         setPosition(

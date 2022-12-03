@@ -45,7 +45,8 @@ public class GamingProcess {
     public void removeCurrentPlayer() {
         map.getPlayerList().remove(getCurrentPlayer());
         playersNumber = map.getPlayerList().size();
-        currentPlayer = (--currentPlayer) % playersNumber;
+        currentPlayer %= playersNumber;
+        if(playersNumber == 1) stage.endGame();
     }
     public boolean isFirst(){
         return currentPlayer == 0;

@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainGameScreen implements Screen {
-    private final Start start;
+    private final ArtofWar artofWar;
     private final Map map;
     private final MainGameStage stage;
     private final OrthographicCamera camera = new OrthographicCamera();
     private final MapToRendererTransformator mapToRendererTransformator;
 
-    public MainGameScreen(int width, int height, Start start) {
+    public MainGameScreen(int width, int height, ArtofWar artofWar) {
         map = new Map(width, height);
 
         List<Player> players = new ArrayList<>();
@@ -31,10 +31,10 @@ public class MainGameScreen implements Screen {
         players.add(new Player("player 2", map));
         players.add(new Player("player 3", map));
         map.setPlayerList(players);
-        GamingProcess gamingProcess = new GamingProcess( map);
-        stage = new MainGameStage(map, gamingProcess, start);
+        GamingProcess gamingProcess = new GamingProcess(map);
+        stage = new MainGameStage(map, gamingProcess, artofWar);
         mapToRendererTransformator = map.getMapToRendererTransformator();
-        this.start = start;
+        this.artofWar = artofWar;
         initialize();
     }
 

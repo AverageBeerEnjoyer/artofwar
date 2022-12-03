@@ -3,15 +3,14 @@ package com.mygdx.game.view;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.view.Start;
 
 public class MenuScreen implements Screen {
 
-    final Start stage;
+    final ArtofWar stage;
     OrthographicCamera camera;
     CreateMenuScreen a;
 
-    public MenuScreen(final Start stage) {
+    public MenuScreen(final ArtofWar stage) {
         this.stage = stage;
         camera = new OrthographicCamera();
         a = new CreateMenuScreen(stage);

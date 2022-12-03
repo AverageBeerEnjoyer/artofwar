@@ -2,7 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.mygdx.game.view.Start;
+import com.mygdx.game.view.ArtofWar;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
@@ -16,6 +16,6 @@ public class DesktopLauncher {
         config.setTitle("ArtofWar");
         config.setWindowedMode(screenWidth, screenHeight);
         config.useVsync(true);
-        new Lwjgl3Application(new Start(), config);
+        new Lwjgl3Application(new ArtofWar(), config);
     }
 }

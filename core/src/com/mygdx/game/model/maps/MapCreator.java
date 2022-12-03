@@ -311,8 +311,8 @@ public class MapCreator {
         Perlin2D elevation_map = new Perlin2D(seed);
         Perlin2D humidity_map = new Perlin2D(this.seed + 1234);
 
-        for (int i = 0; i < height; ++i) {//y
-            for (int j = 0; j < width; ++j) {//x
+        for (int i = 0; i < width; ++i) {//y
+            for (int j = 0; j < height; ++j) {//x
                 MapCell cell = cells[i][j];
                 if (cell.getType() == CellType.LAND) {
                     double e = elevation_map.getNoise(i / (double) height, j / (double) width, octaves, persistence) + .5f;
