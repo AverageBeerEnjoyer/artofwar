@@ -6,17 +6,15 @@ import com.mygdx.game.model.gameobjects.buildings.Building;
 import com.mygdx.game.model.gameobjects.buildings.Capital;
 import com.mygdx.game.model.gameobjects.buildings.Farm;
 import com.mygdx.game.model.gameobjects.units.Unit;
-import com.mygdx.game.model.maps.CellType;
-import com.mygdx.game.model.maps.Map;
-import com.mygdx.game.model.maps.MapCell;
-import com.mygdx.game.model.maps.MapCreator;
+import com.mygdx.game.model.maps.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
     private final Map map;
-    public static Player NOBODY = new Player("", null);
+    public static final Player NOBODY = new Player("", null, null);
+    public final Border border;
     public final String name;
     private final List<Building> buildings;
     private final List<Unit> units;
@@ -27,7 +25,8 @@ public class Player {
     private int gold = 0;
     private int territory = 0;
 
-    public Player(String name, Map map) {
+    public Player(String name, Map map, Border border) {
+        this.border = border;
         this.map = map;
         this.name = name;
         buildings = new ArrayList<>();
@@ -85,6 +84,10 @@ public class Player {
     private void addUnit(Unit unit) {
         if (units.contains(unit)) return;
         units.add(unit);
+    }
+
+    public Map getMap() {
+        return map;
     }
 
     private void removeFarm(Farm farm){

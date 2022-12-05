@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
+import com.mygdx.game.ProjectVariables;
 import com.mygdx.game.controllers.listeners.menu_cl.*;
 import com.mygdx.game.view.ArtofWar;
 
@@ -20,7 +21,6 @@ public class MenuStage extends Stage implements Screen {
     private final ArtofWar artofWar;
     private Group main;
     private Group preGame;
-    private Group enteringNames;
     private Group settings;
     private Texture backgroundImage = new Texture(Gdx.files.internal("menuBackground.jpg"));
     private Spinner
@@ -31,7 +31,7 @@ public class MenuStage extends Stage implements Screen {
     public MenuStage(ArtofWar artofWar) {
         this.artofWar = artofWar;
         VisUI.load();
-        ((OrthographicCamera) getCamera()).setToOrtho(false, 1080, 720);
+        ((OrthographicCamera) getCamera()).setToOrtho(false, 1080,720);
         createMainGroup();
         createPreGame();
         toMain();
@@ -135,7 +135,6 @@ public class MenuStage extends Stage implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
     }
 
     @Override

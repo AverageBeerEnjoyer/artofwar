@@ -3,13 +3,18 @@ package com.mygdx.game.controllers.stages;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.ProjectVariables;
 import com.mygdx.game.controllers.MapToRendererTransformator;
 import com.mygdx.game.controllers.actors.TiledMapActor;
 import com.mygdx.game.controllers.listeners.game_cl.*;
@@ -37,6 +42,7 @@ public class MainGameStage extends Stage implements Screen {
     private GameObject gameObjectToPlace = null;
     private Unit unitToMove = null;
     private GamingProcess gamingProcess;
+    private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
 
     public MainGameStage(Map map, GamingProcess gamingProcess, ArtofWar artofWar) {
@@ -153,6 +159,26 @@ public class MainGameStage extends Stage implements Screen {
         dispose();
     }
 
+    public void showEndStats(){
+        Group endStat = new Group();
+        Label label = artofWar.factory.createLabel(500,500, "Game over!");
+        endStat.addActor(label);
+
+        label = artofWar.factory.createLabel(400,400,"Winner:");
+        endStat.addActor(label);
+
+        label = artofWar.factory.createLabel(500,400,gamingProcess.getCurrentPlayer().name);
+        endStat.addActor(label);
+
+        Button button = artofWar.factory.createTextButton(450,300,"Back to menu", new EndGameCL(this));
+        endStat.addActor(button);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.rect(350,250,300,300);
+        shapeRenderer.end();
+        setRoot(endStat);
+    }
+
     private void createControls() {
         Group controls = new Group();
 
@@ -207,7 +233,6 @@ public class MainGameStage extends Stage implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
     }
 
     @Override

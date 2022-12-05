@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -23,11 +24,13 @@ public class ActorsFactory {
     private MenuStage menuStage;
     public TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
     public TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
+    public Label.LabelStyle labelStyle = new Label.LabelStyle();
 
     public ActorsFactory() {
         BitmapFont font = new BitmapFont(Gdx.files.internal("bitmapfont/Amble-Regular-26.fnt"));
         textButtonStyle.font = font;
         textFieldStyle.font = font;
+        labelStyle.font = font;
         textFieldStyle.fontColor = Color.WHITE;
     }
 
@@ -60,5 +63,10 @@ public class ActorsFactory {
     public TextField createTextField(String text) {
         TextField textField = new TextField(text, textFieldStyle);
         return textField;
+    }
+    public Label createLabel(int x, int y, String text){
+        Label label = new Label(text, labelStyle);
+        label.moveBy(x,y);
+        return label;
     }
 }

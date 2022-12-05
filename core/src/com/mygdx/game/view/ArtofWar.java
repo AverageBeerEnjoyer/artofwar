@@ -1,21 +1,19 @@
 package com.mygdx.game.view;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.mygdx.game.controllers.actors.ActorsFactory;
 import com.mygdx.game.controllers.stages.MainGameStage;
 import com.mygdx.game.controllers.stages.MenuStage;
 import com.mygdx.game.db.DBController;
 import com.mygdx.game.model.GamingProcess;
+import com.mygdx.game.model.maps.Border;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ArtofWar extends Game {
 
@@ -45,7 +43,11 @@ public class ArtofWar extends Game {
     }
     public void newGame(int width, int height, List<String> playersNames){
         Map map  = new Map(width,height);
-        List<Player> players = playersNames.stream().map((name)-> new Player(name, map)).collect(Collectors.toList());
+        List<Player> players = new ArrayList<>();
+        for(int i = 0; i<playersNames.size();++i){
+            Player player = new Player(playersNames.get(i),map,Border.get(i));
+            players.add(player);
+        }
         map.setPlayerList(players);
         GamingProcess gamingProcess = new GamingProcess(map);
         mainGameStage = new MainGameStage(map, gamingProcess, this);

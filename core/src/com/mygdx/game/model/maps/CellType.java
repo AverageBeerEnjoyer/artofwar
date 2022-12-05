@@ -25,8 +25,6 @@ public enum CellType {
         }
         this.tile = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(resourceCatalog + tileTexturePath))));
     }
-    // e elevation
-    // m
     public static CellType defineBiom(double e, double m) {
         if (e < 0) {
             return CellType.WATER;

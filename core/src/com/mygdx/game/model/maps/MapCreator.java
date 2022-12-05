@@ -27,8 +27,8 @@ public class MapCreator {
      * </p>
      */
     private static final int[][]
-            neighbourodd = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}},
-            neighboureven = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, 1}, {1, 1}};
+            neighbourodd = {{1, 0}, {0, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}},
+            neighboureven = {{1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {0, -1}, {1, 0}};
     public static int[][] getNeighbours(int x){
         if((x&1)==0) return neighboureven;
         return neighbourodd;

@@ -46,7 +46,7 @@ public class MapCell {
     }
 
     public void setGameObject(GameObject gameObject) {
-        if(type == CellType.WATER) return;
+        if (type == CellType.WATER) return;
         this.gameObject = gameObject;
     }
 
@@ -63,13 +63,15 @@ public class MapCell {
     }
 
     public void setType(CellType type) {
-        if(type == CellType.UNDEFINED) return;
+        if (type == CellType.UNDEFINED) return;
         this.type = type;
     }
 
     public void setOwner(Player owner) {
-        if(this.owner!=null) this.owner.removeTerritory();
+        if (this.owner != null) this.owner.removeTerritory();
         this.owner = owner;
         this.owner.addTerritory();
+        if (owner != Player.NOBODY)
+            owner.getMap().getMapToRendererTransformator().updateBorders(x, y);
     }
 }
