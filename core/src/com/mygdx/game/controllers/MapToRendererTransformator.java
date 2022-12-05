@@ -39,7 +39,6 @@ public class MapToRendererTransformator {
                 generalMapLayer.setCell(i, j, cell);
             }
         }
-        generalMapLayer.setVisible(false);
         tiledMap.getLayers().add(generalMapLayer);
     }
 
