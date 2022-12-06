@@ -1,10 +1,8 @@
-package com.mygdx.game.controllers.stages;
+package com.mygdx.game.view.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,8 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.ProjectVariables;
-import com.mygdx.game.controllers.MapToRendererTransformator;
+import com.mygdx.game.model.maps.MapToRendererTransformator;
 import com.mygdx.game.controllers.actors.TiledMapActor;
 import com.mygdx.game.controllers.listeners.game_cl.*;
 import com.mygdx.game.model.GamingProcess;

@@ -10,14 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
-import com.mygdx.game.controllers.listeners.game_cl.MoveToCellCL;
-import com.mygdx.game.controllers.listeners.game_cl.PlaceCapitalFirstRoundCL;
-import com.mygdx.game.controllers.listeners.game_cl.PlaceToCellCL;
-import com.mygdx.game.controllers.listeners.game_cl.SelectCellCL;
-import com.mygdx.game.controllers.stages.MainGameStage;
-import com.mygdx.game.controllers.stages.MenuStage;
+import com.mygdx.game.view.stages.MainGameStage;
+import com.mygdx.game.view.stages.MenuStage;
 import com.mygdx.game.model.maps.MapCell;
-import org.w3c.dom.Text;
 
 public class ActorsFactory {
     private MainGameStage gameStage;

@@ -1,4 +1,4 @@
-package com.mygdx.game.controllers.stages;
+package com.mygdx.game.view.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
-import com.mygdx.game.ProjectVariables;
 import com.mygdx.game.controllers.listeners.menu_cl.*;
 import com.mygdx.game.view.ArtofWar;
 

@@ -1,16 +1,10 @@
 package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
-import com.mygdx.game.model.gameobjects.GameObject;
-import com.mygdx.game.model.gameobjects.units.Unit;
-import com.dongbat.jbump.Cell;
 import com.mygdx.game.model.players.Player;
-import com.mygdx.game.view.utils.BiomUtils;
-import com.mygdx.game.view.utils.Pair;
-import com.mygdx.game.view.utils.Triple;
+import com.mygdx.game.utils.BiomUtils;
+import com.mygdx.game.utils.Pair;
 
-import java.awt.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 

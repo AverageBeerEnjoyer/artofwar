@@ -1,10 +1,8 @@
 package com.mygdx.game.model;
 
-import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
-
-import java.util.List;
 
 public class GamingProcess {
     private int round;

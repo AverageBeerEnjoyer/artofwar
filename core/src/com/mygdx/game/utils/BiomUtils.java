@@ -1,4 +1,4 @@
-package com.mygdx.game.view.utils;
+package com.mygdx.game.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

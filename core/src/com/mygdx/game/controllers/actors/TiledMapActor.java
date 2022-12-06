@@ -2,9 +2,8 @@ package com.mygdx.game.controllers.actors;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.game.model.maps.MapCell;
-import com.mygdx.game.view.utils.HexagonUtils;
+import com.mygdx.game.utils.HexagonUtils;
 
 import static com.mygdx.game.ProjectVariables.tileHeight;
 import static com.mygdx.game.ProjectVariables.tileWidth;

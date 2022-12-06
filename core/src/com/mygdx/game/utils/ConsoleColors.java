@@ -1,6 +1,4 @@
-package com.mygdx.game.view.utils;
-
-import com.badlogic.gdx.graphics.Color;
+package com.mygdx.game.utils;
 
 public class ConsoleColors {
     // Reset
