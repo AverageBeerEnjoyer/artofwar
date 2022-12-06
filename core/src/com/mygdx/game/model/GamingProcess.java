@@ -40,6 +40,7 @@ public class GamingProcess {
         if(round == 0) return;
         Player player = getCurrentPlayer();
         player.countIncome();
+        player.refreshUnits();
     }
 
     public void removeCurrentPlayer() {

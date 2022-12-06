@@ -14,10 +14,7 @@ public class SelectCellCL extends CellActionCL {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        System.out.println(cell.getDefence());
-
-
-        if (cell.getOwner() == stage.getGamingProcess().getCurrentPlayer() && cell.getGameObject() instanceof Unit unit) {
+        if (cell.getOwner() == stage.getGamingProcess().getCurrentPlayer() && cell.getGameObject() instanceof Unit unit && !unit.isMoved()) {
             stage.setUnitToMove(unit);
             return;
         }

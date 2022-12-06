@@ -81,10 +81,10 @@ public class ProjectVariables {
 
 
     public static StaticTiledMapTile
-            farmPic = null,
-            towerPic=null,
-            superTowerPic=null,
-            capitalPic=new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(buildingAssetsDirectory + "castle10.png"))));
+            farmPic = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(buildingAssetsDirectory + "farm.png")))),
+            towerPic=new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(buildingAssetsDirectory + "tower.png")))),
+            superTowerPic=new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(buildingAssetsDirectory + "superTower.png")))),
+            capitalPic=new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal(buildingAssetsDirectory + "capital.png"))));
 
     public static int
             tileWidth = 64,

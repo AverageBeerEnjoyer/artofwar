@@ -124,7 +124,11 @@ public class Player {
             map.killGameObject(unit);
         }
     }
-
+    public void refreshUnits(){
+        for(Unit unit:units){
+            unit.refresh();
+        }
+    }
     public void countIncome() {
         if(capital!=null){
             gold+=getFarmsNumber()*ProjectVariables.BuildingSpec.farmMoneyPerTurn;
