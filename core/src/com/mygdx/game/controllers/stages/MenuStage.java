@@ -14,6 +14,7 @@ import com.mygdx.game.ProjectVariables;
 import com.mygdx.game.controllers.listeners.menu_cl.*;
 import com.mygdx.game.view.ArtofWar;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +104,7 @@ public class MenuStage extends Stage implements Screen {
         setRoot(preGame);
     }
 
-    public void startGame() {
+    public void startGame() throws SQLException {
         List<String> players = new ArrayList<>();
         int n = Integer.parseInt(playersNumber.getTextField().getText());
         Table table = preGame.findActor("names table");
