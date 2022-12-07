@@ -21,6 +21,7 @@ public class DBController {
             SQLiteConfig config = new SQLiteConfig();
             config.enforceForeignKeys(true);
             connection = DriverManager.getConnection(DB_URL, config.toProperties());
+            connection.setAutoCommit(false);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.mygdx.game.db;
 
+import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.players.Player;
 
 import java.sql.Connection;
@@ -68,6 +69,7 @@ public class GameDatabase {
                 "    PRIMARY KEY (move_id, player_id)" +
                 ");"
         );
+        connection.commit();
         statement.close();
     }
 
@@ -86,12 +88,22 @@ public class GameDatabase {
             }
             player.setId(rs.getInt(1));
         }
+        statement.close();
+        getIdStatement.close();
+        connection.commit();
     }
 
-    public void newGame() throws SQLException {
+    public void insertGame(GamingProcess gamingProcess, int playerQty, long seed, int mapWidth, int mapHeight) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "INSERT INTO game"
+            "INSERT INTO game (players_qty, map_seed, map_width, map_height) VALUES (?, ?, ?, ?) RETURNING id"
         );
-
+        statement.setInt(1, playerQty);
+        statement.setInt(2, (int) seed);
+        statement.setInt(3, mapWidth);
+        statement.setInt(4, mapHeight);
+        ResultSet rs = statement.executeQuery();
+        gamingProcess.setId(rs.getInt(1));
+        statement.close();
+        connection.commit();
     }
 }
