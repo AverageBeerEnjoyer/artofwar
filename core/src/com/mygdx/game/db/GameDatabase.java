@@ -63,6 +63,8 @@ public class GameDatabase {
                 "    move_id      INTEGER NOT NULL," +
                 "    player_id    INTEGER NOT NULL," +
                 "    is_game_over BOOLEAN DEFAULT false," +
+                "    gold         INTEGER" +
+                "    territories  INTEGER" +
                 "    data         BLOB," +
                 "    FOREIGN KEY (move_id) REFERENCES move (id) ON DELETE CASCADE," +
                 "    FOREIGN KEY (player_id) REFERENCES player (id)," +
