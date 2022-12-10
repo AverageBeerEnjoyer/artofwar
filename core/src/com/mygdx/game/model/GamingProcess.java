@@ -6,6 +6,7 @@ import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
 
 public class GamingProcess {
+    private int gameId;
     private int round;
     private int currentPlayer;
 
@@ -58,5 +59,9 @@ public class GamingProcess {
     }
     public boolean isLast(){
         return currentPlayer == playersNumber - 1;
+    }
+
+    public void setId(int id) {
+        this.gameId = id;
     }
 }

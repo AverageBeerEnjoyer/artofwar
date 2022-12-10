@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
+    private int id = -1;
     private final Map map;
     public static final Player NOBODY = new Player("", null, null);
     public final Border border;
@@ -32,6 +33,10 @@ public class Player {
         buildings = new ArrayList<>();
         units = new ArrayList<>();
         farms = new ArrayList<>();
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getFarmsNumber() {
