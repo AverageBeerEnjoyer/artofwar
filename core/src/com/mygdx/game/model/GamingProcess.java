@@ -64,6 +64,7 @@ public class GamingProcess {
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+        if(isLast()) ++round;
         map.getPlayerList().remove(getCurrentPlayer());
         playersNumber = map.getPlayerList().size();
         currentPlayer %= playersNumber;
