@@ -53,7 +53,6 @@ public class Player {
             }
         }
     }
-
     public void addGameObject(GameObject gameObject) {
         gold -= gameObject.getCost();
         if (gameObject instanceof Unit) {
@@ -119,9 +118,8 @@ public class Player {
     }
 
     private void armyWipe() {
-        for (Unit unit : units) {
-            map.removeGameObject(unit);
-            map.killGameObject(unit);
+        while(!units.isEmpty()){
+            map.killGameObject(units.get(0));
         }
     }
     public void refreshUnits(){

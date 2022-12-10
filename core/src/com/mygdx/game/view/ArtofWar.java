@@ -1,7 +1,11 @@
 package com.mygdx.game.view;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.controllers.actors.ActorsFactory;
 import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.view.stages.MenuStage;
@@ -35,6 +39,7 @@ public class ArtofWar extends Game {
     }
 
     public void create() {
+        //Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         batch = new SpriteBatch();
         factory = new ActorsFactory();
         menuStage = new MenuStage(this);

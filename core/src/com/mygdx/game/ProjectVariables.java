@@ -89,7 +89,9 @@ public class ProjectVariables {
     public static int
             tileWidth = 64,
             tileHeight = 55;
-
+    public static int
+            screenWidth = 1920,
+            screenHeight = 980;
     public static TiledMapTile blackTile = new StaticTiledMapTile(new TextureRegion(new Texture(Gdx.files.internal("pastel_resources_hex/rotat/black.png"))));
 
 

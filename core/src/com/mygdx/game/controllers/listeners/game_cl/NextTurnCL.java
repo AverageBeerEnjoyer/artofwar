@@ -12,6 +12,7 @@ public class NextTurnCL extends MainGameStageCL {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
+        stage.clearSelectedArea();
         stage.getGamingProcess().nextTurn();
     }
 }

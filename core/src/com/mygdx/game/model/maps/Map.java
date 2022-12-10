@@ -49,7 +49,7 @@ public class Map {
             gameObject.owner.addGameObject(gameObject);
         }
         if (cell.getGameObject() != null) {
-            killGameObject(gameObject);
+            killGameObject(cell.getGameObject());
         }
         gameObject.setPlacement(cell);
         cell.setGameObject(gameObject);
@@ -98,6 +98,7 @@ public class Map {
                 q.addFirst(Triple.triple(x + dx, y + dy, n - 1));
             }
         }
+        mirror[xValue][yValue] = -1;
         return mirror;
     }
 

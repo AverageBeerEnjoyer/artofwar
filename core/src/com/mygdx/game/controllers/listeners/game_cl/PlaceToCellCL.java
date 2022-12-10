@@ -16,5 +16,6 @@ public class PlaceToCellCL extends CellActionCL {
         if (cell.getGameObject() != null) return;
         stage.getMap().setGameObjectOnCell(cell.x, cell.y, object);
         stage.clearSelectedArea();
+        stage.updateInfo();
     }
 }

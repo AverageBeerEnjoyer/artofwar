@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
+import com.mygdx.game.ProjectVariables;
 import com.mygdx.game.controllers.listeners.menu_cl.*;
 import com.mygdx.game.view.ArtofWar;
 
@@ -30,7 +31,7 @@ public class MenuStage extends Stage implements Screen {
     public MenuStage(ArtofWar artofWar) {
         this.artofWar = artofWar;
         VisUI.load();
-        ((OrthographicCamera) getCamera()).setToOrtho(false, 1080,720);
+        ((OrthographicCamera) getCamera()).setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         createMainGroup();
         createPreGame();
         toMain();
@@ -39,15 +40,11 @@ public class MenuStage extends Stage implements Screen {
     public void createMainGroup() {
         main = new Group();
 
-        Button play = artofWar.factory.createTextButton(50, 100, "Play", new PreGameCL(this));
-
-//        Button settings = new TextButton("Settings", start.style);
-//        settings.moveBy(50,200);
+        Button play = artofWar.factory.createImageButton(100,300,new Texture(Gdx.files.internal("button/play_button.png")), new PreGameCL(this));
 
 
-        Button exit = artofWar.factory.createTextButton(50, 300, "Exit", new ExitCL());
+        Button exit = artofWar.factory.createImageButton(100, 230, new Texture(Gdx.files.internal("button/quit_button.png")), new ExitCL());
 
-//        main.addActor(settings);
         main.addActor(play);
         main.addActor(exit);
         main.debug();
@@ -75,7 +72,7 @@ public class MenuStage extends Stage implements Screen {
     private void createPreGame() {
         preGame = new Group();
 
-        Button startGame = artofWar.factory.createTextButton(150, 50, "Start game", new StartGameCL(this));
+        Button startGame = artofWar.factory.createImageButton(250, 50, new Texture(Gdx.files.internal("button/start_button.png")), new StartGameCL(this));
 
         playersNumber = artofWar.factory.createIntSpinner(2, 10, "Players");
         playersNumber.addListener(new FillCL(this));
@@ -94,7 +91,7 @@ public class MenuStage extends Stage implements Screen {
 
         createPlayerTable();
 
-        Button back = artofWar.factory.createTextButton(150, 0, "Back to menu", new BackCL(this));
+        Button back = artofWar.factory.createImageButton(50, 50, new Texture(Gdx.files.internal("button/back_button.png")), new BackCL(this));
         preGame.addActor(back);
     }
 

@@ -3,15 +3,17 @@ package com.mygdx.game.view.stages;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.ProjectVariables.*;
 import com.mygdx.game.model.maps.MapToRendererTransformator;
 import com.mygdx.game.controllers.actors.TiledMapActor;
 import com.mygdx.game.controllers.listeners.game_cl.*;
@@ -32,14 +34,14 @@ import java.util.function.BiFunction;
 public class MainGameStage extends Stage implements Screen {
     private final ArtofWar artofWar;
     private final OrthographicCamera camera = new OrthographicCamera();
-    private MapToRendererTransformator mapToRendererTransformator;
+    private final MapToRendererTransformator mapToRendererTransformator;
     private Map map;
     private Group selectedArea;
-    private Group movableActors = new Group();
+    private final Group movableActors = new Group();
+    private Group controls;
     private GameObject gameObjectToPlace = null;
     private Unit unitToMove = null;
     private GamingProcess gamingProcess;
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
 
     public MainGameStage(Map map, GamingProcess gamingProcess, ArtofWar artofWar) {
@@ -51,7 +53,7 @@ public class MainGameStage extends Stage implements Screen {
         artofWar.factory.setGameStage(this);
         addActor(movableActors);
         placeCapitalArea();
-        camera.setToOrtho(false, 1080, 720);
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         addListener(
                 new DragListener() {
                     @Override
@@ -61,12 +63,6 @@ public class MainGameStage extends Stage implements Screen {
                     }
                 }
         );
-    }
-
-    public MainGameStage(ArtofWar artofWar) {
-        this.artofWar = artofWar;
-        this.map = new Map(10, 10, 0, 0);
-        loadActors();
     }
 
 
@@ -120,20 +116,21 @@ public class MainGameStage extends Stage implements Screen {
         for (int i = 0; i < map.getWidth(); ++i) {
             for (int j = 0; j < map.getHeight(); ++j) {
                 if (map.getMapCreator().getCells()[i][j].getType() == CellType.WATER) continue;
-                TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i,j), new SelectCellCL(this, map.getCell(i,j)),2);
+                TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i, j), new SelectCellCL(this, map.getCell(i, j)), 2);
                 cellActors.addActor(actor);
             }
         }
         movableActors.addActor(cellActors);
     }
 
-    public void selectArea(BiFunction<MainGameStage,MapCell, ClickListener> listenerCreator, int[][] area) {
+    public void selectArea(BiFunction<MainGameStage, MapCell, ClickListener> listenerCreator, int[][] area) {
         selectedArea = new Group();
         for (int i = 0; i < map.getWidth(); ++i) {
             for (int j = 0; j < map.getHeight(); ++j) {
                 if (area[i][j] != -1) {
-                    TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i,j), listenerCreator.apply(this,map.getCell(i,j) ), 3);
+                    TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i, j), listenerCreator.apply(this, map.getCell(i, j)), 3);
                     selectedArea.addActor(actor);
+                    actor.debug();
                 }
             }
         }
@@ -156,58 +153,133 @@ public class MainGameStage extends Stage implements Screen {
         dispose();
     }
 
-    public void showEndStats(){
+    public void showEndStats() {
         Group endStat = new Group();
-        Label label = artofWar.factory.createLabel(500,500, "Game over!");
-        endStat.addActor(label);
+        endStat.setBounds(Gdx.graphics.getWidth() / 2 - 150, Gdx.graphics.getHeight() / 2 - 200, 300, 400);
 
-        label = artofWar.factory.createLabel(400,400,"Winner:");
-        endStat.addActor(label);
+        Table table = new Table();
 
-        label = artofWar.factory.createLabel(500,400,gamingProcess.getCurrentPlayer().name);
-        endStat.addActor(label);
+        Image background = new Image(new Texture(Gdx.files.internal("endStatBackground.jpg")));
+        background.setBounds(0,0,300,400);
+        endStat.addActor(background);
 
-        Button button = artofWar.factory.createTextButton(450,300,"Back to menu", new EndGameCL(this));
-        endStat.addActor(button);
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.rect(350,250,300,300);
-        shapeRenderer.end();
+        Label label = artofWar.factory.createLabel(70, 300, "Game over!");
+        table.add(label).colspan(2).center();
+        table.row();
+
+        label = artofWar.factory.createLabel(70, 200, "Winner:");
+        table.add(label).right();
+
+        label = artofWar.factory.createLabel(150, 200, gamingProcess.getCurrentPlayer().name);
+        table.add(label).left();
+        table.row();
+
+        Button button = artofWar.factory.createTextButton(100, 30, "Back to menu", new EndGameCL(this));
+        table.add(button).colspan(2).center();
+
+        table.setPosition(endStat.getWidth()/2 - table.getWidth()/2,endStat.getHeight()/2-table.getHeight()/2);
+
+        endStat.addActor(table);
         setRoot(endStat);
     }
 
     private void createControls() {
-        Group controls = new Group();
+        controls = new Group();
 
-        Button peasant = artofWar.factory.createTextButton(0, 30, "Peasant", new GameObjectCreationCL(this, Peasant.class));
+        HorizontalGroup currentTurnInfo = new HorizontalGroup();
+        currentTurnInfo.setPosition(Gdx.graphics.getWidth() / 2 - 300, Gdx.graphics.getHeight() - 50);
+        HorizontalGroup unitButtons = new HorizontalGroup();
+        unitButtons.setPosition(Gdx.graphics.getWidth() / 2 - 350, 90);
 
-        Button militia = artofWar.factory.createTextButton(0, 60, "Militia", new GameObjectCreationCL(this, Militia.class));
 
-        Button knight = artofWar.factory.createTextButton(0, 90, "Knight", new GameObjectCreationCL(this, Knight.class));
+        Button peasant = artofWar.factory.createImageTextButton(
+                0, 0,
+                new Texture(Gdx.files.internal("button/peasant_button.png")),
+                new GameObjectCreationCL(this, Peasant.class),
+                UnitSpec.peasantCost + " G"
+        );
 
-        Button paladin = artofWar.factory.createTextButton(0, 120, "Paladin", new GameObjectCreationCL(this, Paladin.class));
+        Button militia = artofWar.factory.createImageTextButton(
+                0, 0,
+                new Texture(Gdx.files.internal("button/militia_button.png")),
+                new GameObjectCreationCL(this, Militia.class),
+                UnitSpec.militiaCost + " G"
+        );
 
-        Button farm = artofWar.factory.createTextButton(0, 150, "Farm", new GameObjectCreationCL(this, Farm.class));
+        Button knight = artofWar.factory.createImageTextButton(
+                0, 0,
+                new Texture(Gdx.files.internal("button/knight_button.png")),
+                new GameObjectCreationCL(this, Knight.class),
+                UnitSpec.knightCost + " G"
+        );
 
-        Button tower = artofWar.factory.createTextButton(0, 180, "Tower", new GameObjectCreationCL(this, Tower.class));
+        Button paladin = artofWar.factory.createImageTextButton(
+                0, 0,
+                new Texture(Gdx.files.internal("button/paladin_button.png")),
+                new GameObjectCreationCL(this, Paladin.class),
+                UnitSpec.paladinCost + " G"
+        );
 
-        Button supertower = artofWar.factory.createTextButton(0, 210, "Supertower", new GameObjectCreationCL(this, SuperTower.class));
+        Button farm = artofWar.factory.createImageTextButton(
+                0, 0,
+                new Texture(Gdx.files.internal("button/farm_button.png")),
+                new GameObjectCreationCL(this, Farm.class),
+                (BuildingSpec.defaultFarmCost + gamingProcess.getCurrentPlayer().getFarmsNumber() * BuildingSpec.additionalFarmCost) + " G"
+        );
+        farm.getChild(1).setName("farm");
 
-        Button nextTurn = artofWar.factory.createTextButton(0,240,"Next turn",new NextTurnCL(this));
+        Button tower = artofWar.factory.createImageTextButton(
+                0, 0,
+                new Texture(Gdx.files.internal("button/tower_button.png")),
+                new GameObjectCreationCL(this, Tower.class),
+                BuildingSpec.towerCost + " G"
+        );
 
-        controls.addActor(peasant);
-        controls.addActor(militia);
-        controls.addActor(knight);
-        controls.addActor(paladin);
-        controls.addActor(farm);
-        controls.addActor(tower);
-        controls.addActor(supertower);
+        Button supertower = artofWar.factory.createImageTextButton(
+                0, 0,
+                new Texture(Gdx.files.internal("button/superTower_button.png")),
+                new GameObjectCreationCL(this, SuperTower.class),
+                BuildingSpec.superTowerCost + " G"
+        );
+
+        Button nextTurn = artofWar.factory.createImageButton(Gdx.graphics.getWidth() - 100, 30, new Texture(Gdx.files.internal("button/arrow_next.png")), new NextTurnCL(this));
+
+        unitButtons.addActor(peasant);
+        unitButtons.addActor(militia);
+        unitButtons.addActor(knight);
+        unitButtons.addActor(paladin);
+        unitButtons.addActor(farm);
+        unitButtons.addActor(tower);
+        unitButtons.addActor(supertower);
+
+
+        Label playerName = artofWar.factory.createLabel(0, 0, gamingProcess.getCurrentPlayer().name);
+        playerName.setName("name");
+        Image goldPic = new Image(new Texture(Gdx.files.internal("button/coin_2.png")));
+        Label gold = artofWar.factory.createLabel(0, 0, gamingProcess.getCurrentPlayer().getGold() + "");
+        gold.setName("gold");
+
+
+        currentTurnInfo.addActor(playerName);
+        currentTurnInfo.addActor(goldPic);
+        currentTurnInfo.addActor(gold);
+
+
         controls.addActor(nextTurn);
-
-        controls.setZIndex(10);
+        controls.addActor(unitButtons);
+        controls.addActor(currentTurnInfo);
         addActor(controls);
     }
 
+    public void updateInfo() {
+        Label name = controls.findActor("name");
+        Label farm = controls.findActor("farm");
+        Label gold = controls.findActor("gold");
+        farm.setText((BuildingSpec.defaultFarmCost + gamingProcess.getCurrentPlayer().getFarmsNumber() * BuildingSpec.additionalFarmCost) + " G");
+        name.setText(gamingProcess.getCurrentPlayer().name);
+        gold.setText(gamingProcess.getCurrentPlayer().getGold() + "");
+    }
 
     public GamingProcess getGamingProcess() {
         return gamingProcess;
