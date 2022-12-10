@@ -1,9 +1,12 @@
 package com.mygdx.game.model;
 
+import com.mygdx.game.db.GameDatabase;
 import com.mygdx.game.model.gameobjects.buildings.Capital;
 import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
+
+import java.sql.SQLException;
 
 public class GamingProcess {
     private int gameId;
@@ -13,12 +16,14 @@ public class GamingProcess {
     private int playersNumber;
     private final Map map;
     private MainGameStage stage;
+    private GameDatabase gameDatabase;
 
-    public GamingProcess(Map map) {
+    public GamingProcess(Map map, GameDatabase gameDatabase) {
         this.playersNumber = map.getPlayerList().size();
         this.map = map;
         this.currentPlayer = 0;
         this.round = 0;
+        this.gameDatabase = gameDatabase;
     }
     public void setStage(MainGameStage stage){
         this.stage = stage;
@@ -42,13 +47,23 @@ public class GamingProcess {
         player.countIncome();
         if(player.getCapital() == null) {
             stage.setGameObjectToPlace(new Capital(map, null, player));
-
+        }
+        try {
+            gameDatabase.insertMove(player.getId(), gameId, round, player.getGold(), player.getTerritories());
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
         player.refreshUnits();
         stage.updateInfo();
     }
 
     public void removeCurrentPlayer() {
+        Player player = getCurrentPlayer();
+        try {
+            gameDatabase.insertMove(player.getId(), gameId, round, player.getGold(), 0);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         map.getPlayerList().remove(getCurrentPlayer());
         playersNumber = map.getPlayerList().size();
         currentPlayer %= playersNumber;
@@ -63,5 +78,13 @@ public class GamingProcess {
 
     public void setId(int id) {
         this.gameId = id;
+    }
+
+    public int getGameId() {
+        return gameId;
+    }
+
+    public int getRound() {
+        return round;
     }
 }

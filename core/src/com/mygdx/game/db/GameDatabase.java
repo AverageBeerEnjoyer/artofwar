@@ -48,27 +48,14 @@ public class GameDatabase {
             "CREATE TABLE IF NOT EXISTS move" +
                 "(" +
                 "    id                INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                "    number            INTEGER," +
                 "    current_player_id INTEGER NOT NULL," +
                 "    game_id           INTEGER NOT NULL," +
+                "    round             INTEGER NOT NULL ," +
+                "    gold              INTEGER NOT NULL," +
+                "    territories       INTEGER NOT NULL," +
                 "    timestamp         DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                "    action            TEXT," +
                 "    FOREIGN KEY (current_player_id) REFERENCES player (id)," +
                 "    FOREIGN KEY (game_id) REFERENCES game (id) ON DELETE CASCADE" +
-                ");"
-        );
-        statement.execute(
-            "CREATE TABLE IF NOT EXISTS resource" +
-                "(" +
-                "    move_id      INTEGER NOT NULL," +
-                "    player_id    INTEGER NOT NULL," +
-                "    is_game_over BOOLEAN DEFAULT false," +
-                "    gold         INTEGER" +
-                "    territories  INTEGER" +
-                "    data         BLOB," +
-                "    FOREIGN KEY (move_id) REFERENCES move (id) ON DELETE CASCADE," +
-                "    FOREIGN KEY (player_id) REFERENCES player (id)," +
-                "    PRIMARY KEY (move_id, player_id)" +
                 ");"
         );
         connection.commit();
@@ -107,5 +94,21 @@ public class GameDatabase {
         gamingProcess.setId(rs.getInt(1));
         statement.close();
         connection.commit();
+    }
+
+    public int insertMove(int playerId, int gameId, int round, int gold, int territories) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(
+            "INSERT INTO move (current_player_id, game_id, round, gold, territories) VALUES (?, ?, ?, ?, ?) RETURNING id"
+        );
+        statement.setInt(1, playerId);
+        statement.setInt(2, gameId);
+        statement.setInt(3, round);
+        statement.setInt(4, gold);
+        statement.setInt(5, territories);
+        ResultSet rs = statement.executeQuery();
+        int moveId = rs.getInt(1);
+        statement.close();
+        connection.commit();
+        return moveId;
     }
 }

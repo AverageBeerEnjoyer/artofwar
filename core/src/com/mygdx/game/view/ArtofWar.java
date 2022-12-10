@@ -56,7 +56,7 @@ public class ArtofWar extends Game {
         }
         gameDatabase.insertPlayers(players);
         map.setPlayerList(players);
-        GamingProcess gamingProcess = new GamingProcess(map);
+        GamingProcess gamingProcess = new GamingProcess(map, gameDatabase);
         gameDatabase.insertGame(gamingProcess, players.size(), map.getMapCreator().getSeed(), width, height);
         mainGameStage = new MainGameStage(map, gamingProcess, this);
         setScreen(mainGameStage);
