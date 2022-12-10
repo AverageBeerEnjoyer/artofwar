@@ -1,6 +1,6 @@
 package com.mygdx.game.controllers.listeners.game_cl;
 
-import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.model.maps.MapCell;
 
 abstract class CellActionCL extends MainGameStageCL {

@@ -1,10 +1,9 @@
 package com.mygdx.game.model;
 
-import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.model.gameobjects.buildings.Capital;
+import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
-
-import java.util.List;
 
 public class GamingProcess {
     private int gameId;
@@ -41,7 +40,12 @@ public class GamingProcess {
         if(round == 0) return;
         Player player = getCurrentPlayer();
         player.countIncome();
+        if(player.getCapital() == null) {
+            stage.setGameObjectToPlace(new Capital(map, null, player));
+
+        }
         player.refreshUnits();
+        stage.updateInfo();
     }
 
     public void removeCurrentPlayer() {

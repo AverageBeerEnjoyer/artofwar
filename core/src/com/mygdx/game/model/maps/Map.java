@@ -1,12 +1,11 @@
 package com.mygdx.game.model.maps;
 
 import com.badlogic.gdx.utils.Queue;
-import com.mygdx.game.controllers.MapToRendererTransformator;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.buildings.Building;
 import com.mygdx.game.model.gameobjects.units.Unit;
 import com.mygdx.game.model.players.Player;
-import com.mygdx.game.view.utils.Triple;
+import com.mygdx.game.utils.Triple;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +49,7 @@ public class Map {
             gameObject.owner.addGameObject(gameObject);
         }
         if (cell.getGameObject() != null) {
-            killGameObject(gameObject);
+            killGameObject(cell.getGameObject());
         }
         gameObject.setPlacement(cell);
         cell.setGameObject(gameObject);
@@ -99,6 +98,7 @@ public class Map {
                 q.addFirst(Triple.triple(x + dx, y + dy, n - 1));
             }
         }
+        mirror[xValue][yValue] = -1;
         return mirror;
     }
 

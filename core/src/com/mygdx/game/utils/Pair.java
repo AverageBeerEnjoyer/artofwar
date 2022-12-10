@@ -1,4 +1,4 @@
-package com.mygdx.game.view.utils;
+package com.mygdx.game.utils;
 
 public final class Pair<T, U> {
 
@@ -10,9 +10,6 @@ public final class Pair<T, U> {
     public final T first;
     public final U second;
 
-    // Because 'pair()' is shorter than 'new Pair<>()'.
-    // Sometimes this difference might be very significant (especially in a
-    // 80-ish characters boundary). Sorry diamond operator.
     public static <T, U> Pair<T, U> pair(T first, U second) {
         return new Pair<>(first, second);
     }

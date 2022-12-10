@@ -1,4 +1,4 @@
-package com.mygdx.game.view.utils;
+package com.mygdx.game.utils;
 
 public class HexagonUtils {
     public static float countXLayout(int i,int j){

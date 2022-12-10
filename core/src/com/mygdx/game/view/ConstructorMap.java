@@ -10,8 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.controllers.MapToRendererTransformator;
-import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.model.maps.MapToRendererTransformator;
+import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCreator;
 

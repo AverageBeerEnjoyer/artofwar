@@ -1,7 +1,7 @@
 package com.mygdx.game.controllers.listeners.menu_cl;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.mygdx.game.controllers.stages.MenuStage;
+import com.mygdx.game.view.stages.MenuStage;
 
 public class PreGameCL extends MenuCL{
     public PreGameCL(MenuStage stage){

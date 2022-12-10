@@ -1,7 +1,8 @@
 package com.mygdx.game.controllers.listeners.game_cl;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.mygdx.game.controllers.stages.MainGameStage;
+import com.mygdx.game.model.gameobjects.buildings.Capital;
+import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.model.gameobjects.units.Unit;
 import com.mygdx.game.model.maps.MapCell;
 
@@ -18,6 +19,7 @@ public class SelectCellCL extends CellActionCL {
             stage.setUnitToMove(unit);
             return;
         }
+        if (stage.getGameObjectToPlace() instanceof Capital) return;
         stage.clearSelectedArea();
     }
 }
