@@ -47,6 +47,7 @@ public class GameDatabaseTest {
             rs.next();
             assertThat(rs.getString(1)).isEqualTo(name);
         }
+        statement.close();
     }
 
     @AfterAll

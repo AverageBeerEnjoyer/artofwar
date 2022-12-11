@@ -111,4 +111,13 @@ public class GameDatabase {
         connection.commit();
         return moveId;
     }
+
+    public void finishGame(int gameId) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(
+            "UPDATE game SET end_timestamp = CURRENT_TIMESTAMP WHERE id = ?"
+        );
+        statement.setInt(1, gameId);
+        statement.executeUpdate();
+        connection.commit();
+    }
 }
