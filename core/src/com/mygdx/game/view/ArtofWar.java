@@ -31,7 +31,7 @@ public class ArtofWar extends Game {
     public ArtofWar() {
         super();
         try {
-            DBController dbController = new DBController();
+            DBController dbController = new DBController("artofwar.db");
             dbController.openConnection();
             gameDatabase = new GameDatabase(dbController.getConnection());
         } catch (SQLException e) {
