@@ -45,7 +45,7 @@ public class GameDatabase {
                 ");"
         );
         statement.execute(
-            "CREATE TABLE IF NOT EXISTS move" +
+            "CREATE TABLE IF NOT EXISTS turn" +
                 "(" +
                 "    id                INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                 "    current_player_id INTEGER NOT NULL," +
@@ -62,6 +62,15 @@ public class GameDatabase {
         statement.close();
     }
 
+    /**
+     * Adding players to the player table.
+     * <p>
+     * Each player receive id.
+     * </p>
+     *
+     * @param players List of players
+     * @throws SQLException
+     */
     public void insertPlayers(List<Player> players) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
             "INSERT OR IGNORE INTO player (name) VALUES (?) RETURNING id");
@@ -82,6 +91,19 @@ public class GameDatabase {
         connection.commit();
     }
 
+    /**
+     * Adding players to the player table.
+     * <p>
+     * Each game receive id.
+     * </p>
+     *
+     * @param gamingProcess current game
+     * @param playerQty     number of players in the game
+     * @param seed          map seed
+     * @param mapWidth      map width
+     * @param mapHeight     map height
+     * @throws SQLException
+     */
     public void insertGame(GamingProcess gamingProcess, int playerQty, long seed, int mapWidth, int mapHeight) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
             "INSERT INTO game (players_qty, map_seed, map_width, map_height) VALUES (?, ?, ?, ?) RETURNING id"
@@ -96,9 +118,20 @@ public class GameDatabase {
         connection.commit();
     }
 
-    public int insertMove(int playerId, int gameId, int round, int gold, int territories) throws SQLException {
+    /**
+     * Adding turn to the turn table.
+     *
+     * @param playerId    current playerId
+     * @param gameId      game id
+     * @param round       current round in the game
+     * @param gold        amount of gold at the start of the turn
+     * @param territories amount of territories at the start of the turn
+     * @return id of the new turn
+     * @throws SQLException
+     */
+    public int insertTurn(int playerId, int gameId, int round, int gold, int territories) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "INSERT INTO move (current_player_id, game_id, round, gold, territories) VALUES (?, ?, ?, ?, ?) RETURNING id"
+            "INSERT INTO turn (current_player_id, game_id, round, gold, territories) VALUES (?, ?, ?, ?, ?) RETURNING id"
         );
         statement.setInt(1, playerId);
         statement.setInt(2, gameId);
@@ -106,12 +139,18 @@ public class GameDatabase {
         statement.setInt(4, gold);
         statement.setInt(5, territories);
         ResultSet rs = statement.executeQuery();
-        int moveId = rs.getInt(1);
+        int turnId = rs.getInt(1);
         statement.close();
         connection.commit();
-        return moveId;
+        return turnId;
     }
 
+    /**
+     * Ends the game. Write endTimestamp to the game table.
+     *
+     * @param gameId game id
+     * @throws SQLException
+     */
     public void finishGame(int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
             "UPDATE game SET end_timestamp = CURRENT_TIMESTAMP WHERE id = ?"

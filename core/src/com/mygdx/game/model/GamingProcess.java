@@ -49,7 +49,7 @@ public class GamingProcess {
             stage.setGameObjectToPlace(new Capital(map, null, player));
         }
         try {
-            gameDatabase.insertMove(player.getId(), gameId, round, player.getGold(), player.getTerritories());
+            gameDatabase.insertTurn(player.getId(), gameId, round, player.getGold(), player.getTerritories());
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -60,7 +60,7 @@ public class GamingProcess {
     public void removeCurrentPlayer() {
         Player player = getCurrentPlayer();
         try {
-            gameDatabase.insertMove(player.getId(), gameId, round, player.getGold(), 0);
+            gameDatabase.insertTurn(player.getId(), gameId, round, player.getGold(), 0);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
