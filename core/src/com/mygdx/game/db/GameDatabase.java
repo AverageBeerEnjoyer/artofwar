@@ -92,19 +92,17 @@ public class GameDatabase {
     }
 
     /**
-     * Adding players to the player table.
-     * <p>
-     * Each game receive id.
-     * </p>
+     * Adding game to the player table.
      *
      * @param gamingProcess current game
      * @param playerQty     number of players in the game
      * @param seed          map seed
      * @param mapWidth      map width
      * @param mapHeight     map height
+     * @return id of the game
      * @throws SQLException
      */
-    public void insertGame(GamingProcess gamingProcess, int playerQty, long seed, int mapWidth, int mapHeight) throws SQLException {
+    public int insertGame(GamingProcess gamingProcess, int playerQty, long seed, int mapWidth, int mapHeight) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
             "INSERT INTO game (players_qty, map_seed, map_width, map_height) VALUES (?, ?, ?, ?) RETURNING id"
         );
@@ -113,9 +111,10 @@ public class GameDatabase {
         statement.setInt(3, mapWidth);
         statement.setInt(4, mapHeight);
         ResultSet rs = statement.executeQuery();
-        gamingProcess.setId(rs.getInt(1));
+        int gameId = rs.getInt(1);
         statement.close();
         connection.commit();
+        return gameId;
     }
 
     /**
