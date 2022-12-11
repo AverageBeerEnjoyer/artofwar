@@ -159,4 +159,21 @@ public class GameDatabase {
         statement.executeUpdate();
         connection.commit();
     }
+
+    /**
+     * Get number of the round where player finished the game
+     *
+     * @param playerId player id
+     * @return Number of the round; 0 if player wins the game.
+     * @throws SQLException
+     */
+    public int getFinishRound(int playerId, int gameId) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(
+            "SELECT round FROM turn WHERE game_id = ? AND current_player_id = ? AND territories = 0"
+        );
+        statement.setInt(1, playerId);
+        statement.setInt(2, gameId);
+        ResultSet rs = statement.executeQuery();
+        return rs.getInt(1);
+    }
 }

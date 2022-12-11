@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +31,7 @@ public class GameDatabaseTest {
     @Test
     void addingPlayers() throws SQLException {
         Map map = mock(Map.class);
-        Collection<String> names = Arrays.asList("Ivan", "Elena", "Sergey", "Alex", "John");
+        List<String> names = Arrays.asList("Ivan", "Elena", "Sergey", "Alex", "John");
         List<Player> players = names.stream()
             .map(ele -> new Player(ele, map, null))
             .toList();
