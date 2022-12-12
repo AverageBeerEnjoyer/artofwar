@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
@@ -58,15 +60,18 @@ public class MenuStage extends Stage implements Screen {
     public void createPlayerTable() {
         preGame.removeActor(preGame.findActor("names table"));
         Table table = new Table();
-        table.debug();
         table.setName("names table");
-        table.moveBy(500, 100);
         int n = Integer.parseInt(playersNumber.getTextField().getText());
         for (int i = 0; i < n; ++i) {
             table.add(artofWar.factory.createTextField("player" + (i + 1)));
             table.row();
         }
-
+        TextureRegion tr = new TextureRegion(new Texture("playersTableBackground.jpg"));
+        tr.setRegionHeight((int) table.getHeight());
+        tr.setRegionWidth((int) table.getWidth());
+        table.setBackground(new TextureRegionDrawable(tr));
+        table.pack();
+        table.setPosition(500,100);
         preGame.addActor(table);
     }
 
