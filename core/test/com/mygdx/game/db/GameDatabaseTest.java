@@ -1,6 +1,5 @@
 package com.mygdx.game.db;
 
-import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
 import org.junit.jupiter.api.AfterEach;
@@ -11,9 +10,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -99,6 +100,22 @@ public class GameDatabaseTest {
             "SELECT end_timestamp FROM game WHERE id = 1"
         );
         assertThat(rs.getTimestamp(1)).isNotNull();
+    }
+
+    @Test
+    void gameDurationTest() throws SQLException {
+        Connection connection = dbController.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+            "INSERT INTO game (players_qty, start_timestamp, end_timestamp, map_seed, map_width, map_height) VALUES (?, ?, ?, ?, ?, ?);"
+        );
+        statement.setInt(1, 2);
+        statement.setTimestamp(2, Timestamp.valueOf("2022-12-12 19:40:00"));
+        statement.setTimestamp(3, Timestamp.valueOf("2022-12-12 20:35:30"));
+        statement.setInt(4, 222);
+        statement.setInt(5, 10);
+        statement.setInt(6, 10);
+        statement.executeUpdate();
+        assertThat(gameDatabase.getGameDuration(1)).isEqualTo("55:30");
     }
 
     @AfterEach
