@@ -30,8 +30,8 @@ public abstract class Unit extends GameObject implements Movable {
         if (canMove(x, y)) {
             getMap().removeGameObject(this);
             getMap().setGameObjectOnCell(x, y, this);
+            moved = true;
         }
-        moved = true;
     }
 
     private boolean canMove(int x, int y) {
