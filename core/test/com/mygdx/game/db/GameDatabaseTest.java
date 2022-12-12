@@ -5,6 +5,7 @@ import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -87,6 +88,19 @@ public class GameDatabaseTest {
             arguments(2, 231, 10, 10),
             arguments(10, 999, 50, 50)
         );
+    }
+
+    @Test
+    void finishGameTest() throws SQLException {
+        GamingProcess game = mock(GamingProcess.class);
+        int gameId = gameDatabase.insertGame(game, 2, 111, 10, 10);
+
+        gameDatabase.finishGame(gameId);
+        Connection connection = dbController.getConnection();
+        ResultSet rs = connection.createStatement().executeQuery("" +
+            "SELECT end_timestamp FROM game WHERE id = 1"
+        );
+        assertThat(rs.getTimestamp(1)).isNotNull();
     }
 
     @AfterEach
