@@ -8,9 +8,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBController {
-    private static final String DB_NAME = "artofwar.db";
-    private static final String DB_URL = String.format("jdbc:sqlite:%s", DB_NAME);
+    private final String DB_URL;
     private static Connection connection = null;
+
+    public DBController(String dbName) {
+        DB_URL = String.format("jdbc:sqlite:%s", dbName);
+    }
 
     /**
      * Opens a connection to database instance on DB_URL.

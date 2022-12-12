@@ -31,7 +31,7 @@ public class ArtofWar extends Game {
     public ArtofWar() {
         super();
         try {
-            DBController dbController = new DBController();
+            DBController dbController = new DBController("artofwar.db");
             dbController.openConnection();
             gameDatabase = new GameDatabase(dbController.getConnection());
         } catch (SQLException e) {
@@ -56,8 +56,9 @@ public class ArtofWar extends Game {
         }
         gameDatabase.insertPlayers(players);
         map.setPlayerList(players);
-        GamingProcess gamingProcess = new GamingProcess(map);
-        gameDatabase.insertGame(gamingProcess, players.size(), map.getMapCreator().getSeed(), width, height);
+        GamingProcess gamingProcess = new GamingProcess(map, gameDatabase);
+        int gameId = gameDatabase.insertGame(players.size(), map.getMapCreator().getSeed(), width, height);
+        gamingProcess.setId(gameId);
         mainGameStage = new MainGameStage(map, gamingProcess, this);
         setScreen(mainGameStage);
     }

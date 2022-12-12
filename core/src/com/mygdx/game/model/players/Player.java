@@ -178,4 +178,12 @@ public class Player {
     public int getGold() {
         return gold;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getTerritories() {
+        return territory;
+    }
 }
