@@ -47,6 +47,7 @@ public class GamingProcess {
         player.countIncome();
         if(player.getCapital() == null) {
             stage.setGameObjectToPlace(new Capital(map, null, player));
+            stage.getRoot().findActor("next turn").setVisible(false);
         }
         try {
             gameDatabase.insertTurn(player.getId(), gameId, round, player.getGold(), player.getTerritories());

@@ -17,5 +17,6 @@ public class PlaceToCellCL extends CellActionCL {
         stage.getMap().setGameObjectOnCell(cell.x, cell.y, object);
         stage.clearSelectedArea();
         stage.updateInfo();
+        stage.getRoot().findActor("next turn").setVisible(true);
     }
 }
