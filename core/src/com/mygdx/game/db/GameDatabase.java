@@ -2,13 +2,22 @@ package com.mygdx.game.db;
 
 import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.players.Player;
+import org.sqlite.date.DateFormatUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
+import java.util.Locale;
 
 public class GameDatabase {
     private final Connection connection;
@@ -173,5 +182,24 @@ public class GameDatabase {
         statement.setInt(2, gameId);
         ResultSet rs = statement.executeQuery();
         return rs.getInt(1);
+    }
+
+    public String getGameDuration(int gameId) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(
+            "SELECT start_timestamp, end_timestamp FROM game WHERE id = ?"
+        );
+
+        statement.setInt(1, gameId);
+
+        ResultSet rs = statement.executeQuery();
+
+        Timestamp startGameTimestamp = rs.getTimestamp(1);
+        Timestamp endGameTimestamp = rs.getTimestamp(2);
+
+        long timedelta = endGameTimestamp.getTime() - startGameTimestamp.getTime();
+
+        LocalTime gameTime = new Time(timedelta).toLocalTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
+        return gameTime.format(formatter);
     }
 }
