@@ -65,8 +65,7 @@ public class GameDatabaseTest {
     @ParameterizedTest
     @MethodSource("gameArguments")
     void creatingGameTest(int playerQty, long seed, int mapWidth, int mapHeight) throws SQLException {
-        GamingProcess game = mock(GamingProcess.class);
-        int gameId = gameDatabase.insertGame(game, playerQty, seed, mapWidth, mapHeight);
+        int gameId = gameDatabase.insertGame(playerQty, seed, mapWidth, mapHeight);
         assertThat(gameId).isOne();
 
         Connection connection = dbController.getConnection();
@@ -92,8 +91,7 @@ public class GameDatabaseTest {
 
     @Test
     void finishGameTest() throws SQLException {
-        GamingProcess game = mock(GamingProcess.class);
-        int gameId = gameDatabase.insertGame(game, 2, 111, 10, 10);
+        int gameId = gameDatabase.insertGame(2, 111, 10, 10);
 
         gameDatabase.finishGame(gameId);
         Connection connection = dbController.getConnection();
