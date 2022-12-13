@@ -180,6 +180,13 @@ public class GameDatabase {
         return rs.getInt(1);
     }
 
+    /**
+     * Get gameDuration
+     *
+     * @param gameId game id
+     * @return time formatted "mm:ss"
+     * @throws SQLException
+     */
     public String getGameDuration(int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
             "SELECT start_timestamp, end_timestamp FROM game WHERE id = ?"
@@ -199,6 +206,15 @@ public class GameDatabase {
         return gameTime.format(formatter);
     }
 
+    /**
+     * Get game over statistics of players
+     *
+     * <p>Players ordered from winner to losers</p>
+     *
+     * @param gameId game id
+     * @return List of player records.
+     * @throws SQLException
+     */
     public ArrayList<PlayerStats> getGameOverPlayerStats(int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
             "SELECT name, max(territories) as 'max terrs', sum(gold) as 'total gold', max(round) as 'last round' " +
@@ -209,7 +225,7 @@ public class GameDatabase {
         );
         statement.setInt(1, gameId);
         ResultSet rs = statement.executeQuery();
-        ArrayList<PlayerStats> playersStats = new ArrayList<PlayerStats>();
+        ArrayList<PlayerStats> playersStats = new ArrayList<>();
         while (rs.next()) {
             playersStats.add(new PlayerStats(
                 rs.getString(1), rs.getInt(2), rs.getInt(3), rs.getInt(4))
