@@ -1,8 +1,7 @@
 package com.mygdx.game.db;
 
-import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.players.Player;
-import org.sqlite.date.DateFormatUtils;
+import com.mygdx.game.model.players.PlayerStats;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,13 +10,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class GameDatabase {
     private final Connection connection;
@@ -103,10 +99,10 @@ public class GameDatabase {
     /**
      * Adding game to the player table.
      *
-     * @param playerQty     number of players in the game
-     * @param seed          map seed
-     * @param mapWidth      map width
-     * @param mapHeight     map height
+     * @param playerQty number of players in the game
+     * @param seed      map seed
+     * @param mapWidth  map width
+     * @param mapHeight map height
      * @return id of the game
      * @throws SQLException
      */
@@ -201,5 +197,24 @@ public class GameDatabase {
         LocalTime gameTime = new Time(timedelta).toLocalTime();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
         return gameTime.format(formatter);
+    }
+
+    public ArrayList<PlayerStats> getGameOverPlayerStats(int gameId) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(
+            "SELECT name, max(territories) as 'max terrs', sum(gold) as 'total gold', max(round) as 'last round' " +
+                "FROM turn " +
+                "         JOIN player p on p.id = turn.current_player_id " +
+                "WHERE game_id = ? " +
+                "GROUP BY current_player_id;"
+        );
+        statement.setInt(1, gameId);
+        ResultSet rs = statement.executeQuery();
+        ArrayList<PlayerStats> playersStats = new ArrayList<PlayerStats>();
+        while (rs.next()) {
+            playersStats.add(new PlayerStats(
+                rs.getString(1), rs.getInt(2), rs.getInt(3), rs.getInt(4))
+            );
+        }
+        return playersStats;
     }
 }
