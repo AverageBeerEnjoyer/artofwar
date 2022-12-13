@@ -130,7 +130,6 @@ public class MainGameStage extends Stage implements Screen {
                 if (area[i][j] != -1) {
                     TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i, j), listenerCreator.apply(this, map.getCell(i, j)), 3);
                     selectedArea.addActor(actor);
-                    actor.debug();
                 }
             }
         }
@@ -243,7 +242,12 @@ public class MainGameStage extends Stage implements Screen {
                 BuildingSpec.superTowerCost + " G"
         );
 
-        Button nextTurn = artofWar.factory.createImageButton(Gdx.graphics.getWidth() - 100, 30, new Texture(Gdx.files.internal("button/arrow_next.png")), new NextTurnCL(this));
+        Button nextTurn = artofWar.factory.createImageButton(
+                Gdx.graphics.getWidth() - 100, 30,
+                new Texture(Gdx.files.internal("button/arrow_next.png")),
+                new NextTurnCL(this)
+        );
+        nextTurn.setName("next turn");
 
         unitButtons.addActor(peasant);
         unitButtons.addActor(militia);
