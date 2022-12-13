@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 
+
 public class GameDatabaseTest {
     private static GameDatabase gameDatabase;
     private static DBController dbController;
@@ -116,6 +117,27 @@ public class GameDatabaseTest {
         statement.setInt(6, 10);
         statement.executeUpdate();
         assertThat(gameDatabase.getGameDuration(1)).isEqualTo("55:30");
+    }
+
+    @Test
+    void insertTurnTest() throws SQLException {
+        gameDatabase.insertPlayers(Arrays.asList(
+            new Player("player1", null, null),
+            new Player("player2", null, null))
+        );
+        gameDatabase.insertGame(2, 444, 10, 10);
+        gameDatabase.insertTurn(1, 1, 1, 20, 7);
+        Connection connection = dbController.getConnection();
+        ResultSet rs = connection.createStatement().executeQuery("" +
+            "SELECT * FROM turn WHERE current_player_id = 1"
+        );
+        assertThat(rs.getInt(1)).isOne();
+        assertThat(rs.getInt(2)).isOne();
+        assertThat(rs.getInt(3)).isOne();
+        assertThat(rs.getInt(4)).isOne();
+        assertThat(rs.getInt(5)).isEqualTo(20);
+        assertThat(rs.getInt(6)).isEqualTo(7);
+        assertThat(rs.getTimestamp(7)).isNotNull();
     }
 
     @AfterEach
