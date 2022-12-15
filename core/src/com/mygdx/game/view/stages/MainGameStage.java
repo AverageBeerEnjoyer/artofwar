@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,8 +28,11 @@ import com.mygdx.game.model.maps.CellType;
 import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
+import com.mygdx.game.model.players.PlayerStats;
 import com.mygdx.game.view.ArtofWar;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.function.BiFunction;
 
 public class MainGameStage extends Stage implements Screen {
@@ -154,31 +158,37 @@ public class MainGameStage extends Stage implements Screen {
 
     public void showEndStats() {
         Group endStat = new Group();
-        endStat.setBounds(Gdx.graphics.getWidth() / 2 - 150, Gdx.graphics.getHeight() / 2 - 200, 300, 400);
-
         Table table = new Table();
 
-        Image background = new Image(new Texture(Gdx.files.internal("endStatBackground.jpg")));
-        background.setBounds(0,0,300,400);
-        endStat.addActor(background);
-
-
-        Label label = artofWar.factory.createLabel(70, 300, "Game over!");
-        table.add(label).colspan(2).center();
+        Label label = artofWar.factory.createLabel(0,0, "Game over!");
+        table.add(label).colspan(4).center().expand();
         table.row();
 
-        label = artofWar.factory.createLabel(70, 200, "Winner:");
-        table.add(label).right();
+        try {
+            ArrayList<PlayerStats> stats = artofWar.gameDatabase.getGameOverPlayerStats(gamingProcess.getGameId());
 
-        label = artofWar.factory.createLabel(150, 200, gamingProcess.getCurrentPlayer().name);
-        table.add(label).left();
-        table.row();
+            table.add(artofWar.factory.createLabel(0,0,"Player")).center().pad(10);
+            table.add(artofWar.factory.createLabel(0,0,"Max territory")).center().pad(10);
+            table.add(artofWar.factory.createLabel(0,0,"Max gold")).center().pad(10);
+            table.add(artofWar.factory.createLabel(0,0,"Last round")).center().pad(10);
+            table.row();
+            stats.forEach(playerStats -> {
+                table.add(artofWar.factory.createLabel(0,0,playerStats.name())).center();
+                table.add(artofWar.factory.createLabel(0,0,playerStats.maxTerrs()+"")).center();
+                table.add(artofWar.factory.createLabel(0,0,playerStats.maxGold()+"")).center();
+                table.add(artofWar.factory.createLabel(0,0,playerStats.lastRound()+"")).center();
+                table.row();
+            });
+        } catch (SQLException ignored) {
+        }
 
         Button button = artofWar.factory.createTextButton(100, 30, "Back to menu", new EndGameCL(this));
-        table.add(button).colspan(2).center();
+        table.add(button).colspan(4).center();
 
-        table.setPosition(endStat.getWidth()/2 - table.getWidth()/2,endStat.getHeight()/2-table.getHeight()/2);
-
+        TextureRegionDrawable back = new TextureRegionDrawable(new Texture(Gdx.files.internal("endStatBackground.jpg")));
+        table.setBackground(new TextureRegionDrawable(back));
+        table.pack();
+        table.setBounds(0.25f*Gdx.graphics.getWidth(),0.25f*Gdx.graphics.getHeight(),0.5f*Gdx.graphics.getWidth(),0.5f*Gdx.graphics.getHeight());
         endStat.addActor(table);
         setRoot(endStat);
     }
@@ -187,9 +197,9 @@ public class MainGameStage extends Stage implements Screen {
         controls = new Group();
 
         HorizontalGroup currentTurnInfo = new HorizontalGroup();
-        currentTurnInfo.setPosition(Gdx.graphics.getWidth() / 2 - 300, Gdx.graphics.getHeight() - 50);
+        currentTurnInfo.setPosition(Gdx.graphics.getWidth() / 2f - 300, Gdx.graphics.getHeight() - 50);
         HorizontalGroup unitButtons = new HorizontalGroup();
-        unitButtons.setPosition(Gdx.graphics.getWidth() / 2 - 350, 90);
+        unitButtons.setPosition(Gdx.graphics.getWidth() / 2f - 350, 90);
 
 
         Button peasant = artofWar.factory.createImageTextButton(
