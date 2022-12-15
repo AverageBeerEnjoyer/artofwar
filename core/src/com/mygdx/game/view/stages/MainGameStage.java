@@ -185,7 +185,7 @@ public class MainGameStage extends Stage implements Screen {
         Button button = artofWar.factory.createTextButton(100, 30, "Back to menu", new EndGameCL(this));
         table.add(button).colspan(4).center();
 
-        TextureRegionDrawable back = new TextureRegionDrawable(new Texture(Gdx.files.internal("endStatBackground.jpg")));
+        TextureRegionDrawable back = new TextureRegionDrawable(new Texture(Gdx.files.internal("endStatBackground.png")));
         table.setBackground(new TextureRegionDrawable(back));
         table.pack();
         table.setBounds(0.25f*Gdx.graphics.getWidth(),0.25f*Gdx.graphics.getHeight(),0.5f*Gdx.graphics.getWidth(),0.5f*Gdx.graphics.getHeight());
