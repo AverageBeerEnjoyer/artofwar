@@ -15,6 +15,7 @@ public class DesktopLauncher {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setForegroundFPS(60);
         config.setTitle("ArtofWar");
+        config.setWindowIcon("logo.png");
         config.setWindowedMode(screenWidth, screenHeight);
         config.useVsync(true);
         new Lwjgl3Application(new ArtofWar(), config);
