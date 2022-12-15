@@ -34,7 +34,7 @@ public class MenuStage extends Stage implements Screen {
     public MenuStage(ArtofWar artofWar) {
         this.artofWar = artofWar;
         VisUI.load();
-        ((OrthographicCamera) getCamera()).setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        ((OrthographicCamera) getCamera()).setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         createMainGroup();
         createPreGame();
         toMain();
@@ -43,7 +43,7 @@ public class MenuStage extends Stage implements Screen {
     public void createMainGroup() {
         main = new Group();
 
-        Button play = artofWar.factory.createImageButton(100,300,new Texture(Gdx.files.internal("button/play_button.png")), new PreGameCL(this));
+        Button play = artofWar.factory.createImageButton(100, 300, new Texture(Gdx.files.internal("button/play_button.png")), new PreGameCL(this));
 
 
         Button exit = artofWar.factory.createImageButton(100, 230, new Texture(Gdx.files.internal("button/quit_button.png")), new ExitCL());
@@ -58,10 +58,16 @@ public class MenuStage extends Stage implements Screen {
     }
 
     public void createPlayerTable() {
-        preGame.removeActor(preGame.findActor("names table"));
+        int n;
+        try {
+            n = Integer.parseInt(playersNumber.getTextField().getText());
+        } catch (NumberFormatException e) {
+            return;
+        }
+        if (n < 2 || n > 10) return;
+
         Table table = new Table();
         table.setName("names table");
-        int n = Integer.parseInt(playersNumber.getTextField().getText());
         for (int i = 0; i < n; ++i) {
             table.add(artofWar.factory.createTextField("player" + (i + 1)));
             table.row();
@@ -71,7 +77,8 @@ public class MenuStage extends Stage implements Screen {
         tr.setRegionWidth((int) table.getWidth());
         table.setBackground(new TextureRegionDrawable(tr));
         table.pack();
-        table.setPosition(500,100);
+        table.setPosition(500, 100);
+        preGame.removeActor(preGame.findActor("names table"));
         preGame.addActor(table);
     }
 
@@ -106,16 +113,23 @@ public class MenuStage extends Stage implements Screen {
     }
 
     public void startGame() throws SQLException {
+        int width, height;
+        try {
+            width = Integer.parseInt(mapWidth.getTextField().getText());
+            height = Integer.parseInt(mapHeight.getTextField().getText());
+        } catch (NumberFormatException e) {
+            return;
+        }
+        if (width < 10 || width > 125 || height < 10 || height > 125) return;
+
         List<String> players = new ArrayList<>();
-        int n = Integer.parseInt(playersNumber.getTextField().getText());
         Table table = preGame.findActor("names table");
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < table.getChildren().size; ++i) {
             String player = ((TextField) table.getChildren().get(i)).getText();
             if (player.isEmpty()) player = "player" + (i + 1);
             players.add(player);
         }
-        int width = Integer.parseInt(mapWidth.getTextField().getText());
-        int height = Integer.parseInt(mapHeight.getTextField().getText());
+
         artofWar.newGame(width, height, players);
     }
 
