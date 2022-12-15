@@ -8,13 +8,13 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
 public enum CellType {
     UNDEFINED(null),
-    LAND("sheepHex.gif"),
-    BEACH("desertHex.gif"),
-    WATER("waterHex.gif"),
-    MOUNTAIN("oreHex.gif"),
-    JUNGLE("woodHex.gif"),
-    CLAY("clayHex.gif"),
-    WHEAT("wheatHex.gif");
+    LAND("sheepHex.png"),
+    BEACH("desertHex.png"),
+    WATER("waterHex.png"),
+    MOUNTAIN("oreHex.png"),
+    JUNGLE("woodHex.png"),
+    CLAY("clayHex.png"),
+    WHEAT("wheatHex.png");
     private final TiledMapTile tile;
     private static final String resourceCatalog = "pastel_resources_hex/rotat/";
 

@@ -259,6 +259,13 @@ public class MainGameStage extends Stage implements Screen {
         );
         nextTurn.setName("next turn");
 
+        Button backToMenu = artofWar.factory.createImageButton(
+                10, 900,
+                new Texture(Gdx.files.internal("button/close_button.png")),
+                new EndGameCL(this)
+        );
+        backToMenu.setName("back to menu");
+
         unitButtons.addActor(peasant);
         unitButtons.addActor(militia);
         unitButtons.addActor(knight);
@@ -281,6 +288,7 @@ public class MainGameStage extends Stage implements Screen {
 
 
         controls.addActor(nextTurn);
+        controls.addActor(backToMenu);
         controls.addActor(unitButtons);
         controls.addActor(currentTurnInfo);
         addActor(controls);
