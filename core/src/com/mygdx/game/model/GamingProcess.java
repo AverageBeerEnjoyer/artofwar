@@ -54,15 +54,6 @@ public class GamingProcess {
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
-        player.refreshUnits();
-        stage.updateInfo();
-    }
-
-    public void removeCurrentPlayer() {
-        if(isLast()) ++round;
-        map.getPlayerList().remove(getCurrentPlayer());
-        playersNumber = map.getPlayerList().size();
-        currentPlayer %= playersNumber;
         if(playersNumber == 1) {
             try {
                 gameDatabase.finishGame(gameId);
@@ -71,7 +62,21 @@ public class GamingProcess {
             }
             stage.showEndStats();
         }
+        player.refreshUnits();
+        stage.updateInfo();
+    }
 
+    public void removeCurrentPlayer() {
+        Player player = getCurrentPlayer();
+        try {
+            gameDatabase.insertTurn(player.getId(), gameId, round, player.getGold(), 0);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        if(isLast()) ++round;
+        map.getPlayerList().remove(getCurrentPlayer());
+        playersNumber = map.getPlayerList().size();
+        currentPlayer %= playersNumber;
     }
     public boolean isFirst(){
         return currentPlayer == 0;

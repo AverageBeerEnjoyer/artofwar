@@ -217,7 +217,7 @@ public class GameDatabase {
      */
     public ArrayList<PlayerStats> getGameOverPlayerStats(int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "SELECT name, max(territories) as 'max terrs', sum(gold) as 'total gold', max(round) as 'last round' " +
+            "SELECT name, max(territories) as 'max terrs', sum(gold) as 'total gold', max(round) - 1 as 'last round' " +
                 "FROM turn " +
                 "         JOIN player p on p.id = turn.current_player_id " +
                 "WHERE game_id = ? " +
