@@ -221,7 +221,8 @@ public class GameDatabase {
                 "FROM turn " +
                 "         JOIN player p on p.id = turn.current_player_id " +
                 "WHERE game_id = ? " +
-                "GROUP BY current_player_id;"
+                "GROUP BY current_player_id " +
+                "ORDER BY \"last round\" DESC;"
         );
         statement.setInt(1, gameId);
         ResultSet rs = statement.executeQuery();
