@@ -48,11 +48,12 @@ public class GameDatabaseTest {
 
         Connection connection = dbController.getConnection();
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT name FROM player");
+        ResultSet rs = statement.executeQuery("SELECT id, name FROM player");
 
         for (Player player : players) {
             rs.next();
-            assertThat(rs.getString(1)).isEqualTo(player.name);
+            assertThat(rs.getInt(1)).isEqualTo(player.getId());
+            assertThat(rs.getString(2)).isEqualTo(player.name);
         }
         statement.close();
     }
@@ -129,7 +130,7 @@ public class GameDatabaseTest {
         gameDatabase.insertTurn(1, 1, 1, 20, 7);
         Connection connection = dbController.getConnection();
         ResultSet rs = connection.createStatement().executeQuery("" +
-            "SELECT * FROM turn WHERE current_player_id = 1"
+            "SELECT id, current_player_id, game_id, round, gold, territories, timestamp FROM turn WHERE current_player_id = 1"
         );
         assertThat(rs.getInt(1)).isOne();
         assertThat(rs.getInt(2)).isOne();
