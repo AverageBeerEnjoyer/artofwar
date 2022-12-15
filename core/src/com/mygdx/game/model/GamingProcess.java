@@ -59,12 +59,6 @@ public class GamingProcess {
     }
 
     public void removeCurrentPlayer() {
-        Player player = getCurrentPlayer();
-        try {
-            gameDatabase.insertTurn(player.getId(), gameId, round, player.getGold(), 0);
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
         if(isLast()) ++round;
         map.getPlayerList().remove(getCurrentPlayer());
         playersNumber = map.getPlayerList().size();
