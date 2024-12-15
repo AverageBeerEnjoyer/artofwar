@@ -11,6 +11,7 @@ import com.mygdx.game.utils.Triple;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.mygdx.game.model.maps.CellType.WATER;
 
@@ -29,39 +30,17 @@ public class Map {
         return mapCreator.safeAccess(x, y);
     }
 
-//    public void killGameObject(GameObject gameObject) {
-//        gameObject.owner.removeGameObject(gameObject);
-//        removeGameObject(gameObject);
-//    }
-
     public void removeGameObject(GameObject gameObject) {
         MapCell cell = gameObject.getPlacement();
         cell.setGameObject(null);
-//        mapCreator.updateCell(cell);
     }
 
-    public void setGameObject(GameObject gameObject, int x, int y){
-        MapCell cell = mapCreator.safeAccess(x,y);
+    public void setGameObject(GameObject gameObject, int x, int y) {
+        MapCell cell = mapCreator.safeAccess(x, y);
         cell.setGameObject(gameObject);
         gameObject.setPlacement(cell);
         cell.setOwner(gameObject.owner);
     }
-
-//    public void setGameObjectOnCell(int x, int y, GameObject gameObject) {
-//        MapCell cell = mapCreator.safeAccess(x, y);
-//        if (cell == null) return;
-//        if (gameObject.getPlacement() == null) {
-//            gameObject.owner.addGameObject(gameObject);
-//        }
-//        if (cell.getGameObject() != null) {
-//            killGameObject(cell.getGameObject());
-//        }
-//        gameObject.setPlacement(cell);
-//        cell.setGameObject(gameObject);
-//        cell.setOwner(gameObject.owner);
-//        recountDefenceCoverage();
-//        mapToRendererTransformator.update(x, y);
-//    }
 
     public int[][] selectCellsToMove(int xValue, int yValue) {
         int[][] mirror = new int[mapCreator.getWidth()][mapCreator.getHeight()];
@@ -122,19 +101,6 @@ public class Map {
         return territory;
     }
 
-    private void countGameObjectCoverage(GameObject gameObject) {
-        int x = gameObject.getPlacement().x;
-        int y = gameObject.getPlacement().y;
-        int[][] nb = MapCreator.getNeighbours(x);
-        MapCell cell;
-        for (int[] d : nb) {
-            cell = getCell(x + d[0], y + d[1]);
-            if (cell == null || cell.getOwner() != gameObject.owner) continue;
-            cell.setDefence(Math.max(cell.getDefence(), gameObject.getDefence()));
-        }
-        cell = gameObject.getPlacement();
-        cell.setDefence(Math.max(cell.getDefence(), gameObject.getDefence()));
-    }
 
     public void recountDefenceCoverage(List<Player> playerList) {
         for (int i = 0; i < getWidth(); ++i) {
@@ -154,17 +120,32 @@ public class Map {
         }
     }
 
+    private void countGameObjectCoverage(GameObject gameObject) {
+        processNeighbours(cell -> {
+            if (cell == null || cell.getOwner() != gameObject.owner) return;
+            cell.setDefence(Math.max(cell.getDefence(), gameObject.getDefence()));
+        }, gameObject.getPlacement());
+        MapCell cell = gameObject.getPlacement();
+        cell.setDefence(Math.max(cell.getDefence(), gameObject.getDefence()));
+    }
+
     public void createCapitalArea(Capital capital, int x, int y) {
-        int[][] nb = MapCreator.getNeighbours(capital.getPlacement().x);
+        processNeighbours(cell -> {
+            if (cell == null) return;
+            if (cell.getType() != CellType.WATER && cell.getOwner() == Player.NOBODY) {
+                cell.setOwner(capital.owner);
+            }
+        }, capital.getPlacement());
+    }
+
+    private void processNeighbours(Consumer<MapCell> consumer, MapCell start) {
+        int[][] nb = MapCreator.getNeighbours(start.x);
         for (int i = 0; i < 6; ++i) {
             int dx = nb[i][0];
             int dy = nb[i][1];
 
-            MapCell cell = getCell(x + dx, y + dy);
-            if (cell == null) continue;
-            if (cell.getType() != CellType.WATER && cell.getOwner() == Player.NOBODY) {
-                cell.setOwner(capital.owner);
-            }
+            MapCell cell = getCell(start.x + dx, start.y + dy);
+            consumer.accept(cell);
         }
     }
 

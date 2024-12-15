@@ -8,8 +8,10 @@ import com.mygdx.game.model.gameobjects.buildings.Capital;
 import com.mygdx.game.model.gameobjects.buildings.Farm;
 import com.mygdx.game.model.gameobjects.units.Unit;
 import com.mygdx.game.model.maps.*;
+import com.mygdx.game.utils.ListUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Player {
@@ -18,9 +20,9 @@ public class Player {
     public static final Player NOBODY = new Player("", null);
     public final Border border;
     public final String name;
-    private final List<Building> buildings;
-    private final List<Unit> units;
-    private final List<Farm> farms;
+    private List<Building> buildings;
+    private List<Unit> units;
+    private List<Farm> farms;
 
     boolean done = false;
     private Capital capital;
@@ -35,7 +37,7 @@ public class Player {
         farms = new ArrayList<>();
     }
 
-    public Player(Player player){
+    public Player(Player player) {
         this.id = player.id;
         this.gamingProcess = player.gamingProcess;
         this.border = player.border;
@@ -60,99 +62,51 @@ public class Player {
 
     public void removeGameObject(GameObject gameObject) {
         if (gameObject instanceof Unit) {
-            removeUnit((Unit) gameObject);
+            units = ListUtils.removeObject(units, List.of((Unit) gameObject));
         }
         if (gameObject instanceof Building) {
-            if(gameObject instanceof Capital){
+            if (gameObject instanceof Capital) {
                 this.capital = null;
             }
-            if(gameObject instanceof Farm){
-                removeFarm((Farm) gameObject);
+            if (gameObject instanceof Farm) {
+                farms = ListUtils.removeObject(farms, List.of((Farm) gameObject));
+
             } else {
-                removeBuilding((Building) gameObject);
+                buildings = ListUtils.removeObject(buildings, List.of((Building) gameObject));
             }
         }
     }
+
     public void addGameObject(GameObject gameObject) {
         gold -= gameObject.getCost();
         if (gameObject instanceof Unit) {
-            addUnit((Unit) gameObject);
+            units = ListUtils.addObject(units, (Unit) gameObject);
         }
         if (gameObject instanceof Building) {
             if (gameObject instanceof Capital) {
                 capital = (Capital) gameObject;
             }
             if (gameObject instanceof Farm) {
-                addFarm((Farm) gameObject);
+                farms = ListUtils.addObject(farms, (Farm) gameObject);
             } else {
-                addBuilding((Building) gameObject);
+                buildings = ListUtils.addObject(buildings, (Building) gameObject);
             }
         }
-    }
-
-    private void addFarm(Farm farm){
-        if(farms.contains(farm)) return;
-        farms.add(farm);
-    }
-
-    private void addBuilding(Building building) {
-        if(buildings.contains(building)) return;
-        buildings.add(building);
-    }
-
-    private void addUnit(Unit unit) {
-        if (units.contains(unit)) return;
-        units.add(unit);
-    }
-
-    public GamingProcess getGamingProcess() {
-        return gamingProcess;
-    }
-
-    private void removeFarm(Farm farm){
-        farms.remove(farm);
-    }
-
-    private void removeBuilding(Building building) {
-        buildings.remove(building);
-    }
-
-//    public void createCapitalArea() {
-//        int x = capital.getPlacement().x;
-//        int y = capital.getPlacement().y;
-//        int[][] nb = MapCreator.getNeighbours(x);
-//        for (int i = 0; i < 6; ++i) {
-//            int dx = nb[i][0];
-//            int dy = nb[i][1];
-//            MapCell cell = gamingProcess.getMap().getCell(x + dx, y + dy);
-//            if (cell == null) continue;
-//            if (cell.getType() != CellType.WATER && cell.getOwner() == NOBODY) {
-//                cell.setOwner(this);
-//            }
-//            //TODO убрать
-//            gamingProcess.getMap().getMapToRendererTransformator().update(x + dx, x + dy);
-//        }
-//    }
-
-
-
-    private void removeUnit(Unit unit) {
-        units.remove(unit);
     }
 
     public void armyWipe() {
         gold = 0;
     }
-    public void refreshUnits(){
-        for(Unit unit:units){
-            unit.setMoved(false);
-        }
+
+    public void refreshUnits() {
+        units.forEach(unit -> unit.setMoved(false));
     }
+
     public boolean countIncome() {
-        if(capital!=null){
-            gold+=getFarmsNumber()*ProjectVariables.BuildingSpec.farmMoneyPerTurn;
-            gold+=capital.getMoneyPerTurn();
-            gold+=territory;
+        if (capital != null) {
+            gold += getFarmsNumber() * ProjectVariables.BuildingSpec.farmMoneyPerTurn;
+            gold += capital.getMoneyPerTurn();
+            gold += territory;
         }
         for (Building building : buildings) {
             gold += building.getMoneyPerTurn();
@@ -167,8 +121,6 @@ public class Player {
         }
         return true;
     }
-
-    public void setCapital(Capital capital){}
 
     public boolean isDone() {
         return done;
@@ -207,7 +159,7 @@ public class Player {
         return territory;
     }
 
-    public void setGamingProcess(GamingProcess gamingProcess){
+    public void setGamingProcess(GamingProcess gamingProcess) {
         this.gamingProcess = gamingProcess;
     }
 }

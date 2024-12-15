@@ -19,7 +19,6 @@ public class SelectCellCL extends CellActionCL {
             stage.selectUnit(unit, cell.x, cell.y);
             return;
         }
-//        if (stage.getGamingProcess().getGameObjectSelection() instanceof Capital) return;
         stage.clearSelectedArea();
     }
 }

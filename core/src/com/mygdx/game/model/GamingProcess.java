@@ -11,6 +11,7 @@ import com.mygdx.game.model.players.Player;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GamingProcess {
@@ -56,7 +57,7 @@ public class GamingProcess {
     }
 
     private void nextRound() {
-        players.removeIf(Player::isDone);
+        players = players.stream().filter(player -> !player.isDone()).collect(Collectors.toList());
         ++round;
     }
 
@@ -111,6 +112,7 @@ public class GamingProcess {
         }
 
         map.setGameObject(unit, x, y);
+        map.recountDefenceCoverage(players);
 
         unit.setMoved(true);
     }
