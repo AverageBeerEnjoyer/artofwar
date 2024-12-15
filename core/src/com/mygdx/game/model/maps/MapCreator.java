@@ -23,8 +23,9 @@ public class MapCreator {
     private static final int[][]
             neighbourodd = {{1, 0}, {0, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}},
             neighboureven = {{1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {0, -1}, {1, 0}};
-    public static int[][] getNeighbours(int x){
-        if((x&1)==0) return neighboureven;
+
+    public static int[][] getNeighbours(int x) {
+        if ((x & 1) == 0) return neighboureven;
         return neighbourodd;
     }
 
@@ -199,9 +200,9 @@ public class MapCreator {
         for (int i = 0; i < 7; ++i) {
             removeWater();
         }
-        for(MapCell[] col:cells){
-            for(MapCell cell:col){
-                if(cell.getType()!=WATER) cell.setOwner(Player.NOBODY);
+        for (MapCell[] col : cells) {
+            for (MapCell cell : col) {
+                if (cell.getType() != WATER) cell.setOwner(Player.NOBODY);
             }
         }
     }
@@ -426,6 +427,10 @@ public class MapCreator {
 
     public MapCell[][] getCells() {
         return cells;
+    }
+
+    public void updateCell(MapCell cell) {
+        cells[cell.x][cell.y] = cell;
     }
 }
 

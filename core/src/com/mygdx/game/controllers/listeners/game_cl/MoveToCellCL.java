@@ -12,8 +12,7 @@ public class MoveToCellCL extends CellActionCL {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        Unit movingUnit = stage.getUnitToMove();
-        movingUnit.move(cell.x, cell.y);
-        stage.clearSelectedArea();
+        Unit movingUnit = stage.getGamingProcess().getUnitSelection();
+        stage.moveUnit(movingUnit, cell.x, cell.y);
     }
 }

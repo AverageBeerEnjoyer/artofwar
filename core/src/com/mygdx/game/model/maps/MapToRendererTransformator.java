@@ -129,6 +129,7 @@ public class MapToRendererTransformator {
             return;
         }
         gameObjectsLayer.getCell(x, y).setTile(map.getCell(x, y).getGameObject().getTile());
+        updateBorders(x,y);
     }
 
     public HexagonalTiledMapRenderer getRenderer() {

@@ -1,6 +1,7 @@
 package com.mygdx.game.model.players;
 
 import com.mygdx.game.ProjectVariables;
+import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.gameobjects.GameObject;
 import com.mygdx.game.model.gameobjects.buildings.Building;
 import com.mygdx.game.model.gameobjects.buildings.Capital;
@@ -13,8 +14,8 @@ import java.util.List;
 
 public class Player {
     private int id = -1;
-    private final Map map;
-    public static final Player NOBODY = new Player("", null, null);
+    private GamingProcess gamingProcess;
+    public static final Player NOBODY = new Player("", null);
     public final Border border;
     public final String name;
     private final List<Building> buildings;
@@ -26,13 +27,27 @@ public class Player {
     private int gold = 0;
     private int territory = 0;
 
-    public Player(String name, Map map, Border border) {
+    public Player(String name, Border border) {
         this.border = border;
-        this.map = map;
         this.name = name;
         buildings = new ArrayList<>();
         units = new ArrayList<>();
         farms = new ArrayList<>();
+    }
+
+    public Player(Player player){
+        this.id = player.id;
+        this.gamingProcess = player.gamingProcess;
+        this.border = player.border;
+        this.name = player.name;
+        this.buildings = player.buildings;
+        this.units = player.units;
+        this.farms = player.farms;
+
+        this.done = player.done;
+        this.capital = player.capital;
+        this.gold = player.gold;
+        this.territory = player.territory;
     }
 
     public void setId(int id) {
@@ -90,8 +105,8 @@ public class Player {
         units.add(unit);
     }
 
-    public Map getMap() {
-        return map;
+    public GamingProcess getGamingProcess() {
+        return gamingProcess;
     }
 
     private void removeFarm(Farm farm){
@@ -102,37 +117,38 @@ public class Player {
         buildings.remove(building);
     }
 
-    public void createCapitalArea() {
-        int x = capital.getPlacement().x;
-        int y = capital.getPlacement().y;
-        int[][] nb = MapCreator.getNeighbours(x);
-        for (int i = 0; i < 6; ++i) {
-            int dx = nb[i][0];
-            int dy = nb[i][1];
-            MapCell cell = map.getCell(x + dx, y + dy);
-            if (cell == null) continue;
-            if (cell.getType() != CellType.WATER && cell.getOwner() == NOBODY) {
-                cell.setOwner(this);
-            }
-            map.getMapToRendererTransformator().update(x + dx, x + dy);
-        }
-    }
+//    public void createCapitalArea() {
+//        int x = capital.getPlacement().x;
+//        int y = capital.getPlacement().y;
+//        int[][] nb = MapCreator.getNeighbours(x);
+//        for (int i = 0; i < 6; ++i) {
+//            int dx = nb[i][0];
+//            int dy = nb[i][1];
+//            MapCell cell = gamingProcess.getMap().getCell(x + dx, y + dy);
+//            if (cell == null) continue;
+//            if (cell.getType() != CellType.WATER && cell.getOwner() == NOBODY) {
+//                cell.setOwner(this);
+//            }
+//            //TODO убрать
+//            gamingProcess.getMap().getMapToRendererTransformator().update(x + dx, x + dy);
+//        }
+//    }
+
+
 
     private void removeUnit(Unit unit) {
         units.remove(unit);
     }
 
-    private void armyWipe() {
-        while(!units.isEmpty()){
-            map.killGameObject(units.get(0));
-        }
+    public void armyWipe() {
+        gold = 0;
     }
     public void refreshUnits(){
         for(Unit unit:units){
-            unit.refresh();
+            unit.setMoved(false);
         }
     }
-    public void countIncome() {
+    public boolean countIncome() {
         if(capital!=null){
             gold+=getFarmsNumber()*ProjectVariables.BuildingSpec.farmMoneyPerTurn;
             gold+=capital.getMoneyPerTurn();
@@ -147,8 +163,12 @@ public class Player {
         if (gold < 0) {
             armyWipe();
             gold = 0;
+            return false;
         }
+        return true;
     }
+
+    public void setCapital(Capital capital){}
 
     public boolean isDone() {
         return done;
@@ -185,5 +205,9 @@ public class Player {
 
     public int getTerritories() {
         return territory;
+    }
+
+    public void setGamingProcess(GamingProcess gamingProcess){
+        this.gamingProcess = gamingProcess;
     }
 }

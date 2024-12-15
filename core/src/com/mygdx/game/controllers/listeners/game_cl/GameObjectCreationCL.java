@@ -21,12 +21,11 @@ public class GameObjectCreationCL extends MainGameStageCL {
     public void clicked(InputEvent event, float x, float y) {
         GameObject gameObject;
         try {
-            Constructor<? extends GameObject> cons =aClass.getDeclaredConstructor(Map.class, MapCell.class, Player.class);
+            Constructor<? extends GameObject> cons = aClass.getDeclaredConstructor(Map.class, MapCell.class, Player.class);
             gameObject = cons.newInstance(stage.getMap(), null, stage.getGamingProcess().getCurrentPlayer());
-        } catch (Exception e){
+        } catch (Exception e) {
             return;
         }
-        if (stage.getGamingProcess().getCurrentPlayer().getGold() < gameObject.getCost()) return;
-        stage.setGameObjectToPlace(gameObject);
+        stage.addNewGameObject(gameObject);
     }
 }

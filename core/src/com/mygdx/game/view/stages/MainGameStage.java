@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.ProjectVariables.*;
+import com.mygdx.game.model.gameobjects.buildings.Capital;
 import com.mygdx.game.model.maps.MapToRendererTransformator;
 import com.mygdx.game.controllers.actors.TiledMapActor;
 import com.mygdx.game.controllers.listeners.game_cl.*;
@@ -29,6 +30,7 @@ import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 import com.mygdx.game.model.players.PlayerStats;
+import com.mygdx.game.utils.TurnState;
 import com.mygdx.game.view.ArtofWar;
 
 import java.sql.SQLException;
@@ -43,17 +45,15 @@ public class MainGameStage extends Stage implements Screen {
     private Group selectedArea;
     private final Group movableActors = new Group();
     private Group controls;
-    private GameObject gameObjectToPlace = null;
-    private Unit unitToMove = null;
+
     private GamingProcess gamingProcess;
 
 
     public MainGameStage(Map map, GamingProcess gamingProcess, ArtofWar artofWar) {
         this.artofWar = artofWar;
         this.map = map;
-        mapToRendererTransformator = map.getMapToRendererTransformator();
+        this.mapToRendererTransformator = new MapToRendererTransformator(map);
         this.gamingProcess = gamingProcess;
-        this.gamingProcess.setStage(this);
         artofWar.factory.setGameStage(this);
         addActor(movableActors);
         placeCapitalArea();
@@ -69,15 +69,63 @@ public class MainGameStage extends Stage implements Screen {
         );
     }
 
-
-    public Map getMap() {
-        return this.map;
+    public void nexTurn() {
+        if(gamingProcess.getRound()>0)clearSelectedArea();
+        TurnState turnState = gamingProcess.nextTurn();
+        switch (turnState) {
+            case FINISH -> showEndStats();
+            case CAPITAL -> {
+                if (gamingProcess.getRound() == 0) {
+                    placeCapitalArea();
+                } else {
+                    selectArea(PlaceToCellCL::new, map.getPlayerTerritory(gamingProcess.getCurrentPlayer()));
+                }
+            }
+        }
+        if (gamingProcess.getRound() > 0) updateInfo();
     }
 
-    public void loadActors() {
-        createActorsLayer();
-        createControls();
-        movableActors.toBack();
+    public void moveUnit(Unit unit, int x, int y) {
+        int xOld = unit.getPlacement().x;
+        int yOld = unit.getPlacement().y;
+
+        gamingProcess.moveUnit(unit, x, y);
+        clearSelectedArea();
+
+        mapToRendererTransformator.update(xOld, yOld);
+        mapToRendererTransformator.update(x, y);
+    }
+
+    public void selectUnit(Unit unit, int x, int y) {
+        clearSelectedArea();
+        gamingProcess.setUnitSelection(unit);
+        selectArea(MoveToCellCL::new, map.selectCellsToMove(x, y));
+    }
+
+    public void placeCapitalFirstRound(int x, int y) {
+        clearSelectedArea();
+        gamingProcess.createCapitalArea(gamingProcess.getCurrentPlayer(), x, y);
+        if (gamingProcess.isLast()) loadActors();
+        mapToRendererTransformator.update(x, y);
+        nexTurn();
+    }
+
+    public void addNewGameObject(GameObject gameObject) {
+        if (gamingProcess.getCurrentPlayer().getGold() < gameObject.getCost()) return;
+        clearSelectedArea();
+        gamingProcess.setGameObjectSelection(gameObject);
+        selectArea(
+                PlaceToCellCL::new,
+                map.getPlayerTerritory(gamingProcess.getCurrentPlayer())
+        );
+    }
+
+    public void placeGameObject(GameObject gameObject, int x, int y) {
+        clearSelectedArea();
+        gamingProcess.placeNewGameObjectOnCell(gameObject, x, y);
+        updateInfo();
+        getRoot().findActor("next turn").setVisible(true);
+        mapToRendererTransformator.update(x, y);
     }
 
     public Group getMovableActors() {
@@ -88,30 +136,34 @@ public class MainGameStage extends Stage implements Screen {
         this.map = Map;
     }
 
-    public void setGameObjectToPlace(GameObject gameObjectToPlace) {
-        clearSelectedArea();
-        this.gameObjectToPlace = gameObjectToPlace;
-        selectArea(PlaceToCellCL::new, map.getPlayerTerritory(gamingProcess.getCurrentPlayer()));
+    public Map getMap() {
+        return this.map;
     }
 
-    public void setUnitToMove(Unit unit) {
-        clearSelectedArea();
-        unitToMove = unit;
-        selectArea(MoveToCellCL::new, map.selectCellsToMove(unitToMove.getPlacement().x, unitToMove.getPlacement().y));
+    public GamingProcess getGamingProcess() {
+        return gamingProcess;
     }
 
-
-    public Unit getUnitToMove() {
-        return unitToMove;
+    //-------------------------------------------
+    // UI
+    //-------------------------------------------
+    public void updateInfo() {
+        Label name = controls.findActor("name");
+        Label farm = controls.findActor("farm");
+        Label gold = controls.findActor("gold");
+        farm.setText((BuildingSpec.defaultFarmCost + gamingProcess.getCurrentPlayer().getFarmsNumber() * BuildingSpec.additionalFarmCost) + " G");
+        name.setText(gamingProcess.getCurrentPlayer().name);
+        gold.setText(gamingProcess.getCurrentPlayer().getGold() + "");
     }
-
-    public GameObject getGameObjectToPlace() {
-        return gameObjectToPlace;
-    }
-
 
     public void placeCapitalArea() {
         selectArea(PlaceCapitalFirstRoundCL::new, map.getPlayerTerritory(Player.NOBODY));
+    }
+
+    public void loadActors() {
+        createActorsLayer();
+        createControls();
+        movableActors.toBack();
     }
 
     private void createActorsLayer() {
@@ -137,20 +189,21 @@ public class MainGameStage extends Stage implements Screen {
                 }
             }
         }
-        map.getMapToRendererTransformator().createSelectedArea(area);
+        mapToRendererTransformator.createSelectedArea(area);
         movableActors.addActor(selectedArea);
     }
 
     public void clearSelectedArea() {
         movableActors.getChild(0).setVisible(true);
         movableActors.removeActor(selectedArea);
-        map.getMapToRendererTransformator().clearSelectedArea();
-        unitToMove = null;
-        gameObjectToPlace = null;
+        mapToRendererTransformator.clearSelectedArea();
+        gamingProcess.setGameObjectSelection(null);
+        gamingProcess.setUnitSelection(null);
         selectedArea = null;
     }
 
     public void endGame() {
+        showEndStats();
         artofWar.setScreen(artofWar.menuStage);
         artofWar.menuStage.toMain();
         dispose();
@@ -160,23 +213,23 @@ public class MainGameStage extends Stage implements Screen {
         Group endStat = new Group();
         Table table = new Table();
 
-        Label label = artofWar.factory.createLabel(0,0, "Game over!");
+        Label label = artofWar.factory.createLabel(0, 0, "Game over!");
         table.add(label).colspan(4).center().expand();
         table.row();
 
         try {
             ArrayList<PlayerStats> stats = artofWar.gameDatabase.getGameOverPlayerStats(gamingProcess.getGameId());
 
-            table.add(artofWar.factory.createLabel(0,0,"Player")).center().pad(10);
-            table.add(artofWar.factory.createLabel(0,0,"Max territory")).center().pad(10);
-            table.add(artofWar.factory.createLabel(0,0,"Max gold")).center().pad(10);
-            table.add(artofWar.factory.createLabel(0,0,"Last round")).center().pad(10);
+            table.add(artofWar.factory.createLabel(0, 0, "Player")).center().pad(10);
+            table.add(artofWar.factory.createLabel(0, 0, "Max territory")).center().pad(10);
+            table.add(artofWar.factory.createLabel(0, 0, "Max gold")).center().pad(10);
+            table.add(artofWar.factory.createLabel(0, 0, "Last round")).center().pad(10);
             table.row();
             stats.forEach(playerStats -> {
-                table.add(artofWar.factory.createLabel(0,0,playerStats.name())).center();
-                table.add(artofWar.factory.createLabel(0,0,playerStats.maxTerrs()+"")).center();
-                table.add(artofWar.factory.createLabel(0,0,playerStats.maxGold()+"")).center();
-                table.add(artofWar.factory.createLabel(0,0,playerStats.lastRound()+"")).center();
+                table.add(artofWar.factory.createLabel(0, 0, playerStats.name())).center();
+                table.add(artofWar.factory.createLabel(0, 0, playerStats.maxTerrs() + "")).center();
+                table.add(artofWar.factory.createLabel(0, 0, playerStats.maxGold() + "")).center();
+                table.add(artofWar.factory.createLabel(0, 0, playerStats.lastRound() + "")).center();
                 table.row();
             });
         } catch (SQLException ignored) {
@@ -188,7 +241,7 @@ public class MainGameStage extends Stage implements Screen {
         TextureRegionDrawable back = new TextureRegionDrawable(new Texture(Gdx.files.internal("endStatBackground.png")));
         table.setBackground(new TextureRegionDrawable(back));
         table.pack();
-        table.setBounds(0.25f*Gdx.graphics.getWidth(),0.25f*Gdx.graphics.getHeight(),0.5f*Gdx.graphics.getWidth(),0.5f*Gdx.graphics.getHeight());
+        table.setBounds(0.25f * Gdx.graphics.getWidth(), 0.25f * Gdx.graphics.getHeight(), 0.5f * Gdx.graphics.getWidth(), 0.5f * Gdx.graphics.getHeight());
         endStat.addActor(table);
         setRoot(endStat);
     }
@@ -294,18 +347,6 @@ public class MainGameStage extends Stage implements Screen {
         addActor(controls);
     }
 
-    public void updateInfo() {
-        Label name = controls.findActor("name");
-        Label farm = controls.findActor("farm");
-        Label gold = controls.findActor("gold");
-        farm.setText((BuildingSpec.defaultFarmCost + gamingProcess.getCurrentPlayer().getFarmsNumber() * BuildingSpec.additionalFarmCost) + " G");
-        name.setText(gamingProcess.getCurrentPlayer().name);
-        gold.setText(gamingProcess.getCurrentPlayer().getGold() + "");
-    }
-
-    public GamingProcess getGamingProcess() {
-        return gamingProcess;
-    }
 
     @Override
     public void show() {

@@ -16,10 +16,10 @@ public class SelectCellCL extends CellActionCL {
     @Override
     public void clicked(InputEvent event, float x, float y) {
         if (cell.getOwner() == stage.getGamingProcess().getCurrentPlayer() && cell.getGameObject() instanceof Unit unit && !unit.isMoved()) {
-            stage.setUnitToMove(unit);
+            stage.selectUnit(unit, cell.x, cell.y);
             return;
         }
-        if (stage.getGameObjectToPlace() instanceof Capital) return;
+//        if (stage.getGamingProcess().getGameObjectSelection() instanceof Capital) return;
         stage.clearSelectedArea();
     }
 }

@@ -12,11 +12,9 @@ public class PlaceToCellCL extends CellActionCL {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        GameObject object = stage.getGameObjectToPlace();
+        GameObject object = stage.getGamingProcess().getGameObjectSelection();
         if (cell.getGameObject() != null) return;
-        stage.getMap().setGameObjectOnCell(cell.x, cell.y, object);
-        stage.clearSelectedArea();
-        stage.updateInfo();
-        stage.getRoot().findActor("next turn").setVisible(true);
+
+        stage.placeGameObject(object, cell.x, cell.y);
     }
 }

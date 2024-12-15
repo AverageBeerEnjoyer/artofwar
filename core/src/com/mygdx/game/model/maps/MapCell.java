@@ -21,6 +21,17 @@ public class MapCell {
         this.y = y;
     }
 
+    public MapCell(MapCell mapCell){
+        this.type = mapCell.type;
+        this.elevation = mapCell.elevation;
+        this.humidity = mapCell.humidity;
+        this.defence = mapCell.defence;
+        this.x = mapCell.x;
+        this.y = mapCell.y;
+        this.owner = mapCell.owner;
+        this.gameObject = mapCell.gameObject;
+    }
+
     public double getHumidity() {
         return humidity;
     }
@@ -71,7 +82,5 @@ public class MapCell {
         if (this.owner != null) this.owner.removeTerritory();
         this.owner = owner;
         this.owner.addTerritory();
-        if (owner != Player.NOBODY)
-            owner.getMap().getMapToRendererTransformator().updateBorders(x, y);
     }
 }

@@ -51,12 +51,12 @@ public class ArtofWar extends Game {
         Map map  = new Map(width,height);
         List<Player> players = new ArrayList<>();
         for(int i = 0; i<playersNames.size();++i){
-            Player player = new Player(playersNames.get(i),map,Border.get(i));
+            Player player = new Player(playersNames.get(i),Border.get(i));
             players.add(player);
         }
         gameDatabase.insertPlayers(players);
-        map.setPlayerList(players);
         GamingProcess gamingProcess = new GamingProcess(map, gameDatabase);
+        gamingProcess.setPlayers(players);
         int gameId = gameDatabase.insertGame(players.size(), map.getMapCreator().getSeed(), width, height);
         gamingProcess.setId(gameId);
         mainGameStage = new MainGameStage(map, gamingProcess, this);
