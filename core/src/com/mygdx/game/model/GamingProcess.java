@@ -143,7 +143,7 @@ public class GamingProcess {
             return;
         }
         ++currentPlayer;
-        while (getCurrentPlayer().isDone()) {
+        while (!players.containsKey(turnOrder.get(currentPlayer)) || getCurrentPlayer().isDone()) {
             nextPlayer();
         }
     }
