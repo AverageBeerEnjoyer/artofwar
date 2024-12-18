@@ -10,7 +10,7 @@ public class MapCell {
     private double humidity;
     private int defence;
     public final int x, y;
-    private Player owner;
+    private int ownerId;
     private GameObject gameObject;
 
     public MapCell(int x, int y) {
@@ -28,7 +28,7 @@ public class MapCell {
         this.defence = mapCell.defence;
         this.x = mapCell.x;
         this.y = mapCell.y;
-        this.owner = mapCell.owner;
+        this.ownerId = mapCell.ownerId;
         this.gameObject = mapCell.gameObject;
     }
 
@@ -44,8 +44,8 @@ public class MapCell {
         return type;
     }
 
-    public Player getOwner() {
-        return owner;
+    public int getOwnerId() {
+        return ownerId;
     }
 
     public int getDefence() {
@@ -78,9 +78,9 @@ public class MapCell {
         this.type = type;
     }
 
-    public void setOwner(Player owner) {
-        if (this.owner != null) this.owner.removeTerritory();
-        this.owner = owner;
-        this.owner.addTerritory();
+    public void setOwnerId(int ownerId) {
+//        if (this.ownerId != null) this.ownerId.removeTerritory();
+        this.ownerId = ownerId;
+//        this.ownerId.addTerritory();
     }
 }

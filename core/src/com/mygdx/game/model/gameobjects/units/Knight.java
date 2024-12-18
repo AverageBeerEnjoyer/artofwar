@@ -4,18 +4,18 @@ import static com.mygdx.game.ProjectVariables.*;
 import static com.mygdx.game.ProjectVariables.UnitSpec.*;
 
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
 public class Knight extends Unit {
     public Knight(
-            Map Map,
+            GameMap GameMap,
             MapCell placement,
             Player owner
     ) {
         super(
-                Map,
+                GameMap,
                 placement,
                 owner
         );

@@ -1,7 +1,7 @@
 package com.mygdx.game.model.gameobjects.units;
 
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
@@ -10,12 +10,12 @@ import static com.mygdx.game.ProjectVariables.UnitSpec.*;
 
 public class Militia extends Unit {
     public Militia(
-            Map Map,
+            GameMap GameMap,
             MapCell placement,
             Player owner
     ) {
         super(
-                Map,
+                GameMap,
                 placement,
                 owner
         );

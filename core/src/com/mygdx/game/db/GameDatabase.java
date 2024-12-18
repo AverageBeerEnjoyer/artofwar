@@ -31,69 +31,89 @@ public class GameDatabase {
     public void createSchema() throws SQLException {
         Statement statement = connection.createStatement();
         statement.execute(
-            "CREATE TABLE IF NOT EXISTS player" +
-                "(" +
-                "    id   INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                "    name VARCHAR(63) NOT NULL UNIQUE" +
-                ");"
+                "CREATE TABLE IF NOT EXISTS player" +
+                        "(" +
+                        "    id   INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                        "    name VARCHAR(63) NOT NULL UNIQUE" +
+                        ");"
         );
         statement.execute(
-            "CREATE TABLE IF NOT EXISTS game" +
-                "(" +
-                "    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                "    players_qty     INTEGER NOT NULL," +
-                "    start_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                "    end_timestamp   DATETIME," +
-                "    map_seed        INTEGER NOT NULL," +
-                "    map_width       INTEGER NOT NULL," +
-                "    map_height      INTEGER NOT NULL" +
-                ");"
+                "CREATE TABLE IF NOT EXISTS game" +
+                        "(" +
+                        "    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                        "    players_qty     INTEGER NOT NULL," +
+                        "    start_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                        "    end_timestamp   DATETIME," +
+                        "    map_seed        INTEGER NOT NULL," +
+                        "    map_width       INTEGER NOT NULL," +
+                        "    map_height      INTEGER NOT NULL" +
+                        ");"
         );
         statement.execute(
-            "CREATE TABLE IF NOT EXISTS turn" +
-                "(" +
-                "    id                INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                "    current_player_id INTEGER NOT NULL," +
-                "    game_id           INTEGER NOT NULL," +
-                "    round             INTEGER NOT NULL ," +
-                "    gold              INTEGER NOT NULL," +
-                "    territories       INTEGER NOT NULL," +
-                "    timestamp         DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                "    FOREIGN KEY (current_player_id) REFERENCES player (id)," +
-                "    FOREIGN KEY (game_id) REFERENCES game (id) ON DELETE CASCADE" +
-                ");"
+                "CREATE TABLE IF NOT EXISTS turn" +
+                        "(" +
+                        "    id                INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                        "    current_player_id INTEGER NOT NULL," +
+                        "    game_id           INTEGER NOT NULL," +
+                        "    round             INTEGER NOT NULL ," +
+                        "    gold              INTEGER NOT NULL," +
+                        "    territories       INTEGER NOT NULL," +
+                        "    timestamp         DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                        "    FOREIGN KEY (current_player_id) REFERENCES player (id)," +
+                        "    FOREIGN KEY (game_id) REFERENCES game (id) ON DELETE CASCADE" +
+                        ");"
         );
         connection.commit();
         statement.close();
     }
 
-    /**
-     * Adding players to the player table.
-     * <p>
-     * Each player receive id.
-     * </p>
-     *
-     * @param players List of players
-     * @throws SQLException
-     */
-    public void insertPlayers(List<Player> players) throws SQLException {
+//    /**
+//     * Adding players to the player table.
+//     * <p>
+//     * Each player receive id.
+//     * </p>
+//     *
+//     * @param players List of players
+//     * @throws SQLException
+//     */
+//    public void insertPlayers(List<Player> players) throws SQLException {
+//        PreparedStatement statement = connection.prepareStatement(
+//                "INSERT OR IGNORE INTO player (name) VALUES (?) RETURNING id");
+//        PreparedStatement getIdStatement = connection.prepareStatement(
+//                "SELECT id FROM player WHERE name = ?"
+//        );
+//        for (Player player : players) {
+//            statement.setString(1, player.name);
+//            ResultSet rs = statement.executeQuery();
+//            if (!rs.next()) {
+//                getIdStatement.setString(1, player.name);
+//                rs = getIdStatement.executeQuery();
+//            }
+//            player.setId(rs.getInt(1));
+//        }
+//        statement.close();
+//        getIdStatement.close();
+//        connection.commit();
+//    }
+
+    public int insertPlayerAndGetId(String name) throws SQLException {
+        int id;
         PreparedStatement statement = connection.prepareStatement(
-            "INSERT OR IGNORE INTO player (name) VALUES (?) RETURNING id");
+                "INSERT OR IGNORE INTO player (name) VALUES (?) RETURNING id");
         PreparedStatement getIdStatement = connection.prepareStatement(
-            "SELECT id FROM player WHERE name = ?"
+                "SELECT id FROM player WHERE name = ?"
         );
-        for (Player player : players) {
-            statement.setString(1, player.name);
-            ResultSet rs = statement.executeQuery();
-            if (!rs.next()) {
-                getIdStatement.setString(1, player.name);
-                rs = getIdStatement.executeQuery();
-            }
-            player.setId(rs.getInt(1));
+        statement.setString(1, name);
+        ResultSet rs = statement.executeQuery();
+        if (!rs.next()) {
+            getIdStatement.setString(1, name);
+            rs = getIdStatement.executeQuery();
         }
+        id = rs.getInt(1);
         statement.close();
         getIdStatement.close();
         connection.commit();
+        return id;
     }
 
     /**
@@ -108,7 +128,7 @@ public class GameDatabase {
      */
     public int insertGame(int playerQty, long seed, int mapWidth, int mapHeight) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "INSERT INTO game (players_qty, map_seed, map_width, map_height) VALUES (?, ?, ?, ?) RETURNING id"
+                "INSERT INTO game (players_qty, map_seed, map_width, map_height) VALUES (?, ?, ?, ?) RETURNING id"
         );
         statement.setInt(1, playerQty);
         statement.setInt(2, (int) seed);
@@ -134,7 +154,7 @@ public class GameDatabase {
      */
     public int insertTurn(int playerId, int gameId, int round, int gold, int territories) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "INSERT INTO turn (current_player_id, game_id, round, gold, territories) VALUES (?, ?, ?, ?, ?) RETURNING id"
+                "INSERT INTO turn (current_player_id, game_id, round, gold, territories) VALUES (?, ?, ?, ?, ?) RETURNING id"
         );
         statement.setInt(1, playerId);
         statement.setInt(2, gameId);
@@ -156,7 +176,7 @@ public class GameDatabase {
      */
     public void finishGame(int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "UPDATE game SET end_timestamp = CURRENT_TIMESTAMP WHERE id = ?"
+                "UPDATE game SET end_timestamp = CURRENT_TIMESTAMP WHERE id = ?"
         );
         statement.setInt(1, gameId);
         statement.executeUpdate();
@@ -172,7 +192,7 @@ public class GameDatabase {
      */
     public int getFinishRound(int playerId, int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "SELECT round FROM turn WHERE game_id = ? AND current_player_id = ? AND territories = 0"
+                "SELECT round FROM turn WHERE game_id = ? AND current_player_id = ? AND territories = 0"
         );
         statement.setInt(1, playerId);
         statement.setInt(2, gameId);
@@ -189,7 +209,7 @@ public class GameDatabase {
      */
     public String getGameDuration(int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "SELECT start_timestamp, end_timestamp FROM game WHERE id = ?"
+                "SELECT start_timestamp, end_timestamp FROM game WHERE id = ?"
         );
 
         statement.setInt(1, gameId);
@@ -217,19 +237,19 @@ public class GameDatabase {
      */
     public ArrayList<PlayerStats> getGameOverPlayerStats(int gameId) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(
-            "SELECT name, max(territories) as 'max terrs', sum(gold) as 'total gold', max(round) - 1 as 'last round' " +
-                "FROM turn " +
-                "         JOIN player p on p.id = turn.current_player_id " +
-                "WHERE game_id = ? " +
-                "GROUP BY current_player_id " +
-                "ORDER BY \"last round\" DESC;"
+                "SELECT name, max(territories) as 'max terrs', sum(gold) as 'total gold', max(round) - 1 as 'last round' " +
+                        "FROM turn " +
+                        "         JOIN player p on p.id = turn.current_player_id " +
+                        "WHERE game_id = ? " +
+                        "GROUP BY current_player_id " +
+                        "ORDER BY \"last round\" DESC;"
         );
         statement.setInt(1, gameId);
         ResultSet rs = statement.executeQuery();
         ArrayList<PlayerStats> playersStats = new ArrayList<>();
         while (rs.next()) {
             playersStats.add(new PlayerStats(
-                rs.getString(1), rs.getInt(2), rs.getInt(3), rs.getInt(4))
+                    rs.getString(1), rs.getInt(2), rs.getInt(3), rs.getInt(4))
             );
         }
         return playersStats;

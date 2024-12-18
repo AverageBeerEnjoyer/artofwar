@@ -1,19 +1,15 @@
 package com.mygdx.game.view;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.controllers.actors.ActorsFactory;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.view.stages.MenuStage;
 import com.mygdx.game.db.DBController;
 import com.mygdx.game.db.GameDatabase;
 import com.mygdx.game.model.GamingProcess;
 import com.mygdx.game.model.maps.Border;
-import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.players.Player;
 
 import java.sql.SQLException;
@@ -48,18 +44,16 @@ public class ArtofWar extends Game {
         this.setScreen(menuStage);
     }
     public void newGame(int width, int height, List<String> playersNames) throws SQLException {
-        Map map  = new Map(width,height);
+        GameMap gameMap = new GameMap(width,height);
         List<Player> players = new ArrayList<>();
         for(int i = 0; i<playersNames.size();++i){
-            Player player = new Player(playersNames.get(i),Border.get(i));
+            int id = gameDatabase.insertPlayerAndGetId(playersNames.get(i));
+            Player player = new Player(id, playersNames.get(i),Border.get(i));
             players.add(player);
         }
-        gameDatabase.insertPlayers(players);
-        GamingProcess gamingProcess = new GamingProcess(map, gameDatabase);
-        gamingProcess.setPlayers(players);
-        int gameId = gameDatabase.insertGame(players.size(), map.getMapCreator().getSeed(), width, height);
-        gamingProcess.setId(gameId);
-        mainGameStage = new MainGameStage(map, gamingProcess, this);
+        int gameId = gameDatabase.insertGame(players.size(), gameMap.getMapCreator().getSeed(), width, height);
+        GamingProcess gamingProcess = new GamingProcess(gameMap, gameDatabase, players, gameId);
+        mainGameStage = new MainGameStage(gameMap, gamingProcess, this);
         setScreen(mainGameStage);
     }
 

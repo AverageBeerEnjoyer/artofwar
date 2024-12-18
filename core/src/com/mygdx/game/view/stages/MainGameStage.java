@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.ProjectVariables.*;
-import com.mygdx.game.model.gameobjects.buildings.Capital;
 import com.mygdx.game.model.maps.MapToRendererTransformator;
 import com.mygdx.game.controllers.actors.TiledMapActor;
 import com.mygdx.game.controllers.listeners.game_cl.*;
@@ -26,7 +23,7 @@ import com.mygdx.game.model.gameobjects.buildings.SuperTower;
 import com.mygdx.game.model.gameobjects.buildings.Tower;
 import com.mygdx.game.model.gameobjects.units.*;
 import com.mygdx.game.model.maps.CellType;
-import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 import com.mygdx.game.model.players.PlayerStats;
@@ -41,7 +38,7 @@ public class MainGameStage extends Stage implements Screen {
     private final ArtofWar artofWar;
     private final OrthographicCamera camera = new OrthographicCamera();
     private final MapToRendererTransformator mapToRendererTransformator;
-    private Map map;
+    private GameMap gameMap;
     private Group selectedArea;
     private final Group movableActors = new Group();
     private Group controls;
@@ -49,10 +46,10 @@ public class MainGameStage extends Stage implements Screen {
     private GamingProcess gamingProcess;
 
 
-    public MainGameStage(Map map, GamingProcess gamingProcess, ArtofWar artofWar) {
+    public MainGameStage(GameMap gameMap, GamingProcess gamingProcess, ArtofWar artofWar) {
         this.artofWar = artofWar;
-        this.map = map;
-        this.mapToRendererTransformator = new MapToRendererTransformator(map);
+        this.gameMap = gameMap;
+        this.mapToRendererTransformator = new MapToRendererTransformator(gameMap);
         this.gamingProcess = gamingProcess;
         artofWar.factory.setGameStage(this);
         addActor(movableActors);
@@ -78,7 +75,7 @@ public class MainGameStage extends Stage implements Screen {
                 if (gamingProcess.getRound() == 0) {
                     placeCapitalArea();
                 } else {
-                    selectArea(PlaceToCellCL::new, map.getPlayerTerritory(gamingProcess.getCurrentPlayer()));
+                    selectArea(PlaceToCellCL::new, gameMap.getPlayerTerritory(gamingProcess.getCurrentPlayer().id));
                 }
             }
         }
@@ -92,21 +89,21 @@ public class MainGameStage extends Stage implements Screen {
         gamingProcess.moveUnit(unit, x, y);
         clearSelectedArea();
 
-        mapToRendererTransformator.update(xOld, yOld);
-        mapToRendererTransformator.update(x, y);
+        mapToRendererTransformator.update(xOld, yOld, gamingProcess.getTurnOrder());
+        mapToRendererTransformator.update(x, y, gamingProcess.getTurnOrder());
     }
 
     public void selectUnit(Unit unit, int x, int y) {
         clearSelectedArea();
         gamingProcess.setUnitSelection(unit);
-        selectArea(MoveToCellCL::new, map.selectCellsToMove(x, y));
+        selectArea(MoveToCellCL::new, gameMap.selectCellsToMove(x, y));
     }
 
     public void placeCapitalFirstRound(int x, int y) {
         clearSelectedArea();
         gamingProcess.createCapitalArea(gamingProcess.getCurrentPlayer(), x, y);
         if (gamingProcess.isLast()) loadActors();
-        mapToRendererTransformator.update(x, y);
+        mapToRendererTransformator.update(x, y, gamingProcess.getTurnOrder());
         nexTurn();
     }
 
@@ -116,7 +113,7 @@ public class MainGameStage extends Stage implements Screen {
         gamingProcess.setGameObjectSelection(gameObject);
         selectArea(
                 PlaceToCellCL::new,
-                map.getPlayerTerritory(gamingProcess.getCurrentPlayer())
+                gameMap.getPlayerTerritory(gamingProcess.getCurrentPlayer().id)
         );
     }
 
@@ -125,19 +122,19 @@ public class MainGameStage extends Stage implements Screen {
         gamingProcess.placeNewGameObjectOnCell(gameObject, x, y);
         updateInfo();
         getRoot().findActor("next turn").setVisible(true);
-        mapToRendererTransformator.update(x, y);
+        mapToRendererTransformator.update(x, y, gamingProcess.getTurnOrder());
     }
 
     public Group getMovableActors() {
         return movableActors;
     }
 
-    public void setMap(Map Map) {
-        this.map = Map;
+    public void setMap(GameMap GameMap) {
+        this.gameMap = GameMap;
     }
 
-    public Map getMap() {
-        return this.map;
+    public GameMap getMap() {
+        return this.gameMap;
     }
 
     public GamingProcess getGamingProcess() {
@@ -157,7 +154,7 @@ public class MainGameStage extends Stage implements Screen {
     }
 
     public void placeCapitalArea() {
-        selectArea(PlaceCapitalFirstRoundCL::new, map.getPlayerTerritory(Player.NOBODY));
+        selectArea(PlaceCapitalFirstRoundCL::new, gameMap.getPlayerTerritory(Player.NOBODY.id));
     }
 
     public void loadActors() {
@@ -169,10 +166,10 @@ public class MainGameStage extends Stage implements Screen {
     private void createActorsLayer() {
         Group cellActors = new Group();
         cellActors.setName("cellActors");
-        for (int i = 0; i < map.getWidth(); ++i) {
-            for (int j = 0; j < map.getHeight(); ++j) {
-                if (map.getMapCreator().getCells()[i][j].getType() == CellType.WATER) continue;
-                TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i, j), new SelectCellCL(this, map.getCell(i, j)), 2);
+        for (int i = 0; i < gameMap.getWidth(); ++i) {
+            for (int j = 0; j < gameMap.getHeight(); ++j) {
+                if (gameMap.getMapCreator().getCells()[i][j].getType() == CellType.WATER) continue;
+                TiledMapActor actor = artofWar.factory.createTiledMapActor(gameMap.getCell(i, j), new SelectCellCL(this, gameMap.getCell(i, j)), 2);
                 cellActors.addActor(actor);
             }
         }
@@ -181,10 +178,10 @@ public class MainGameStage extends Stage implements Screen {
 
     public void selectArea(BiFunction<MainGameStage, MapCell, ClickListener> listenerCreator, int[][] area) {
         selectedArea = new Group();
-        for (int i = 0; i < map.getWidth(); ++i) {
-            for (int j = 0; j < map.getHeight(); ++j) {
+        for (int i = 0; i < gameMap.getWidth(); ++i) {
+            for (int j = 0; j < gameMap.getHeight(); ++j) {
                 if (area[i][j] != -1) {
-                    TiledMapActor actor = artofWar.factory.createTiledMapActor(map.getCell(i, j), listenerCreator.apply(this, map.getCell(i, j)), 3);
+                    TiledMapActor actor = artofWar.factory.createTiledMapActor(gameMap.getCell(i, j), listenerCreator.apply(this, gameMap.getCell(i, j)), 3);
                     selectedArea.addActor(actor);
                 }
             }

@@ -4,18 +4,18 @@ import static com.mygdx.game.ProjectVariables.UnitSpec.*;
 import static com.mygdx.game.ProjectVariables.paladinPic;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
 public class Paladin extends Unit {
     public Paladin(
-            Map Map,
+            GameMap GameMap,
             MapCell placement,
             Player owner
     ) {
         super(
-                Map,
+                GameMap,
                 placement,
                 owner
         );

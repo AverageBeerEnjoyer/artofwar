@@ -202,7 +202,7 @@ public class MapCreator {
         }
         for (MapCell[] col : cells) {
             for (MapCell cell : col) {
-                if (cell.getType() != WATER) cell.setOwner(Player.NOBODY);
+                if (cell.getType() != WATER) cell.setOwnerId(Player.NOBODY.id);
             }
         }
     }

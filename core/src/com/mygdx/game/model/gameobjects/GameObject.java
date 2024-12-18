@@ -2,28 +2,27 @@ package com.mygdx.game.model.gameobjects;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.mygdx.game.model.maps.CellType;
-import com.mygdx.game.model.maps.Map;
-import com.mygdx.game.model.maps.MapCreator;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
 public abstract class GameObject {
-    private final Map map;
+    private final GameMap gameMap;
     private MapCell placement;
-    public final Player owner;
+    public final int ownerId;
 
     public GameObject(
-            Map map,
+            GameMap gameMap,
             MapCell placement,
             Player owner
     ) {
-        this.map = map;
+        this.gameMap = gameMap;
         this.placement = placement;
-        this.owner = owner;
+        this.ownerId = owner.id;
     }
 
-    public Map getMap() {
-        return map;
+    public GameMap getMap() {
+        return gameMap;
     }
 
     public MapCell getPlacement() {

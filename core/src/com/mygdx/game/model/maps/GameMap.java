@@ -8,21 +8,22 @@ import com.mygdx.game.model.gameobjects.units.Unit;
 import com.mygdx.game.model.players.Player;
 import com.mygdx.game.utils.Triple;
 
-import java.util.ArrayList;
+import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.mygdx.game.model.maps.CellType.WATER;
 
-public class Map {
+public class GameMap {
     private final MapCreator mapCreator;
 
-    public Map(int width, int height) throws IllegalArgumentException {
+    public GameMap(int width, int height) throws IllegalArgumentException {
         this.mapCreator = new MapCreator(width, height, 0, -1);
     }
 
-    public Map(int width, int height, int mode, long seed) {
+    public GameMap(int width, int height, int mode, long seed) {
         this.mapCreator = new MapCreator(width, height, mode, seed);
     }
 
@@ -35,11 +36,15 @@ public class Map {
         cell.setGameObject(null);
     }
 
-    public void setGameObject(GameObject gameObject, int x, int y) {
+    public int[] setGameObject(GameObject gameObject, int x, int y) {
         MapCell cell = mapCreator.safeAccess(x, y);
+        int[] res = new int[2];
+        res[0] = cell.getOwnerId();
+        res[1] = gameObject.ownerId;
         cell.setGameObject(gameObject);
         gameObject.setPlacement(cell);
-        cell.setOwner(gameObject.owner);
+        cell.setOwnerId(gameObject.ownerId);
+        return res;
     }
 
     public int[][] selectCellsToMove(int xValue, int yValue) {
@@ -68,7 +73,7 @@ public class Map {
             if (cell == null) continue;
             if (cell.getType() == WATER) continue;
             if (mirror[x][y] > 0) stop = true;
-            if (!startCell.getOwner().equals(cell.getOwner())) {
+            if (startCell.getOwnerId() != cell.getOwnerId()) {
                 if (cell.getDefence() >= unit.getPower()) continue;
                 stop = true;
             }
@@ -86,14 +91,14 @@ public class Map {
         return mirror;
     }
 
-    public int[][] getPlayerTerritory(Player player) {
+    public int[][] getPlayerTerritory(int playerId) {
         int[][] territory = new int[getWidth()][getHeight()];
         for (int[] row : territory) {
             Arrays.fill(row, -1);
         }
         for (int i = 0; i < getWidth(); ++i) {
             for (int j = 0; j < getHeight(); ++j) {
-                if (mapCreator.getCells()[i][j].getOwner() == player) {
+                if (mapCreator.getCells()[i][j].getOwnerId() == playerId) {
                     territory[i][j] = 0;
                 }
             }
@@ -102,13 +107,13 @@ public class Map {
     }
 
 
-    public void recountDefenceCoverage(List<Player> playerList) {
+    public void recountDefenceCoverage(Map<Integer, Player> playerList) {
         for (int i = 0; i < getWidth(); ++i) {
             for (int j = 0; j < getHeight(); ++j) {
                 getCell(i, j).setDefence(0);
             }
         }
-        for (Player player : playerList) {
+        for (Player player : playerList.values()) {
             for (Building building : player.getBuildings()) {
                 countGameObjectCoverage(building);
             }
@@ -122,20 +127,25 @@ public class Map {
 
     private void countGameObjectCoverage(GameObject gameObject) {
         processNeighbours(cell -> {
-            if (cell == null || cell.getOwner() != gameObject.owner) return;
+            if (cell == null || cell.getOwnerId() != gameObject.ownerId) return;
             cell.setDefence(Math.max(cell.getDefence(), gameObject.getDefence()));
         }, gameObject.getPlacement());
         MapCell cell = gameObject.getPlacement();
         cell.setDefence(Math.max(cell.getDefence(), gameObject.getDefence()));
     }
 
-    public void createCapitalArea(Capital capital, int x, int y) {
+    public int createCapitalArea(Capital capital) {
+        var ref = new Object() {
+            int cnt = 0;
+        };
         processNeighbours(cell -> {
             if (cell == null) return;
-            if (cell.getType() != CellType.WATER && cell.getOwner() == Player.NOBODY) {
-                cell.setOwner(capital.owner);
+            if (cell.getType() != CellType.WATER && cell.getOwnerId() == Player.NOBODY.id) {
+                cell.setOwnerId(capital.ownerId);
+                ++ref.cnt;
             }
         }, capital.getPlacement());
+        return ref.cnt;
     }
 
     private void processNeighbours(Consumer<MapCell> consumer, MapCell start) {

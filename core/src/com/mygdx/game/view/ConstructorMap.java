@@ -10,9 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.model.maps.MapToRendererTransformator;
 import com.mygdx.game.view.stages.MainGameStage;
-import com.mygdx.game.model.maps.Map;
 import com.mygdx.game.model.maps.MapCreator;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class ConstructorMap implements Screen {
     final ArtofWar game;
     private final MainGameStage stage;
     private MapToRendererTransformator mapToRendererTransformator;
-    private Map map;
+    private GameMap gameMap;
     private MapCreator mapCreator;
     private String labelWidth = "25", labelHeight = "25", labelSeed = "5", n4 = "1.5", n5 = "2", n6 = "0.1";
     private String textRandom = "Random: off";
@@ -32,7 +32,7 @@ public class ConstructorMap implements Screen {
 
     public ConstructorMap(final ArtofWar game) {
         this.game = game;
-        map = new Map(
+        gameMap = new GameMap(
                 Integer.parseInt(labelWidth),
                 Integer.parseInt(labelHeight),
                 0,
@@ -111,13 +111,13 @@ public class ConstructorMap implements Screen {
                 n4 = fieldDegree.getText();
                 n5 = fieldOctaves.getText();
                 n6 = fieldPersistence.getText();
-                map = new Map(
+                gameMap = new GameMap(
                         Integer.parseInt(labelWidth),//x
                         Integer.parseInt(labelHeight),//y
                         0,//mode
                         Long.parseLong(ConstructorMap.this.labelSeed)//seed
                 );
-                mapCreator = map.getMapCreator();
+                mapCreator = gameMap.getMapCreator();
                 UpdateSettings();
                 ConstructorMap.this.labelSeed = String.valueOf(mapCreator.getSeed());
                 statInfo = mapCreator.getStatInfo();
@@ -149,8 +149,8 @@ public class ConstructorMap implements Screen {
 
 
     private void CreateTypeCell() {
-        map = new Map(Integer.parseInt(labelWidth), Integer.parseInt(labelHeight), 0, Integer.parseInt(labelSeed));
-        mapCreator = map.getMapCreator();
+        gameMap = new GameMap(Integer.parseInt(labelWidth), Integer.parseInt(labelHeight), 0, Integer.parseInt(labelSeed));
+        mapCreator = gameMap.getMapCreator();
         statInfo = mapCreator.getStatInfo();
     }
 
@@ -178,7 +178,7 @@ public class ConstructorMap implements Screen {
     }
 
     private void UpdateSettings() {
-        stage.setMap(map);
+        stage.setMap(gameMap);
         mapCreator.setDegree(Double.parseDouble(n4));
         mapCreator.setOctaves(Integer.parseInt(n5));
         mapCreator.setPersistence(Double.parseDouble(n6));

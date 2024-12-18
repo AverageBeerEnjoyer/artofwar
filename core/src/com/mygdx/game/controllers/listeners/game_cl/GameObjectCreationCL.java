@@ -3,7 +3,7 @@ package com.mygdx.game.controllers.listeners.game_cl;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.mygdx.game.view.stages.MainGameStage;
 import com.mygdx.game.model.gameobjects.GameObject;
-import com.mygdx.game.model.maps.Map;
+import com.mygdx.game.model.maps.GameMap;
 import com.mygdx.game.model.maps.MapCell;
 import com.mygdx.game.model.players.Player;
 
@@ -21,7 +21,7 @@ public class GameObjectCreationCL extends MainGameStageCL {
     public void clicked(InputEvent event, float x, float y) {
         GameObject gameObject;
         try {
-            Constructor<? extends GameObject> cons = aClass.getDeclaredConstructor(Map.class, MapCell.class, Player.class);
+            Constructor<? extends GameObject> cons = aClass.getDeclaredConstructor(GameMap.class, MapCell.class, Player.class);
             gameObject = cons.newInstance(stage.getMap(), null, stage.getGamingProcess().getCurrentPlayer());
         } catch (Exception e) {
             return;
